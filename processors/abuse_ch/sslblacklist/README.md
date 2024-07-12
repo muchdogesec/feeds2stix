@@ -1,5 +1,14 @@
 # abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
 
+## Overview
+
+> The SSL Certificate Blacklist (CSV) is a CSV that contains SHA1 Fingerprint of all SSL certificates blacklisted on SSLBL. This format is useful if you want to process the blacklisted SSL certificate further, e.g. loading them into your SIEM. The CSV contains the following values:
+> * Listing date (UTC)
+> * SHA1 Fingerprint of the blacklisted SSL certificate
+> * Listing reason
+
+https://sslbl.abuse.ch/blacklist/#ssl-certificates-csv
+
 ## Data source
 
 https://sslbl.abuse.ch/blacklist/sslblacklist.csv
