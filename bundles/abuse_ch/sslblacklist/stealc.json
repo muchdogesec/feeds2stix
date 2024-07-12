@@ -1,0 +1,240 @@
+{
+    "type": "bundle",
+    "id": "bundle--53c9c135-3f51-5c4d-8897-cb00d050079b",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a38ff232-6dd6-5c5e-be16-11a9a5d28daf",
+            "hashes": {
+                "SHA-1": "00c5e34b34da3f23ac52975637da01d5f0f1d108"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--f67f4a05-f81e-5833-9fd1-7c5d83cab199",
+            "hashes": {
+                "SHA-1": "af8d9adafc003111285c8780e1a6687eb00bc0ea"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--d2c551a9-dab7-5c2f-bf0e-a0085aee7d35",
+            "hashes": {
+                "SHA-1": "5840c9e5bd8cb39de75bc28c20b9fe09eada256b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--8ffd55d1-ad41-592a-976e-666e8458b8f1",
+            "hashes": {
+                "SHA-1": "08832c60295f53d768ef856693615f24e7d02955"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--4fc1cfa7-1831-5da6-b87e-26ae2641bffb",
+            "hashes": {
+                "SHA-1": "395c98e8da883cc824a1ec77cdf495f8c955332b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--227724bc-5489-53c7-ab54-302428930892",
+            "hashes": {
+                "SHA-1": "6bcf172ea022156150dff8a46ed00fba2957ecce"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--1f3f0844-8142-5467-b374-aa540e87be29",
+            "hashes": {
+                "SHA-1": "bfc8c3e02d01f0f1c3de2f761d52991a5dc45b0b"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-05-14T07:17:45.000Z",
+            "modified": "2024-05-30T06:14:09.000Z",
+            "name": "Stealc",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--a38ff232-6dd6-5c5e-be16-11a9a5d28daf",
+                "file--f67f4a05-f81e-5833-9fd1-7c5d83cab199",
+                "file--d2c551a9-dab7-5c2f-bf0e-a0085aee7d35",
+                "file--8ffd55d1-ad41-592a-976e-666e8458b8f1",
+                "file--4fc1cfa7-1831-5da6-b87e-26ae2641bffb",
+                "file--227724bc-5489-53c7-ab54-302428930892",
+                "file--1f3f0844-8142-5467-b374-aa540e87be29"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-05-14T07:17:45.000Z",
+            "modified": "2024-05-30T06:14:09.000Z",
+            "name": "Stealc",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '00c5e34b34da3f23ac52975637da01d5f0f1d108' ] OR [ file:hashes.'SHA-1' = 'af8d9adafc003111285c8780e1a6687eb00bc0ea' ] OR [ file:hashes.'SHA-1' = '5840c9e5bd8cb39de75bc28c20b9fe09eada256b' ] OR [ file:hashes.'SHA-1' = '08832c60295f53d768ef856693615f24e7d02955' ] OR [ file:hashes.'SHA-1' = '395c98e8da883cc824a1ec77cdf495f8c955332b' ] OR [ file:hashes.'SHA-1' = '6bcf172ea022156150dff8a46ed00fba2957ecce' ] OR [ file:hashes.'SHA-1' = 'bfc8c3e02d01f0f1c3de2f761d52991a5dc45b0b' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2024-05-14T07:17:45Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4decc6c8-0c98-5376-b70b-038312ce7991",
+            "created": "2024-05-30T06:14:09.000Z",
+            "modified": "2024-05-30T06:14:09.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--a38ff232-6dd6-5c5e-be16-11a9a5d28daf",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--3d75917a-bfc2-53c1-98c5-a60297f70771",
+            "created": "2024-05-28T17:33:14.000Z",
+            "modified": "2024-05-28T17:33:14.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--f67f4a05-f81e-5833-9fd1-7c5d83cab199",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--6425942f-7fd0-51bf-a3bf-3a8d9d75f324",
+            "created": "2024-05-28T17:32:57.000Z",
+            "modified": "2024-05-28T17:32:57.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--d2c551a9-dab7-5c2f-bf0e-a0085aee7d35",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f62c295d-39a1-58fb-b664-ec2a764bb984",
+            "created": "2024-05-25T07:22:08.000Z",
+            "modified": "2024-05-25T07:22:08.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--8ffd55d1-ad41-592a-976e-666e8458b8f1",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--fb1b03d0-8943-5914-a67d-8a06ee39b1c9",
+            "created": "2024-05-25T07:21:59.000Z",
+            "modified": "2024-05-25T07:21:59.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--4fc1cfa7-1831-5da6-b87e-26ae2641bffb",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--d9765e88-32dc-51c8-9bb1-28c5c3a3fcc0",
+            "created": "2024-05-22T14:17:54.000Z",
+            "modified": "2024-05-22T14:17:54.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--227724bc-5489-53c7-ab54-302428930892",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--2c2f576e-7652-50e7-a52f-85f714e66def",
+            "created": "2024-05-14T07:17:45.000Z",
+            "modified": "2024-05-14T07:17:45.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--60fcd52c-d6d8-5360-a36e-66d5a27402a8",
+            "target_ref": "file--1f3f0844-8142-5467-b374-aa540e87be29",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,102 @@
+{
+    "type": "bundle",
+    "id": "bundle--f8df79f3-2d1c-51c1-a906-2aac3ebfa218",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--719057f6-1bdf-5602-bd60-651c3ff4d696",
+            "hashes": {
+                "SHA-1": "3a8843fca6f4e206bdf69ae150cb65756a2e8795"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--dd05725e-1dfa-56ea-b8d6-5c7e3654d476",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-04-15T05:19:25.000Z",
+            "modified": "2024-04-15T05:19:25.000Z",
+            "name": "MarsStealer",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--719057f6-1bdf-5602-bd60-651c3ff4d696"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--dd05725e-1dfa-56ea-b8d6-5c7e3654d476",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-04-15T05:19:25.000Z",
+            "modified": "2024-04-15T05:19:25.000Z",
+            "name": "MarsStealer",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '3a8843fca6f4e206bdf69ae150cb65756a2e8795' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2024-04-15T05:19:25Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--d7f8023a-993c-5156-8a69-2f29ce3bfb28",
+            "created": "2024-04-15T05:19:25.000Z",
+            "modified": "2024-04-15T05:19:25.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--dd05725e-1dfa-56ea-b8d6-5c7e3654d476",
+            "target_ref": "file--719057f6-1bdf-5602-bd60-651c3ff4d696",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

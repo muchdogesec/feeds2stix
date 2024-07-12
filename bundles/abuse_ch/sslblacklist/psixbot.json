@@ -1,0 +1,217 @@
+{
+    "type": "bundle",
+    "id": "bundle--ce88d168-3a3b-5ee3-b784-3e86fe72cf22",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--0dfebb76-1672-519b-b103-0c58286d0561",
+            "hashes": {
+                "SHA-1": "41e5c147583cb7e5b5d3132376aef7696d53dc35"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--cbe97569-5655-5818-a94e-90c7faea32e8",
+            "hashes": {
+                "SHA-1": "75988b854b33e272c758b2bd1421923795def02c"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--12c5296e-f4f7-5920-bbf2-019eefb0c566",
+            "hashes": {
+                "SHA-1": "b2d0d8f003f06f104866e0d416b4b756a9ec0aaf"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--f25d73f8-85ec-58c9-90f7-70165cc33a1c",
+            "hashes": {
+                "SHA-1": "ac894dd3a62d498c3f6317a45cd6e22dccf1bdd2"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--3fb6a78e-14cb-5b7b-a832-2c4e51faf1bd",
+            "hashes": {
+                "SHA-1": "6d28e9c22dea118cb62e543fc366b83260a86e0d"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--5abb20f0-258c-5c8c-999e-a5e2597778e8",
+            "hashes": {
+                "SHA-1": "59711bd3b823351fb5ffe685100adb6e7b1549cd"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2019-07-30T08:47:32.000Z",
+            "modified": "2019-12-11T20:09:52.000Z",
+            "name": "PsiXBot",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--0dfebb76-1672-519b-b103-0c58286d0561",
+                "file--cbe97569-5655-5818-a94e-90c7faea32e8",
+                "file--12c5296e-f4f7-5920-bbf2-019eefb0c566",
+                "file--f25d73f8-85ec-58c9-90f7-70165cc33a1c",
+                "file--3fb6a78e-14cb-5b7b-a832-2c4e51faf1bd",
+                "file--5abb20f0-258c-5c8c-999e-a5e2597778e8"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2019-07-30T08:47:32.000Z",
+            "modified": "2019-12-11T20:09:52.000Z",
+            "name": "PsiXBot",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '41e5c147583cb7e5b5d3132376aef7696d53dc35' ] OR [ file:hashes.'SHA-1' = '75988b854b33e272c758b2bd1421923795def02c' ] OR [ file:hashes.'SHA-1' = 'b2d0d8f003f06f104866e0d416b4b756a9ec0aaf' ] OR [ file:hashes.'SHA-1' = 'ac894dd3a62d498c3f6317a45cd6e22dccf1bdd2' ] OR [ file:hashes.'SHA-1' = '6d28e9c22dea118cb62e543fc366b83260a86e0d' ] OR [ file:hashes.'SHA-1' = '59711bd3b823351fb5ffe685100adb6e7b1549cd' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2019-07-30T08:47:32Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1c1e0c00-bec4-5523-a460-4a34e3da2882",
+            "created": "2019-12-11T20:09:52.000Z",
+            "modified": "2019-12-11T20:09:52.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--0dfebb76-1672-519b-b103-0c58286d0561",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--47b0bca4-74dd-5feb-80c5-551284a21198",
+            "created": "2019-09-09T10:41:43.000Z",
+            "modified": "2019-09-09T10:41:43.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--cbe97569-5655-5818-a94e-90c7faea32e8",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9b99fbcb-da8d-56ac-b9e9-729f32718f7b",
+            "created": "2019-09-09T06:45:41.000Z",
+            "modified": "2019-09-09T06:45:41.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--12c5296e-f4f7-5920-bbf2-019eefb0c566",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--64276392-13b6-592f-98fd-60a5e2aa2f93",
+            "created": "2019-09-09T06:36:03.000Z",
+            "modified": "2019-09-09T06:36:03.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--f25d73f8-85ec-58c9-90f7-70165cc33a1c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--7c0e2a55-36be-5e1d-ad47-00bf5f9bf3f1",
+            "created": "2019-09-07T18:55:11.000Z",
+            "modified": "2019-09-07T18:55:11.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--3fb6a78e-14cb-5b7b-a832-2c4e51faf1bd",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--99e6a580-5a90-5134-a281-72f44f785b52",
+            "created": "2019-07-30T08:47:32.000Z",
+            "modified": "2019-07-30T08:47:32.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--a30ab022-5149-598b-b8a8-7af6a0ab8eed",
+            "target_ref": "file--5abb20f0-258c-5c8c-999e-a5e2597778e8",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

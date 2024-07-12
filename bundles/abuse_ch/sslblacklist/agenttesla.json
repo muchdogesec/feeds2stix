@@ -1,0 +1,148 @@
+{
+    "type": "bundle",
+    "id": "bundle--b360297b-0e57-565f-919d-5dbf5085a0a9",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--06d5d983-e655-55b0-b899-9a71c1d30a25",
+            "hashes": {
+                "SHA-1": "05df9191f421f57089281a0067542d9546ad86eb"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--7b71f6a0-d552-53b9-9187-0547031e579c",
+            "hashes": {
+                "SHA-1": "73f88fe673ebeeb1ef4d6fc7927b46c8f48ac450"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--ec12e0f6-4263-598e-b276-da080c89fd6c",
+            "hashes": {
+                "SHA-1": "f6dac339e16f90b84d91588e7f581f35f20de2a7"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--6d7d7dbd-f75b-576f-a29e-83ec7288579f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2018-08-06T14:55:03.000Z",
+            "modified": "2024-03-30T07:23:53.000Z",
+            "name": "AgentTesla",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--06d5d983-e655-55b0-b899-9a71c1d30a25",
+                "file--7b71f6a0-d552-53b9-9187-0547031e579c",
+                "file--ec12e0f6-4263-598e-b276-da080c89fd6c"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6d7d7dbd-f75b-576f-a29e-83ec7288579f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2018-08-06T14:55:03.000Z",
+            "modified": "2024-03-30T07:23:53.000Z",
+            "name": "AgentTesla",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '05df9191f421f57089281a0067542d9546ad86eb' ] OR [ file:hashes.'SHA-1' = '73f88fe673ebeeb1ef4d6fc7927b46c8f48ac450' ] OR [ file:hashes.'SHA-1' = 'f6dac339e16f90b84d91588e7f581f35f20de2a7' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2018-08-06T14:55:03Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--8f214550-c872-5c65-96a6-e55afe11a473",
+            "created": "2024-03-30T07:23:53.000Z",
+            "modified": "2024-03-30T07:23:53.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6d7d7dbd-f75b-576f-a29e-83ec7288579f",
+            "target_ref": "file--06d5d983-e655-55b0-b899-9a71c1d30a25",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e0584371-ad66-5706-9f10-32d80f0f10ed",
+            "created": "2022-06-30T08:33:16.000Z",
+            "modified": "2022-06-30T08:33:16.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6d7d7dbd-f75b-576f-a29e-83ec7288579f",
+            "target_ref": "file--7b71f6a0-d552-53b9-9187-0547031e579c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--bc5a171b-3abc-5882-bc6a-fa94563c4f16",
+            "created": "2018-08-06T14:55:03.000Z",
+            "modified": "2018-08-06T14:55:03.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6d7d7dbd-f75b-576f-a29e-83ec7288579f",
+            "target_ref": "file--ec12e0f6-4263-598e-b276-da080c89fd6c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

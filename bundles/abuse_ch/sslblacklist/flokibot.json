@@ -1,0 +1,125 @@
+{
+    "type": "bundle",
+    "id": "bundle--2f4a7c9f-4248-5c0d-b85f-aaf50e52cd90",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--d4bd7469-fa05-5d2e-8b21-b807e543e15b",
+            "hashes": {
+                "SHA-1": "b7a4743e885675b9ac54f73b4217ef60da84f73a"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--28657ff7-379c-580a-9f41-9b67f29d3ec2",
+            "hashes": {
+                "SHA-1": "a80f80724722cd774b80388f4b853ec5d4270ef3"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--e5dedca6-0fce-55ba-8fb3-f8f7f8bb404f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2016-11-24T08:09:14.000Z",
+            "modified": "2016-12-01T11:31:24.000Z",
+            "name": "Flokibot",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--d4bd7469-fa05-5d2e-8b21-b807e543e15b",
+                "file--28657ff7-379c-580a-9f41-9b67f29d3ec2"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e5dedca6-0fce-55ba-8fb3-f8f7f8bb404f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2016-11-24T08:09:14.000Z",
+            "modified": "2016-12-01T11:31:24.000Z",
+            "name": "Flokibot",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = 'b7a4743e885675b9ac54f73b4217ef60da84f73a' ] OR [ file:hashes.'SHA-1' = 'a80f80724722cd774b80388f4b853ec5d4270ef3' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2016-11-24T08:09:14Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f7608078-849e-5e38-a3a5-3db2ea4463c1",
+            "created": "2016-12-01T11:31:24.000Z",
+            "modified": "2016-12-01T11:31:24.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--e5dedca6-0fce-55ba-8fb3-f8f7f8bb404f",
+            "target_ref": "file--d4bd7469-fa05-5d2e-8b21-b807e543e15b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--667b01aa-cdcb-5715-8216-0676ab07e4e8",
+            "created": "2016-11-24T08:09:14.000Z",
+            "modified": "2016-11-24T08:09:14.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--e5dedca6-0fce-55ba-8fb3-f8f7f8bb404f",
+            "target_ref": "file--28657ff7-379c-580a-9f41-9b67f29d3ec2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

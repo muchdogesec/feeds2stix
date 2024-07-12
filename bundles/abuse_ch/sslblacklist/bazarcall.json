@@ -1,0 +1,194 @@
+{
+    "type": "bundle",
+    "id": "bundle--fca96e99-6e57-56d5-8f93-08b6820cfcd4",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "hashes": {
+                "SHA-1": "99d9534224017db5bd28709ae3d06f1f89fc0e48"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "hashes": {
+                "SHA-1": "dbb4e3f0b3932768ccfbbb7384d1c095c7a4f7b1"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "hashes": {
+                "SHA-1": "4e82fde55c2c527c1d2c3a3a5b569ee61c4cc3a1"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "hashes": {
+                "SHA-1": "1920e1292a4170b9e7e3d4def9c003038d6b8ef4"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "hashes": {
+                "SHA-1": "3ae3c30d9a0a79c56dffadbc447afdece45eebc4"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "BazarCall",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+                "file--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+                "file--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+                "file--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+                "file--6537be9e-03e9-5515-979e-0d9beff0f35a"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "BazarCall",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '99d9534224017db5bd28709ae3d06f1f89fc0e48' ] OR [ file:hashes.'SHA-1' = 'dbb4e3f0b3932768ccfbbb7384d1c095c7a4f7b1' ] OR [ file:hashes.'SHA-1' = '4e82fde55c2c527c1d2c3a3a5b569ee61c4cc3a1' ] OR [ file:hashes.'SHA-1' = '1920e1292a4170b9e7e3d4def9c003038d6b8ef4' ] OR [ file:hashes.'SHA-1' = '3ae3c30d9a0a79c56dffadbc447afdece45eebc4' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-11T07:41:17Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1af396c4-72f1-50ed-97d4-ea49bdf8a919",
+            "created": "2021-03-19T15:14:44.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "target_ref": "file--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--fd063ff4-9820-5fc7-9d76-70bfddd2842d",
+            "created": "2021-03-19T15:14:43.000Z",
+            "modified": "2021-03-19T15:14:43.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "target_ref": "file--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--dad32fc0-4e2a-5b45-8976-0c68da947dab",
+            "created": "2021-03-12T07:34:29.000Z",
+            "modified": "2021-03-12T07:34:29.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "target_ref": "file--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e9874015-8236-5859-abff-5c205858a58e",
+            "created": "2021-03-11T07:41:48.000Z",
+            "modified": "2021-03-11T07:41:48.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "target_ref": "file--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--25b3cf15-ff87-57b0-bbe7-4a27176923cd",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-11T07:41:17.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--1e612359-f95b-5bf8-83dd-7703a1cb9dc2",
+            "target_ref": "file--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

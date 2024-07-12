@@ -1,0 +1,286 @@
+{
+    "type": "bundle",
+    "id": "bundle--aa7e4e47-e660-570b-ac59-1feee09b1e8a",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--b2303d34-5ad5-5ecc-bf5b-6a933d5524a0",
+            "hashes": {
+                "SHA-1": "41c82d5dc9bd75f67b776bb0d341f576a0dfae30"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--516c33a6-5bba-509f-86c3-75644476701f",
+            "hashes": {
+                "SHA-1": "22812ad387632e1b4d1ccf5e911686fdc5aa265f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--9b3c4c01-92a0-57d8-8c19-f369287829ce",
+            "hashes": {
+                "SHA-1": "2145dfa39e0e50702aee09aea1b68a9a1e7555c3"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--fcd11eeb-b0a8-56b1-a2df-133cca39605c",
+            "hashes": {
+                "SHA-1": "11bbf86062c5469d5c3ee8ba1cb3cd8f5b8d0ea2"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--40638821-a530-5d15-a293-d079e10c54eb",
+            "hashes": {
+                "SHA-1": "93451cec2fb6853fbd6fb5053bae747162e0feaf"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--0ffcdf94-27c8-5b44-aa56-a4db4f5849f1",
+            "hashes": {
+                "SHA-1": "1b61d02d820bd711087c850557a81bbfaf53246c"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--d9fed3d2-0c6c-5fbf-b8da-3d15667b85b1",
+            "hashes": {
+                "SHA-1": "7486ac5b2af44413003697968d5c2f46faa649ca"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a66df175-98d2-5c63-9d58-18b8dda29eba",
+            "hashes": {
+                "SHA-1": "de986431ff37f7dcbd7c7013aa47bed4f21483c3"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--ef7935bb-54e6-5c8e-a432-2cf9cf3b1ac3",
+            "hashes": {
+                "SHA-1": "bb56e3d9b370cff33769c11812e10fe094b31800"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2019-11-19T13:40:07.000Z",
+            "modified": "2020-10-20T06:43:40.000Z",
+            "name": "Ostap",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--b2303d34-5ad5-5ecc-bf5b-6a933d5524a0",
+                "file--516c33a6-5bba-509f-86c3-75644476701f",
+                "file--9b3c4c01-92a0-57d8-8c19-f369287829ce",
+                "file--fcd11eeb-b0a8-56b1-a2df-133cca39605c",
+                "file--40638821-a530-5d15-a293-d079e10c54eb",
+                "file--0ffcdf94-27c8-5b44-aa56-a4db4f5849f1",
+                "file--d9fed3d2-0c6c-5fbf-b8da-3d15667b85b1",
+                "file--a66df175-98d2-5c63-9d58-18b8dda29eba",
+                "file--ef7935bb-54e6-5c8e-a432-2cf9cf3b1ac3"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2019-11-19T13:40:07.000Z",
+            "modified": "2020-10-20T06:43:40.000Z",
+            "name": "Ostap",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '41c82d5dc9bd75f67b776bb0d341f576a0dfae30' ] OR [ file:hashes.'SHA-1' = '22812ad387632e1b4d1ccf5e911686fdc5aa265f' ] OR [ file:hashes.'SHA-1' = '2145dfa39e0e50702aee09aea1b68a9a1e7555c3' ] OR [ file:hashes.'SHA-1' = '11bbf86062c5469d5c3ee8ba1cb3cd8f5b8d0ea2' ] OR [ file:hashes.'SHA-1' = '93451cec2fb6853fbd6fb5053bae747162e0feaf' ] OR [ file:hashes.'SHA-1' = '1b61d02d820bd711087c850557a81bbfaf53246c' ] OR [ file:hashes.'SHA-1' = '7486ac5b2af44413003697968d5c2f46faa649ca' ] OR [ file:hashes.'SHA-1' = 'de986431ff37f7dcbd7c7013aa47bed4f21483c3' ] OR [ file:hashes.'SHA-1' = 'bb56e3d9b370cff33769c11812e10fe094b31800' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2019-11-19T13:40:07Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--26da7fb9-533f-59ca-886f-0dc4100f056f",
+            "created": "2020-10-20T06:43:40.000Z",
+            "modified": "2020-10-20T06:43:40.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--b2303d34-5ad5-5ecc-bf5b-6a933d5524a0",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1dd7758b-c117-5ff0-9ac2-91545975d414",
+            "created": "2020-10-15T11:46:15.000Z",
+            "modified": "2020-10-15T11:46:15.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--516c33a6-5bba-509f-86c3-75644476701f",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1dfc315e-0263-5c7a-b4c8-09101331724a",
+            "created": "2020-08-13T12:28:17.000Z",
+            "modified": "2020-08-13T12:28:17.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--9b3c4c01-92a0-57d8-8c19-f369287829ce",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--c099dd79-ebba-5195-bc8f-ee875133627f",
+            "created": "2020-06-11T08:49:57.000Z",
+            "modified": "2020-06-11T08:49:57.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--fcd11eeb-b0a8-56b1-a2df-133cca39605c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f59d4c0b-984d-5e75-91db-5248e69a0617",
+            "created": "2019-11-23T10:17:58.000Z",
+            "modified": "2019-11-23T10:17:58.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--40638821-a530-5d15-a293-d079e10c54eb",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--0c5fc098-b7d8-5e82-9f5b-76302b30e316",
+            "created": "2019-11-21T07:06:45.000Z",
+            "modified": "2019-11-21T07:06:45.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--0ffcdf94-27c8-5b44-aa56-a4db4f5849f1",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f050409a-28be-5628-b727-2840ba73adac",
+            "created": "2019-11-20T13:09:50.000Z",
+            "modified": "2019-11-20T13:09:50.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--d9fed3d2-0c6c-5fbf-b8da-3d15667b85b1",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--80da22b9-071a-5dbc-a3ba-5b5c916350d8",
+            "created": "2019-11-19T13:41:50.000Z",
+            "modified": "2019-11-19T13:41:50.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--a66df175-98d2-5c63-9d58-18b8dda29eba",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e08a11b9-54c5-5665-a4e5-2d82d663fb4c",
+            "created": "2019-11-19T13:40:07.000Z",
+            "modified": "2019-11-19T13:40:07.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--6a7c920d-41a4-5294-95ae-6868d478c095",
+            "target_ref": "file--ef7935bb-54e6-5c8e-a432-2cf9cf3b1ac3",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

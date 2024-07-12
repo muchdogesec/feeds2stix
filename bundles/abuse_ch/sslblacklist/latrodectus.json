@@ -1,0 +1,148 @@
+{
+    "type": "bundle",
+    "id": "bundle--c748d6f0-8e46-5651-8b40-c008afdbfd20",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--293b7746-bb9f-5c6e-8432-3c03d2973598",
+            "hashes": {
+                "SHA-1": "f48552e08a2e56b11738285f406eabacdee550f0"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--41930f4f-04ed-53c5-9b38-fac3b22b82a0",
+            "hashes": {
+                "SHA-1": "62d026a9d660d6e533907efeafe23afa2287fb42"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--57de5cc0-5439-584c-98b7-95428f7d4942",
+            "hashes": {
+                "SHA-1": "d9b58c374f81305fb5b545b6f9a93b99bb81070a"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--bfa38c93-fd34-597a-88a9-a3aa5e2dea1d",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-02-18T08:46:35.000Z",
+            "modified": "2024-07-08T10:44:17.000Z",
+            "name": "Latrodectus",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--293b7746-bb9f-5c6e-8432-3c03d2973598",
+                "file--41930f4f-04ed-53c5-9b38-fac3b22b82a0",
+                "file--57de5cc0-5439-584c-98b7-95428f7d4942"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bfa38c93-fd34-597a-88a9-a3aa5e2dea1d",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-02-18T08:46:35.000Z",
+            "modified": "2024-07-08T10:44:17.000Z",
+            "name": "Latrodectus",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = 'f48552e08a2e56b11738285f406eabacdee550f0' ] OR [ file:hashes.'SHA-1' = '62d026a9d660d6e533907efeafe23afa2287fb42' ] OR [ file:hashes.'SHA-1' = 'd9b58c374f81305fb5b545b6f9a93b99bb81070a' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2024-02-18T08:46:35Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--0b780443-1140-5b4a-b864-e986de98958d",
+            "created": "2024-07-08T10:44:17.000Z",
+            "modified": "2024-07-08T10:44:17.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--bfa38c93-fd34-597a-88a9-a3aa5e2dea1d",
+            "target_ref": "file--293b7746-bb9f-5c6e-8432-3c03d2973598",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--50fce50c-e3d4-5e3e-a414-9a5b309cf398",
+            "created": "2024-02-18T08:46:36.000Z",
+            "modified": "2024-02-18T08:46:36.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--bfa38c93-fd34-597a-88a9-a3aa5e2dea1d",
+            "target_ref": "file--41930f4f-04ed-53c5-9b38-fac3b22b82a0",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--8e50a826-7167-5f5e-a6e0-95e3a9da25b6",
+            "created": "2024-02-18T08:46:35.000Z",
+            "modified": "2024-02-18T08:46:35.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--bfa38c93-fd34-597a-88a9-a3aa5e2dea1d",
+            "target_ref": "file--57de5cc0-5439-584c-98b7-95428f7d4942",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

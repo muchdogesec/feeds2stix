@@ -1,0 +1,516 @@
+{
+    "type": "bundle",
+    "id": "bundle--29559c6e-2531-5bbc-a483-4beebbe403bb",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--46193153-72a5-5ad1-89fa-11cdf91c86eb",
+            "hashes": {
+                "SHA-1": "243a25a11fe06205831a3f6516e21c3f4f33801f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--63f9b99c-79cb-550b-aa4f-6bc476b49aa9",
+            "hashes": {
+                "SHA-1": "50ee4fd682beec0b482640b4cd45b170d8d544a3"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--554dc010-10fa-593d-888c-c8fb16ad969f",
+            "hashes": {
+                "SHA-1": "32ca92799cde5f058c48a4189562cd8acba9076e"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--518da36d-0b7b-5f43-b9eb-d0b4cde04661",
+            "hashes": {
+                "SHA-1": "a82e6d70fd4e25df80ea0c69a6f31bd502ab8904"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--5f7d532c-06f7-544b-a4b8-5c214fe14334",
+            "hashes": {
+                "SHA-1": "7b88365aeb508b4883dafd96306c7095344555a3"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--8d1f3909-2bcb-5d5c-8e07-053d5d51eccf",
+            "hashes": {
+                "SHA-1": "fcf8ef46c24dee5cd4482465e5a2dfbf20267808"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--7e3b0747-1117-56af-8b72-9ce3fc733a67",
+            "hashes": {
+                "SHA-1": "51c05bbcb0baae6481370c47d6c638fde8685925"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--9a7527cf-a30e-5a8b-817f-43ff62abf9ed",
+            "hashes": {
+                "SHA-1": "6f13e741251c107db3294cc4d1d8e8522c4b810c"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a06e1caf-193e-5cb5-bdf2-752870ee9e2f",
+            "hashes": {
+                "SHA-1": "691839fbead70ae9fea3148373dd09ae65514d73"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--3c485d26-3524-53c1-9092-f744aef82367",
+            "hashes": {
+                "SHA-1": "ae0424d2370382139989ac0f12268ef886caa2ce"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--5fb7dc4d-a275-5af7-bc29-34fd176f1b20",
+            "hashes": {
+                "SHA-1": "cfbfa6724515b3829cc78435918094c86d608429"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--b694c77e-cf78-52c9-87ec-7c4507b0b260",
+            "hashes": {
+                "SHA-1": "f0a9253de5cb31fadc1c5f2e652905f50227e576"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c4591f31-c179-543b-a509-56070e0e8b38",
+            "hashes": {
+                "SHA-1": "238d8b89fb1d48577fe72d4bfc6abff83483358b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--e1907cbe-4fae-56fb-b025-c7a0ff662bd6",
+            "hashes": {
+                "SHA-1": "e892d00abcaf5281e6d75ae0a33a881c83dc5d3f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--ef7dfff7-da31-5098-94dc-ac73905884cc",
+            "hashes": {
+                "SHA-1": "f65838a98e2b13fe1e67648d8ddbf911bae2329b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a381b7fc-f305-58f7-a1f9-30903bcaa7fe",
+            "hashes": {
+                "SHA-1": "4cf359be1c8849b785c33e4fdaf13f48228b8def"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c89c0019-a776-57e7-b205-2d1ca9e5175b",
+            "hashes": {
+                "SHA-1": "8938a6d496334e1dcf7ce02f8e3dc9e5590690aa"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--f86a0c0f-7d20-58df-b624-21ed47f44c1c",
+            "hashes": {
+                "SHA-1": "592bc72a43dedf222c7d4435e02dad0d8a8a2a55"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--9e604ffc-e528-56c5-8bc3-a376819c2558",
+            "hashes": {
+                "SHA-1": "e404611578427b919cfe99560ccd55f9b0afa4ad"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2018-09-15T13:35:46.000Z",
+            "modified": "2021-08-31T08:30:11.000Z",
+            "name": "AZORult",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--46193153-72a5-5ad1-89fa-11cdf91c86eb",
+                "file--63f9b99c-79cb-550b-aa4f-6bc476b49aa9",
+                "file--554dc010-10fa-593d-888c-c8fb16ad969f",
+                "file--518da36d-0b7b-5f43-b9eb-d0b4cde04661",
+                "file--5f7d532c-06f7-544b-a4b8-5c214fe14334",
+                "file--8d1f3909-2bcb-5d5c-8e07-053d5d51eccf",
+                "file--7e3b0747-1117-56af-8b72-9ce3fc733a67",
+                "file--9a7527cf-a30e-5a8b-817f-43ff62abf9ed",
+                "file--a06e1caf-193e-5cb5-bdf2-752870ee9e2f",
+                "file--3c485d26-3524-53c1-9092-f744aef82367",
+                "file--5fb7dc4d-a275-5af7-bc29-34fd176f1b20",
+                "file--b694c77e-cf78-52c9-87ec-7c4507b0b260",
+                "file--c4591f31-c179-543b-a509-56070e0e8b38",
+                "file--e1907cbe-4fae-56fb-b025-c7a0ff662bd6",
+                "file--ef7dfff7-da31-5098-94dc-ac73905884cc",
+                "file--a381b7fc-f305-58f7-a1f9-30903bcaa7fe",
+                "file--c89c0019-a776-57e7-b205-2d1ca9e5175b",
+                "file--f86a0c0f-7d20-58df-b624-21ed47f44c1c",
+                "file--9e604ffc-e528-56c5-8bc3-a376819c2558"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2018-09-15T13:35:46.000Z",
+            "modified": "2021-08-31T08:30:11.000Z",
+            "name": "AZORult",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '243a25a11fe06205831a3f6516e21c3f4f33801f' ] OR [ file:hashes.'SHA-1' = '50ee4fd682beec0b482640b4cd45b170d8d544a3' ] OR [ file:hashes.'SHA-1' = '32ca92799cde5f058c48a4189562cd8acba9076e' ] OR [ file:hashes.'SHA-1' = 'a82e6d70fd4e25df80ea0c69a6f31bd502ab8904' ] OR [ file:hashes.'SHA-1' = '7b88365aeb508b4883dafd96306c7095344555a3' ] OR [ file:hashes.'SHA-1' = 'fcf8ef46c24dee5cd4482465e5a2dfbf20267808' ] OR [ file:hashes.'SHA-1' = '51c05bbcb0baae6481370c47d6c638fde8685925' ] OR [ file:hashes.'SHA-1' = '6f13e741251c107db3294cc4d1d8e8522c4b810c' ] OR [ file:hashes.'SHA-1' = '691839fbead70ae9fea3148373dd09ae65514d73' ] OR [ file:hashes.'SHA-1' = 'ae0424d2370382139989ac0f12268ef886caa2ce' ] OR [ file:hashes.'SHA-1' = 'cfbfa6724515b3829cc78435918094c86d608429' ] OR [ file:hashes.'SHA-1' = 'f0a9253de5cb31fadc1c5f2e652905f50227e576' ] OR [ file:hashes.'SHA-1' = '238d8b89fb1d48577fe72d4bfc6abff83483358b' ] OR [ file:hashes.'SHA-1' = 'e892d00abcaf5281e6d75ae0a33a881c83dc5d3f' ] OR [ file:hashes.'SHA-1' = 'f65838a98e2b13fe1e67648d8ddbf911bae2329b' ] OR [ file:hashes.'SHA-1' = '4cf359be1c8849b785c33e4fdaf13f48228b8def' ] OR [ file:hashes.'SHA-1' = '8938a6d496334e1dcf7ce02f8e3dc9e5590690aa' ] OR [ file:hashes.'SHA-1' = '592bc72a43dedf222c7d4435e02dad0d8a8a2a55' ] OR [ file:hashes.'SHA-1' = 'e404611578427b919cfe99560ccd55f9b0afa4ad' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2018-09-15T13:35:46Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--a4077d05-b3cd-5509-bf8f-5319ac1c1cac",
+            "created": "2021-08-31T08:30:11.000Z",
+            "modified": "2021-08-31T08:30:11.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--46193153-72a5-5ad1-89fa-11cdf91c86eb",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4863aff4-a017-5314-8931-1f216ef69689",
+            "created": "2020-06-08T07:40:19.000Z",
+            "modified": "2020-06-08T07:40:19.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--63f9b99c-79cb-550b-aa4f-6bc476b49aa9",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--0f84dd53-3ef0-5b7e-aded-8ed8375e3771",
+            "created": "2020-05-24T07:17:53.000Z",
+            "modified": "2020-05-24T07:17:53.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--554dc010-10fa-593d-888c-c8fb16ad969f",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--3b50e8f1-a671-5531-a4b3-c1a2b649a0ee",
+            "created": "2020-04-18T10:29:18.000Z",
+            "modified": "2020-04-18T10:29:18.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--518da36d-0b7b-5f43-b9eb-d0b4cde04661",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--219ffd13-3885-5231-9404-abc0131063ab",
+            "created": "2020-04-13T12:35:07.000Z",
+            "modified": "2020-04-13T12:35:07.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--5f7d532c-06f7-544b-a4b8-5c214fe14334",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9ae66550-5eba-5be8-a6df-cd75d8ed5504",
+            "created": "2020-04-07T08:34:32.000Z",
+            "modified": "2020-04-07T08:34:32.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--8d1f3909-2bcb-5d5c-8e07-053d5d51eccf",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--825c5a3a-82a2-5a3d-a5d7-051f4a3a1aee",
+            "created": "2020-03-05T13:06:30.000Z",
+            "modified": "2020-03-05T13:06:30.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--7e3b0747-1117-56af-8b72-9ce3fc733a67",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1cdce523-ee90-5e87-abe3-da694ec81496",
+            "created": "2020-03-05T06:48:44.000Z",
+            "modified": "2020-03-05T06:48:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--9a7527cf-a30e-5a8b-817f-43ff62abf9ed",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--3ebd7ed8-a52a-5d56-bad1-4947eb3382d9",
+            "created": "2020-03-02T06:32:44.000Z",
+            "modified": "2020-03-02T06:32:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--a06e1caf-193e-5cb5-bdf2-752870ee9e2f",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--90c60049-eb0c-548b-9d17-063c66c2b0c0",
+            "created": "2020-03-01T14:46:03.000Z",
+            "modified": "2020-03-01T14:46:03.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--3c485d26-3524-53c1-9092-f744aef82367",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--93fc8770-e7dc-52ad-9802-1f8b6e8fa530",
+            "created": "2020-02-21T10:21:44.000Z",
+            "modified": "2020-02-21T10:21:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--5fb7dc4d-a275-5af7-bc29-34fd176f1b20",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--14023064-ae3b-51b2-902b-7bebf7b1374e",
+            "created": "2020-02-18T08:30:20.000Z",
+            "modified": "2020-02-18T08:30:20.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--b694c77e-cf78-52c9-87ec-7c4507b0b260",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f9c4101b-93b9-5812-bda1-c0052f35b96a",
+            "created": "2020-01-24T14:37:04.000Z",
+            "modified": "2020-01-24T14:37:04.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--c4591f31-c179-543b-a509-56070e0e8b38",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4ca4c3f7-8dd9-5ef7-9338-178f4fa991ff",
+            "created": "2019-07-31T12:12:19.000Z",
+            "modified": "2019-07-31T12:12:19.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--e1907cbe-4fae-56fb-b025-c7a0ff662bd6",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--a13f21e5-a960-5925-9fdc-15db7f392961",
+            "created": "2019-03-21T08:07:15.000Z",
+            "modified": "2019-03-21T08:07:15.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--ef7dfff7-da31-5098-94dc-ac73905884cc",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b6e7d455-159a-53ac-b419-82c33130afa1",
+            "created": "2019-02-08T07:18:17.000Z",
+            "modified": "2019-02-08T07:18:17.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--a381b7fc-f305-58f7-a1f9-30903bcaa7fe",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--d422c551-ef1b-5a6d-a965-3fc887818c10",
+            "created": "2019-01-27T08:26:00.000Z",
+            "modified": "2019-01-27T08:26:00.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--c89c0019-a776-57e7-b205-2d1ca9e5175b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f186e99f-739b-54aa-a4b0-4dd44326ce33",
+            "created": "2018-09-15T13:35:49.000Z",
+            "modified": "2018-09-15T13:35:49.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--f86a0c0f-7d20-58df-b624-21ed47f44c1c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f55f56a9-1bcd-52a7-863a-6ca912fbc8ee",
+            "created": "2018-09-15T13:35:46.000Z",
+            "modified": "2018-09-15T13:35:46.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--491acd99-9ccf-54e4-b080-ebaa42d568f1",
+            "target_ref": "file--9e604ffc-e528-56c5-8bc3-a376819c2558",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

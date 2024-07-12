@@ -1,0 +1,125 @@
+{
+    "type": "bundle",
+    "id": "bundle--e045d42e-17c3-5902-96c3-f45007f4ce64",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--dea3a376-1f6f-5659-8566-c0fa4cf19b69",
+            "hashes": {
+                "SHA-1": "7e75cdf922b9a24f86da31581ae4c62dc1bd25b0"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--26a4e01c-45e1-50fd-95f6-f0e49d527129",
+            "hashes": {
+                "SHA-1": "ffc3bf9b72df3df10e2261f570ed9974515e1e2b"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--e7a3f94d-57ad-5996-9880-c0147d06b180",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2016-06-28T07:31:17.000Z",
+            "modified": "2016-08-31T10:52:33.000Z",
+            "name": "RockLoader",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--dea3a376-1f6f-5659-8566-c0fa4cf19b69",
+                "file--26a4e01c-45e1-50fd-95f6-f0e49d527129"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e7a3f94d-57ad-5996-9880-c0147d06b180",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2016-06-28T07:31:17.000Z",
+            "modified": "2016-08-31T10:52:33.000Z",
+            "name": "RockLoader",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '7e75cdf922b9a24f86da31581ae4c62dc1bd25b0' ] OR [ file:hashes.'SHA-1' = 'ffc3bf9b72df3df10e2261f570ed9974515e1e2b' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2016-06-28T07:31:17Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--8973c26b-87ad-51e8-8b00-10b0761a5201",
+            "created": "2016-08-31T10:52:33.000Z",
+            "modified": "2016-08-31T10:52:33.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--e7a3f94d-57ad-5996-9880-c0147d06b180",
+            "target_ref": "file--dea3a376-1f6f-5659-8566-c0fa4cf19b69",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--bac5c5f6-f14d-587b-8f47-4097ea148d4b",
+            "created": "2016-06-28T07:31:17.000Z",
+            "modified": "2016-06-28T07:31:17.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--e7a3f94d-57ad-5996-9880-c0147d06b180",
+            "target_ref": "file--26a4e01c-45e1-50fd-95f6-f0e49d527129",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+## Ignore hidden mac objects
+
+.DS_Store
+
+## Ignore venv from docs
+
+feeds2stix-venv/
+
+## Ignore any content generated temporarily
+
+.python-version
+__pycache__/

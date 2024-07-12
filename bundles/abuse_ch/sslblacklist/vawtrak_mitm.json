@@ -1,0 +1,424 @@
+{
+    "type": "bundle",
+    "id": "bundle--81af2328-b1f9-50fd-b52d-497bdca67c04",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--25250364-1b33-5515-9f41-7e05b2f428c0",
+            "hashes": {
+                "SHA-1": "33ecb0cde6598b79f982a37aeb54fee0f1d1d173"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--5fa5ea1f-3529-5848-8fa0-d27a262da6b6",
+            "hashes": {
+                "SHA-1": "bcc8b2e2018ce5138879751bd00653a8c27f1c48"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--731fe978-7dd9-5125-8fa0-ec849c02e205",
+            "hashes": {
+                "SHA-1": "ca2e435bb8836081ffa61c902db05a4e0e11c78f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--ac0aa68b-c90b-5ede-aa92-3182def48f44",
+            "hashes": {
+                "SHA-1": "eaab3ca37694c89d57b921b4f3930bafde022de0"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c4454aa9-fc8a-5293-ad63-1f176d28b19a",
+            "hashes": {
+                "SHA-1": "7502e55deb4d19b96ea9612634824b2fb6ad966d"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--3d220bfb-38b7-56d2-a411-2668408d0bdf",
+            "hashes": {
+                "SHA-1": "ff1552d1df5cd00ec56900319e9f24804ae60c63"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--24f696da-94dc-569e-8ed1-c6d509befc95",
+            "hashes": {
+                "SHA-1": "ddbd8027403bbdf217e634530bee7240ced68a8e"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--736cff0e-27c6-54bf-a47f-174f19cf35c4",
+            "hashes": {
+                "SHA-1": "e852a3e8cd0beb2d28df622e2ca4d54df43ccc9f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c917ce76-dd8f-5aab-98cd-eb4601a5d4c0",
+            "hashes": {
+                "SHA-1": "b6028517c10fe9e31048f02e5853e5c1741fefb8"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--aaef487e-0ca7-5d9e-b437-e4c7b1b0be05",
+            "hashes": {
+                "SHA-1": "46deba70b2f5e17ba854cf0226ec5bdf8fb0067b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--daea5cda-2307-539a-9d1f-3e167580924c",
+            "hashes": {
+                "SHA-1": "df4b2f329f19f8a50233e4f51ee1616eb80dc7f1"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--1c380a20-6108-57e5-a051-02828e0c4b6d",
+            "hashes": {
+                "SHA-1": "59c1d3551cd54355391072030d21577ac65a4983"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--8f9fe88f-ac70-52a7-8541-2bec723f89f4",
+            "hashes": {
+                "SHA-1": "f986e8fab555bbdb969ff24c488cd96609435eec"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--5d5a91f0-9a9b-5f18-9196-1f36f6b06c7d",
+            "hashes": {
+                "SHA-1": "4b1d64c1637aae427aa07d6c756c13b977715603"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a53499de-cac9-5336-9854-ee440dcbced1",
+            "hashes": {
+                "SHA-1": "1bccac6e7f395c5a30c6ec51b8fa055a641a0d68"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2014-06-26T05:23:06.000Z",
+            "modified": "2014-08-15T12:39:52.000Z",
+            "name": "Vawtrak MITM",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--25250364-1b33-5515-9f41-7e05b2f428c0",
+                "file--5fa5ea1f-3529-5848-8fa0-d27a262da6b6",
+                "file--731fe978-7dd9-5125-8fa0-ec849c02e205",
+                "file--ac0aa68b-c90b-5ede-aa92-3182def48f44",
+                "file--c4454aa9-fc8a-5293-ad63-1f176d28b19a",
+                "file--3d220bfb-38b7-56d2-a411-2668408d0bdf",
+                "file--24f696da-94dc-569e-8ed1-c6d509befc95",
+                "file--736cff0e-27c6-54bf-a47f-174f19cf35c4",
+                "file--c917ce76-dd8f-5aab-98cd-eb4601a5d4c0",
+                "file--aaef487e-0ca7-5d9e-b437-e4c7b1b0be05",
+                "file--daea5cda-2307-539a-9d1f-3e167580924c",
+                "file--1c380a20-6108-57e5-a051-02828e0c4b6d",
+                "file--8f9fe88f-ac70-52a7-8541-2bec723f89f4",
+                "file--5d5a91f0-9a9b-5f18-9196-1f36f6b06c7d",
+                "file--a53499de-cac9-5336-9854-ee440dcbced1"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2014-06-26T05:23:06.000Z",
+            "modified": "2014-08-15T12:39:52.000Z",
+            "name": "Vawtrak MITM",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = '33ecb0cde6598b79f982a37aeb54fee0f1d1d173' ] OR [ file:hashes.'SHA-1' = 'bcc8b2e2018ce5138879751bd00653a8c27f1c48' ] OR [ file:hashes.'SHA-1' = 'ca2e435bb8836081ffa61c902db05a4e0e11c78f' ] OR [ file:hashes.'SHA-1' = 'eaab3ca37694c89d57b921b4f3930bafde022de0' ] OR [ file:hashes.'SHA-1' = '7502e55deb4d19b96ea9612634824b2fb6ad966d' ] OR [ file:hashes.'SHA-1' = 'ff1552d1df5cd00ec56900319e9f24804ae60c63' ] OR [ file:hashes.'SHA-1' = 'ddbd8027403bbdf217e634530bee7240ced68a8e' ] OR [ file:hashes.'SHA-1' = 'e852a3e8cd0beb2d28df622e2ca4d54df43ccc9f' ] OR [ file:hashes.'SHA-1' = 'b6028517c10fe9e31048f02e5853e5c1741fefb8' ] OR [ file:hashes.'SHA-1' = '46deba70b2f5e17ba854cf0226ec5bdf8fb0067b' ] OR [ file:hashes.'SHA-1' = 'df4b2f329f19f8a50233e4f51ee1616eb80dc7f1' ] OR [ file:hashes.'SHA-1' = '59c1d3551cd54355391072030d21577ac65a4983' ] OR [ file:hashes.'SHA-1' = 'f986e8fab555bbdb969ff24c488cd96609435eec' ] OR [ file:hashes.'SHA-1' = '4b1d64c1637aae427aa07d6c756c13b977715603' ] OR [ file:hashes.'SHA-1' = '1bccac6e7f395c5a30c6ec51b8fa055a641a0d68' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2014-06-26T05:23:06Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--03c76389-df30-5b78-85a5-c34f05d13556",
+            "created": "2014-08-15T12:39:52.000Z",
+            "modified": "2014-08-15T12:39:52.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--25250364-1b33-5515-9f41-7e05b2f428c0",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--df209452-965f-555e-b804-8d74c0f34c86",
+            "created": "2014-08-15T12:33:03.000Z",
+            "modified": "2014-08-15T12:33:03.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--5fa5ea1f-3529-5848-8fa0-d27a262da6b6",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--bc5cd548-63fc-522f-8689-fa88bb72229b",
+            "created": "2014-08-07T17:26:50.000Z",
+            "modified": "2014-08-07T17:26:50.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--731fe978-7dd9-5125-8fa0-ec849c02e205",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b6d32c5a-5fb9-53f9-8c10-64bf70dae2c9",
+            "created": "2014-08-07T08:30:06.000Z",
+            "modified": "2014-08-07T08:30:06.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--ac0aa68b-c90b-5ede-aa92-3182def48f44",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--40e5abac-4980-5b70-8beb-98e6d10d1fee",
+            "created": "2014-07-22T12:47:56.000Z",
+            "modified": "2014-07-22T12:47:56.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--c4454aa9-fc8a-5293-ad63-1f176d28b19a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--19392ff6-fd8f-5b6a-b1dd-a93913a75e5c",
+            "created": "2014-07-15T08:52:12.000Z",
+            "modified": "2014-07-15T08:52:12.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--3d220bfb-38b7-56d2-a411-2668408d0bdf",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--3b051f7b-8ab1-5d87-a29e-4309a40bed89",
+            "created": "2014-07-15T08:51:46.000Z",
+            "modified": "2014-07-15T08:51:46.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--24f696da-94dc-569e-8ed1-c6d509befc95",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--bdfa11ac-e439-5c3d-a788-d2449a993121",
+            "created": "2014-07-15T08:51:44.000Z",
+            "modified": "2014-07-15T08:51:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--736cff0e-27c6-54bf-a47f-174f19cf35c4",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--60ecc923-ce6a-59a3-af7c-6a2bbc2ef9bd",
+            "created": "2014-07-15T08:51:42.000Z",
+            "modified": "2014-07-15T08:51:42.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--c917ce76-dd8f-5aab-98cd-eb4601a5d4c0",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--6afa77ef-e99d-50af-9f66-5808efd26579",
+            "created": "2014-07-10T07:31:58.000Z",
+            "modified": "2014-07-10T07:31:58.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--aaef487e-0ca7-5d9e-b437-e4c7b1b0be05",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4ef9d916-e922-5f9f-b5b7-2b75c5143a2f",
+            "created": "2014-07-05T15:01:08.000Z",
+            "modified": "2014-07-05T15:01:08.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--daea5cda-2307-539a-9d1f-3e167580924c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--20a8f000-4cf3-57a8-b93c-765e1ce5843b",
+            "created": "2014-06-27T13:49:07.000Z",
+            "modified": "2014-06-27T13:49:07.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--1c380a20-6108-57e5-a051-02828e0c4b6d",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--6f08e0fe-11fa-532f-93aa-60794e8571f1",
+            "created": "2014-06-26T06:35:28.000Z",
+            "modified": "2014-06-26T06:35:28.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--8f9fe88f-ac70-52a7-8541-2bec723f89f4",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--baa73912-bf13-55a5-bd72-93c613dca1d3",
+            "created": "2014-06-26T06:24:34.000Z",
+            "modified": "2014-06-26T06:24:34.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--5d5a91f0-9a9b-5f18-9196-1f36f6b06c7d",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e5778a63-4d89-5dc8-8d98-4c73360f703f",
+            "created": "2014-06-26T05:23:06.000Z",
+            "modified": "2014-06-26T05:23:06.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--5499dc45-c653-5a5a-afa8-8e250bb4eab3",
+            "target_ref": "file--a53499de-cac9-5336-9854-ee440dcbced1",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,194 @@
+{
+    "type": "bundle",
+    "id": "bundle--599df882-e61e-5b9b-924b-02712ecd3475",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--605f363f-f057-5184-b298-29a7c455797d",
+            "hashes": {
+                "SHA-1": "a56ced67e43bd667f829161a91d487016ffb9672"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--65e656af-56c6-5f11-81c9-776b9acf87a2",
+            "hashes": {
+                "SHA-1": "2fce7bd2f5a22853bdb7e7dc2d6603b7b254e701"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--6deedb6f-8126-583b-9eb8-7385c4ced4df",
+            "hashes": {
+                "SHA-1": "0c25569d92b7e87e33852bea5138fbd6fd7b2610"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--81c15a45-b90b-533b-84d0-9a1c221db89d",
+            "hashes": {
+                "SHA-1": "a2b776685316bfbc6aa7199461cdbc132eee5e6f"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--84ad8a60-fa4e-5d5a-8557-39284d314fd8",
+            "hashes": {
+                "SHA-1": "3b670ea0f803c163c004b54a92cf7c4094b568fd"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2021-08-30T12:39:28.000Z",
+            "modified": "2022-10-10T14:21:37.000Z",
+            "name": "Vjw0rm",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--605f363f-f057-5184-b298-29a7c455797d",
+                "file--65e656af-56c6-5f11-81c9-776b9acf87a2",
+                "file--6deedb6f-8126-583b-9eb8-7385c4ced4df",
+                "file--81c15a45-b90b-533b-84d0-9a1c221db89d",
+                "file--84ad8a60-fa4e-5d5a-8557-39284d314fd8"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2021-08-30T12:39:28.000Z",
+            "modified": "2022-10-10T14:21:37.000Z",
+            "name": "Vjw0rm",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = 'a56ced67e43bd667f829161a91d487016ffb9672' ] OR [ file:hashes.'SHA-1' = '2fce7bd2f5a22853bdb7e7dc2d6603b7b254e701' ] OR [ file:hashes.'SHA-1' = '0c25569d92b7e87e33852bea5138fbd6fd7b2610' ] OR [ file:hashes.'SHA-1' = 'a2b776685316bfbc6aa7199461cdbc132eee5e6f' ] OR [ file:hashes.'SHA-1' = '3b670ea0f803c163c004b54a92cf7c4094b568fd' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-08-30T12:39:28Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--8ee4fd49-acd6-5019-ab4d-f0fb8aed1ec2",
+            "created": "2022-10-10T14:21:37.000Z",
+            "modified": "2022-10-10T14:21:37.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "target_ref": "file--605f363f-f057-5184-b298-29a7c455797d",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9f3494c9-9501-5057-91d5-8067d34d46c3",
+            "created": "2022-08-09T16:35:10.000Z",
+            "modified": "2022-08-09T16:35:10.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "target_ref": "file--65e656af-56c6-5f11-81c9-776b9acf87a2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--7d629f36-ef2d-51e0-92f2-0486e0fd2ac6",
+            "created": "2022-06-27T15:01:57.000Z",
+            "modified": "2022-06-27T15:01:57.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "target_ref": "file--6deedb6f-8126-583b-9eb8-7385c4ced4df",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b35d79f9-b600-5ce3-90fa-42ee11161687",
+            "created": "2021-09-09T06:58:40.000Z",
+            "modified": "2021-09-09T06:58:40.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "target_ref": "file--81c15a45-b90b-533b-84d0-9a1c221db89d",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--127489a4-3433-5408-9be1-4ddfba010b1f",
+            "created": "2021-08-30T12:39:28.000Z",
+            "modified": "2021-08-30T12:39:28.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--2e095dfe-7645-5b0f-8b43-0bc2ee6e2380",
+            "target_ref": "file--84ad8a60-fa4e-5d5a-8557-39284d314fd8",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}

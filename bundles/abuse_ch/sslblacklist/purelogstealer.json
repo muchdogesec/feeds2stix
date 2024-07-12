@@ -1,0 +1,493 @@
+{
+    "type": "bundle",
+    "id": "bundle--95bd70d6-d213-50a0-9b04-abaa8b411049",
+    "objects": [
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ],
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--863f1077-aca6-5d6d-9e48-00cb6f642d49",
+            "hashes": {
+                "SHA-1": "c2ad5eeb248e3b79e1c9d6baab07cf9daac5ae6c"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--d58a4918-8e26-5877-9159-447b833f793a",
+            "hashes": {
+                "SHA-1": "91352237c646c0756aa9ae7a7746859d562ec8ba"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--6c24d8ee-7c2c-5b97-8b46-76e145ef8b3b",
+            "hashes": {
+                "SHA-1": "c586f46135098d38ae9019b12d83ac9501dbee34"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--754c43bb-3c5a-5419-9542-25a6bf32f18d",
+            "hashes": {
+                "SHA-1": "83acb5bb507651cc3c8d928d537d28ca261f0ea3"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--343cb82a-ea0f-5838-b925-fdffcb374140",
+            "hashes": {
+                "SHA-1": "63a58c8ec0bee00687f5047781be02340adee8f4"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--dc1c03d2-16a3-5bbb-8426-b54e88725678",
+            "hashes": {
+                "SHA-1": "ea19705164b4c900d4a57c8a5b6c4a10d9cf4541"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--21b9a8f7-0b38-545d-bf27-2eb332a4c755",
+            "hashes": {
+                "SHA-1": "faff798e6eeb919255d3d36d461d46dd3fcc2cf7"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--ba3974ef-c465-5cbc-81fa-1c3acf325a19",
+            "hashes": {
+                "SHA-1": "fee88cfc81f85a9b2332658b062f34c93b621f2b"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--355ba67d-f633-51d6-913e-d93b5c65afbe",
+            "hashes": {
+                "SHA-1": "9aa15660a0a0db415a7a0820021ed5d0d9c89163"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--258d9840-c67f-538d-88d6-5ff51ced1beb",
+            "hashes": {
+                "SHA-1": "e13cf9c72eee40604c949bbe29935b19db5a7c91"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c4ffcb45-32e7-51f5-a5aa-a2a14fcc510a",
+            "hashes": {
+                "SHA-1": "67d8ace75adf779e6a2ed799b8792dfed468ecaf"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--a1fd7fe5-1e9d-5f19-abbc-ceaedec9aa40",
+            "hashes": {
+                "SHA-1": "e7bb6cb5e7154e794d101cc3a49dfdef68beb299"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--c36badf5-5a44-5ef3-b869-c8bedabac566",
+            "hashes": {
+                "SHA-1": "548ee6e2cd5279c71f4df6d84c0d11b7f0363721"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--034c93cc-eb2f-57f1-b205-44352fdbc695",
+            "hashes": {
+                "SHA-1": "3e034e54c92a3a88f3e2f9ee4de0fb7742df3b42"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--d2ee6077-5352-5ded-b52a-b31941bbdd0b",
+            "hashes": {
+                "SHA-1": "442992b3e82796c9b38c65684cb1dc5e9ae55da1"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--23c57be9-734b-5878-9203-2f26ab3e5d1c",
+            "hashes": {
+                "SHA-1": "8578749c7ee09141050253138246463fd7f85980"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--b9ead6b7-cfa0-5a09-bd6d-5833c1ae69cf",
+            "hashes": {
+                "SHA-1": "545fe2349ae30645dfba8461455cdd19084439a9"
+            }
+        },
+        {
+            "type": "file",
+            "spec_version": "2.1",
+            "id": "file--74b4f800-89dc-532e-a1e9-a827c5ba9776",
+            "hashes": {
+                "SHA-1": "729e1c86f46bd539c2204cb0227e6dec16621264"
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-02-15T13:27:00.000Z",
+            "modified": "2024-05-25T07:21:49.000Z",
+            "name": "PureLogStealer",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "sample_refs": [
+                "file--863f1077-aca6-5d6d-9e48-00cb6f642d49",
+                "file--d58a4918-8e26-5877-9159-447b833f793a",
+                "file--6c24d8ee-7c2c-5b97-8b46-76e145ef8b3b",
+                "file--754c43bb-3c5a-5419-9542-25a6bf32f18d",
+                "file--343cb82a-ea0f-5838-b925-fdffcb374140",
+                "file--dc1c03d2-16a3-5bbb-8426-b54e88725678",
+                "file--21b9a8f7-0b38-545d-bf27-2eb332a4c755",
+                "file--ba3974ef-c465-5cbc-81fa-1c3acf325a19",
+                "file--355ba67d-f633-51d6-913e-d93b5c65afbe",
+                "file--258d9840-c67f-538d-88d6-5ff51ced1beb",
+                "file--c4ffcb45-32e7-51f5-a5aa-a2a14fcc510a",
+                "file--a1fd7fe5-1e9d-5f19-abbc-ceaedec9aa40",
+                "file--c36badf5-5a44-5ef3-b869-c8bedabac566",
+                "file--034c93cc-eb2f-57f1-b205-44352fdbc695",
+                "file--d2ee6077-5352-5ded-b52a-b31941bbdd0b",
+                "file--23c57be9-734b-5878-9203-2f26ab3e5d1c",
+                "file--b9ead6b7-cfa0-5a09-bd6d-5833c1ae69cf",
+                "file--74b4f800-89dc-532e-a1e9-a827c5ba9776"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-02-15T13:27:00.000Z",
+            "modified": "2024-05-25T07:21:49.000Z",
+            "name": "PureLogStealer",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "([ file:hashes.'SHA-1' = 'c2ad5eeb248e3b79e1c9d6baab07cf9daac5ae6c' ] OR [ file:hashes.'SHA-1' = '91352237c646c0756aa9ae7a7746859d562ec8ba' ] OR [ file:hashes.'SHA-1' = 'c586f46135098d38ae9019b12d83ac9501dbee34' ] OR [ file:hashes.'SHA-1' = '83acb5bb507651cc3c8d928d537d28ca261f0ea3' ] OR [ file:hashes.'SHA-1' = '63a58c8ec0bee00687f5047781be02340adee8f4' ] OR [ file:hashes.'SHA-1' = 'ea19705164b4c900d4a57c8a5b6c4a10d9cf4541' ] OR [ file:hashes.'SHA-1' = 'faff798e6eeb919255d3d36d461d46dd3fcc2cf7' ] OR [ file:hashes.'SHA-1' = 'fee88cfc81f85a9b2332658b062f34c93b621f2b' ] OR [ file:hashes.'SHA-1' = '9aa15660a0a0db415a7a0820021ed5d0d9c89163' ] OR [ file:hashes.'SHA-1' = 'e13cf9c72eee40604c949bbe29935b19db5a7c91' ] OR [ file:hashes.'SHA-1' = '67d8ace75adf779e6a2ed799b8792dfed468ecaf' ] OR [ file:hashes.'SHA-1' = 'e7bb6cb5e7154e794d101cc3a49dfdef68beb299' ] OR [ file:hashes.'SHA-1' = '548ee6e2cd5279c71f4df6d84c0d11b7f0363721' ] OR [ file:hashes.'SHA-1' = '3e034e54c92a3a88f3e2f9ee4de0fb7742df3b42' ] OR [ file:hashes.'SHA-1' = '442992b3e82796c9b38c65684cb1dc5e9ae55da1' ] OR [ file:hashes.'SHA-1' = '8578749c7ee09141050253138246463fd7f85980' ] OR [ file:hashes.'SHA-1' = '545fe2349ae30645dfba8461455cdd19084439a9' ] OR [ file:hashes.'SHA-1' = '729e1c86f46bd539c2204cb0227e6dec16621264' ])",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2024-02-15T13:27:00Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--8f72323e-9d0d-548d-b576-7a65d94e6915",
+            "created": "2024-05-25T07:21:49.000Z",
+            "modified": "2024-05-25T07:21:49.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--863f1077-aca6-5d6d-9e48-00cb6f642d49",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9708f744-f1b7-53d8-b415-8190e74afad7",
+            "created": "2024-05-22T14:18:02.000Z",
+            "modified": "2024-05-22T14:18:02.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--d58a4918-8e26-5877-9159-447b833f793a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--98d31ebc-81f3-5d7e-bea2-142ce42664bd",
+            "created": "2024-05-14T07:16:35.000Z",
+            "modified": "2024-05-14T07:16:35.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--6c24d8ee-7c2c-5b97-8b46-76e145ef8b3b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4dc8014a-0ca4-53d1-90ce-4ba5c22938ca",
+            "created": "2024-04-30T06:48:11.000Z",
+            "modified": "2024-04-30T06:48:11.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--754c43bb-3c5a-5419-9542-25a6bf32f18d",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b250bab1-8845-535f-a4ea-a1b5a49a9681",
+            "created": "2024-04-28T14:53:18.000Z",
+            "modified": "2024-04-28T14:53:18.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--343cb82a-ea0f-5838-b925-fdffcb374140",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--4f805a91-f9c9-5dc5-92f7-4a24b00c52f4",
+            "created": "2024-04-24T04:37:23.000Z",
+            "modified": "2024-04-24T04:37:23.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--dc1c03d2-16a3-5bbb-8426-b54e88725678",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f6fb5f60-97c0-5edb-90ef-264f437a4d25",
+            "created": "2024-04-16T17:18:02.000Z",
+            "modified": "2024-04-16T17:18:02.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--21b9a8f7-0b38-545d-bf27-2eb332a4c755",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--99cb065e-be4e-5e11-b627-900f861fb587",
+            "created": "2024-04-10T09:39:40.000Z",
+            "modified": "2024-04-10T09:39:40.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--ba3974ef-c465-5cbc-81fa-1c3acf325a19",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--fce1c111-645a-5cda-b40e-b0b3d0c8c5fb",
+            "created": "2024-04-06T07:26:09.000Z",
+            "modified": "2024-04-06T07:26:09.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--355ba67d-f633-51d6-913e-d93b5c65afbe",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9cd4a524-d18b-5e47-81bd-505ae3ac35ef",
+            "created": "2024-04-03T15:57:50.000Z",
+            "modified": "2024-04-03T15:57:50.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--258d9840-c67f-538d-88d6-5ff51ced1beb",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--43d2df3f-4abe-5d53-89f4-e2e67b72cb43",
+            "created": "2024-04-02T14:07:44.000Z",
+            "modified": "2024-04-02T14:07:44.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--c4ffcb45-32e7-51f5-a5aa-a2a14fcc510a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--7a1df9cd-5430-5a3d-877e-a0c61bb1b1a9",
+            "created": "2024-03-29T16:54:11.000Z",
+            "modified": "2024-03-29T16:54:11.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--a1fd7fe5-1e9d-5f19-abbc-ceaedec9aa40",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--94b96c3e-2bb7-52f4-aa5f-3536b00b2215",
+            "created": "2024-03-26T07:47:39.000Z",
+            "modified": "2024-03-26T07:47:39.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--c36badf5-5a44-5ef3-b869-c8bedabac566",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--92974231-542f-5ea0-973e-447e37d5122f",
+            "created": "2024-03-19T09:43:16.000Z",
+            "modified": "2024-03-19T09:43:16.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--034c93cc-eb2f-57f1-b205-44352fdbc695",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--47320f5c-5528-5fec-bf2e-52eda1d8783b",
+            "created": "2024-03-17T08:21:49.000Z",
+            "modified": "2024-03-17T08:21:49.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--d2ee6077-5352-5ded-b52a-b31941bbdd0b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--c53e37ed-24ab-5d5e-b6d2-bba4457febf0",
+            "created": "2024-03-17T08:11:00.000Z",
+            "modified": "2024-03-17T08:11:00.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--23c57be9-734b-5878-9203-2f26ab3e5d1c",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b5efe8f2-421f-568b-843a-f60232877778",
+            "created": "2024-03-03T09:25:34.000Z",
+            "modified": "2024-03-03T09:25:34.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--b9ead6b7-cfa0-5a09-bd6d-5833c1ae69cf",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--f82314ff-a123-50ad-a0e3-ec410d388649",
+            "created": "2024-02-15T13:27:00.000Z",
+            "modified": "2024-02-15T13:27:00.000Z",
+            "relationship_type": "detects",
+            "source_ref": "indicator--d5ce10bb-56dc-5cf5-8c83-31fd82aab014",
+            "target_ref": "file--74b4f800-89dc-532e-a1e9-a827c5ba9776",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
+}
