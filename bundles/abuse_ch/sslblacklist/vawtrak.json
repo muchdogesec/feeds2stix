@@ -1,6 +1,6 @@
 {
     "type": "bundle",
-    "id": "bundle--07d4d522-36d1-558b-bebf-34eeffe58bcb",
+    "id": "bundle--eaa0040a-be15-5143-b7fe-041d4f1e8c69",
     "objects": [
         {
             "type": "marking-definition",
@@ -35,6 +35,21 @@
                 "technology"
             ],
             "contact_information": "https://www.dogesec.com/contact/"
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
         },
         {
             "type": "file",
@@ -303,7 +318,7 @@
         {
             "type": "malware",
             "spec_version": "2.1",
-            "id": "malware--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "id": "malware--1df2af50-b32a-57fa-a973-32387017e060",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2014-07-07T07:08:17.000Z",
             "modified": "2016-12-24T12:27:58.000Z",
@@ -349,13 +364,14 @@
             ],
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "id": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2014-07-07T07:08:17.000Z",
             "modified": "2016-12-24T12:27:58.000Z",
@@ -369,468 +385,502 @@
             "valid_from": "2014-07-07T07:08:17Z",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--ee96c322-e964-5c26-a436-a96f5172f024",
+            "id": "relationship--d8fad471-bfb4-59fb-b032-e5dc042171ae",
             "created": "2016-12-24T12:27:58.000Z",
             "modified": "2016-12-24T12:27:58.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--3173479b-c539-5bca-a018-4716177e8ca8",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--01d38901-d74a-550d-b959-7f8515b83798",
+            "id": "relationship--65c0e7e5-aa40-59e9-8ff0-7425521a1f95",
             "created": "2016-12-07T10:07:12.000Z",
             "modified": "2016-12-07T10:07:12.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--8efbe168-4de0-5059-bb4f-dfe11ec9cb8c",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--700db56d-a49a-58b1-a3d1-63faf7bd6089",
+            "id": "relationship--6df4ab24-c85e-573d-a806-6a533d3b0cd9",
             "created": "2016-12-03T09:54:21.000Z",
             "modified": "2016-12-03T09:54:21.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--8f194b73-31a4-5b6a-a5c5-c8bfc7ccd220",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--08ec92eb-13f4-5be4-b625-cbcaa430cc6b",
+            "id": "relationship--9c67e01e-7e4b-548a-a3b0-c066e64a233c",
             "created": "2016-12-03T09:54:16.000Z",
             "modified": "2016-12-03T09:54:16.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--f931c25e-911f-5015-9c85-0604dac6029c",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--54c7521a-50f7-5345-9438-e06d3fa16740",
+            "id": "relationship--6715f644-2e35-5f83-b39e-5155fcaa1158",
             "created": "2016-12-02T07:15:54.000Z",
             "modified": "2016-12-02T07:15:54.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--ad1dc9f5-1842-517b-a4f6-971438674e91",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--766bd932-6f70-503e-8e2f-9aa4e9b6722f",
+            "id": "relationship--c305eed1-7387-547a-8adf-e812ab40f894",
             "created": "2016-12-01T11:24:44.000Z",
             "modified": "2016-12-01T11:24:44.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--6c348774-900f-5190-ab94-5c38493e8bbd",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--fe440ed9-f447-5b5d-afc8-62c0cead3e97",
+            "id": "relationship--132eef23-8e78-5a78-a913-16d16a65c1bb",
             "created": "2016-11-26T09:58:50.000Z",
             "modified": "2016-11-26T09:58:50.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--71ee4b5e-7193-5477-b227-49f50a8eb76a",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--6cc93331-3a73-5145-a3f3-59c205254b85",
+            "id": "relationship--ce42d2e4-2b76-51e2-8163-7fa100bbdd02",
             "created": "2016-11-26T09:58:47.000Z",
             "modified": "2016-11-26T09:58:47.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--0013b7c3-fc46-5785-b286-b9c862d09edd",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--5681212a-f322-5c99-87ad-f460a2193514",
+            "id": "relationship--cd7e7801-d373-54cb-860f-76f7b3077aab",
             "created": "2016-11-21T09:14:45.000Z",
             "modified": "2016-11-21T09:14:45.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--5eba6208-bc72-5b77-a571-c96c2026d6c3",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--c9e83339-9ee0-586d-a2bf-bda9c9aa6810",
+            "id": "relationship--96272be5-5f98-57ca-998a-20a98a20bd30",
             "created": "2016-11-21T09:14:42.000Z",
             "modified": "2016-11-21T09:14:42.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--6e6045ac-575d-5bc1-88b8-4da1b6e5ecca",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--03474978-08d3-5700-96db-c73c698caa40",
+            "id": "relationship--b00f00ac-bf92-539a-90b6-962c3c129831",
             "created": "2016-11-21T09:08:08.000Z",
             "modified": "2016-11-21T09:08:08.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--9c90d887-b69e-5ded-89d2-31ee787e04e2",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--1c50d0b1-8a1f-548f-a276-0b1c7c5b001b",
+            "id": "relationship--d806f02b-6c41-5ecc-af76-0b3b16e2a0a7",
             "created": "2016-11-21T09:08:08.000Z",
             "modified": "2016-11-21T09:08:08.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--d32fc09c-5a98-5808-a0a4-986fd70769d1",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--282c03ef-4eb7-51e1-947f-f63783594ade",
+            "id": "relationship--3e6248c2-7bb0-59db-8db1-3622288e7bc9",
             "created": "2016-11-21T09:08:05.000Z",
             "modified": "2016-11-21T09:08:05.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--b79db652-e6ea-5237-91f1-c870f56b2dba",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--dbd67649-ab76-5ba4-abcb-a12d64d50cd9",
+            "id": "relationship--5779383b-f137-528d-9754-592f9a36ee31",
             "created": "2016-11-17T17:05:45.000Z",
             "modified": "2016-11-17T17:05:45.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--db29c95e-7245-5cb8-83d1-3af8f5397fe0",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--29154903-2f92-5a9d-bf24-9b8ffc0af3c5",
+            "id": "relationship--ae692c8c-0991-5c18-a688-cf34da1e157e",
             "created": "2016-11-17T17:05:42.000Z",
             "modified": "2016-11-17T17:05:42.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--d7a1f602-65ed-5fd3-aa1a-5c0f1ce475fc",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--bebed458-fbad-5f5a-b46c-5fdd9f33e466",
+            "id": "relationship--6fd87c43-a867-5f99-acec-0b689deed02e",
             "created": "2016-11-02T06:13:45.000Z",
             "modified": "2016-11-02T06:13:45.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--ba2d5af0-7fba-5359-8002-6ba0b7f90c13",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--56d20439-6830-5fb9-a1d1-16afe60e65d7",
+            "id": "relationship--f5092f57-0b5a-517d-8ee9-29a4308a3cb6",
             "created": "2016-11-02T06:13:43.000Z",
             "modified": "2016-11-02T06:13:43.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--ec4d7b38-fd1d-5f27-b176-d0b35e673344",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--09adda62-f2c5-58cc-8727-3929f6e8f615",
+            "id": "relationship--3272715e-d1c3-5033-bca4-20967d6cf943",
             "created": "2016-11-01T08:54:32.000Z",
             "modified": "2016-11-01T08:54:32.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--ea075c6e-0fa8-55b5-9466-c1d266e4eb5b",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--9b3a694f-7db7-5ee0-a731-3ac500f749fc",
+            "id": "relationship--25a26f90-a0f4-5788-b796-080f9c6e366c",
             "created": "2016-11-01T08:54:31.000Z",
             "modified": "2016-11-01T08:54:31.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--d518c61d-6710-5ffc-b91b-15ff47533704",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--f35e6572-099c-5e09-8319-ad2bdca9afa7",
+            "id": "relationship--d4954a2e-8e4f-53b8-84e1-8d2f62411a2f",
             "created": "2016-10-30T08:55:39.000Z",
             "modified": "2016-10-30T08:55:39.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--7c11219b-610d-5946-b7da-4b5a9bba1a25",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--92007b4c-ed16-5ef2-a1fb-77bb246627d1",
+            "id": "relationship--0a72a98e-e119-50d1-8641-4d91e3a2ae92",
             "created": "2016-10-30T08:55:36.000Z",
             "modified": "2016-10-30T08:55:36.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--97d97ff7-38ab-5f39-9dda-ee2a7e5c3093",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--27bc3536-2dad-59cf-9bdc-84b4ccfe01a7",
+            "id": "relationship--9d92e240-e1ac-5393-bbf5-edff5ff3c397",
             "created": "2016-10-27T09:28:36.000Z",
             "modified": "2016-10-27T09:28:36.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--90e2c168-89e1-5e7c-98f3-35c53891ea8d",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--582c4dac-9ef4-5c5b-9677-ca8c459a46f5",
+            "id": "relationship--6ab3b76e-566e-5ed9-92a6-8433b39a7906",
             "created": "2016-10-26T14:53:25.000Z",
             "modified": "2016-10-26T14:53:25.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--19c48c4c-d047-5ccf-bb20-d69ca89304e0",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--96f1f043-434c-51ca-a851-1d97b0c08993",
+            "id": "relationship--8a03a588-3375-510f-a623-0b119945cc4e",
             "created": "2016-10-26T14:36:48.000Z",
             "modified": "2016-10-26T14:36:48.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--e0eb5e02-3c0e-5730-9216-d753ff4a4659",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--eacf8677-f2f7-5309-82fc-e699279cbed2",
+            "id": "relationship--4f38ffda-3e19-51ae-aa45-43bb1aee9ed6",
             "created": "2016-10-24T12:41:43.000Z",
             "modified": "2016-10-24T12:41:43.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--5b7b872c-9b1f-597f-b464-638db8bc5cd9",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--8b2f028e-9464-5fc4-988c-e9e086d267de",
+            "id": "relationship--f55d4ccb-6fac-520e-9499-a9e345409bf6",
             "created": "2016-10-24T12:40:28.000Z",
             "modified": "2016-10-24T12:40:28.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--60218d84-16d4-5be3-a4a7-e034b5a23186",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--4d1e5495-bf8c-585c-be03-51dd437b1299",
+            "id": "relationship--ba1b7710-4d0c-505d-8cbd-c2be9adac899",
             "created": "2016-10-19T09:26:08.000Z",
             "modified": "2016-10-19T09:26:08.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--74fb9a57-639c-518f-8ed7-5b49400c3a54",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--cd1b8c4d-7ed7-5a5d-9e34-20feb8684e16",
+            "id": "relationship--7459e3f8-8de8-50d3-a8e1-b2cbe5ca2a98",
             "created": "2016-10-19T09:26:07.000Z",
             "modified": "2016-10-19T09:26:07.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--42cbad1c-f490-5403-8b6a-9b2c2d0ea366",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--686a03ed-3bd8-5122-bc21-5034e3d6c407",
+            "id": "relationship--5188b6ed-503c-5c18-b11a-8c8ce383288c",
             "created": "2016-08-29T08:39:00.000Z",
             "modified": "2016-08-29T08:39:00.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--370a87f0-0ec7-5d1d-8fff-4b5f2708a4de",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--cbe2c6d4-270b-56e8-96ee-d4dcd2bc6cac",
+            "id": "relationship--0a93d94b-5ffa-5ca0-b870-fc694b92eddb",
             "created": "2016-08-23T16:19:34.000Z",
             "modified": "2016-08-23T16:19:34.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--5d860a6a-1eb7-5c53-8769-e6a8457fabc2",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--194a2680-7463-53e3-a9f8-c750e788928d",
+            "id": "relationship--d36bed00-57c1-5dbf-b6a8-9df0a86f6a59",
             "created": "2016-08-10T10:06:06.000Z",
             "modified": "2016-08-10T10:06:06.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--0872c882-4f9f-5ff6-bb2c-bf1603e9525a",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--fbe251e1-4596-5bc9-9012-6914f8f7ce68",
+            "id": "relationship--ff002764-f27d-57d0-8c5d-d923bc82c230",
             "created": "2016-08-10T10:06:05.000Z",
             "modified": "2016-08-10T10:06:05.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--3a247318-41b6-532a-8bfa-5f0a75abe8b4",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--d11b9e9c-4377-5dee-bfa7-58767d6dd00e",
+            "id": "relationship--cf6cc8b9-eb70-511f-89e9-1c56646abb5b",
             "created": "2014-07-07T07:08:17.000Z",
             "modified": "2014-07-07T07:08:17.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--446a2787-11ea-54d6-9b48-a8bd79bb06c7",
+            "source_ref": "indicator--1df2af50-b32a-57fa-a973-32387017e060",
             "target_ref": "file--bd664b2f-f644-50da-a18f-275cbd8e82dd",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         }

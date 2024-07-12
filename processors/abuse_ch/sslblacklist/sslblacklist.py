@@ -31,7 +31,7 @@ os.makedirs(output_dir)
 store = FileSystemStore(output_dir)
 
 # Use a predefined namespace UUID for generating UUIDv5
-namespace_uuid = uuid.UUID('a1cb37d2-3bd3-5b23-8526-47a22694b7e0')
+namespace_uuid = uuid.UUID('418465b1-2dbe-41b7-b994-19817164e793')  # marking definition uuid for feed
 
 # Function to generate UUIDv5
 def generate_uuid(namespace, name):
@@ -129,7 +129,25 @@ for row in reader:
 # Step 2: Create Malware, Indicator, and Relationship objects for each listing_reason and generate bundles
 logger.info("Creating Malware, Indicator, and Relationship objects.")
 for listing_reason, data in malware_mapping.items():
-    stix_objects = [marking_definition, identity]
+    stix_objects = [
+        marking_definition,
+        identity,
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        }
+    ]
     stix_objects.extend(data["stix_objects"])
     file_refs = [file.id for file in data["files"]]
     earliest_date = min(data["dates"])
@@ -146,6 +164,7 @@ for listing_reason, data in malware_mapping.items():
         sample_refs=file_refs,
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+            "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
             marking_definition.id
         ]
     )
@@ -173,6 +192,7 @@ for listing_reason, data in malware_mapping.items():
         valid_from=earliest_date.isoformat() + "Z",
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+            "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
             marking_definition.id
         ]
     )
@@ -191,6 +211,7 @@ for listing_reason, data in malware_mapping.items():
             target_ref=file_obj.id,
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 marking_definition.id
             ]
         )

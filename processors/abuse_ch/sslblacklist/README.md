@@ -1,13 +1,10 @@
-# abuse.ch feeds
+# abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
 
-
-## abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
-
-### Data source
+## Data source
 
 https://sslbl.abuse.ch/blacklist/sslblacklist.csv
 
-### Data schema
+## Data schema
 
 ```
 ################################################################
@@ -28,19 +25,23 @@ https://sslbl.abuse.ch/blacklist/sslblacklist.csv
 2024-07-09 09:23:28,a0cf3ddb0fa7f0bdc42c025c84d9dd0e2331f832,AsyncRAT C&C
 ```
 
-### Generated STIX objects
+## Data Normalisation
 
-Imported objects:
+There are some entries we've decided to normalise. We replace the following values in the input (in the following order):
+
+1. `malware distribution`->blank
+2. `Malware distribution`->`Malware`
+3. `Cobalt C&C`->`CobaltStrike C&C`
+4. ` C&C`->blank
+
+## STIX objects
+
+### Imported objects:
 
 * marking-definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json
 * identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json
 
-
-Created by STIX2 package:
-
-This script creates the STIX objects using the [stix2 Python Lib](https://stix2.readthedocs.io/en/latest/).
-
-It utilises the filesystem store, which saves the output objects into a directory called `stix2_objects`. On each script run this directory is deleted and then recreated with new objects.
+### Generated object mappings:
 
 ```json
 {
@@ -51,7 +52,7 @@ It utilises the filesystem store, which saves the output objects into a director
     "created": "2020-01-01T00:00:00.000Z",
     "definition_type": "statement",
     "definition": {
-        "statement": "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+        "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
     },
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -77,8 +78,8 @@ It utilises the filesystem store, which saves the output objects into a director
 	"spec_version": "2.1",
 	"id": "malware--<UUIDV5>",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-	"created": "2020-01-01T00:00:00.000Z",
-	"modified": "2020-01-01T00:00:00.000Z",
+	"created": "Earliest <Listingdate>",
+	"modified": "Latest <Listingdate>",
 	"name": "<Listingreason> (without C&C part)",
 	"malware_types": [
 		"remote-access-trojan"
@@ -89,12 +90,13 @@ It utilises the filesystem store, which saves the output objects into a director
 	],
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
     ]
 }
 ```
 
-UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` and value `name`
+UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` (feed marking definition uuid) and value `name`
 
 ```json
 {
@@ -113,7 +115,8 @@ UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` and v
     "valid_from": "<Listingdate>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
     ]
   }
 ```
@@ -125,21 +128,22 @@ The pattern contains all file sha1 hashes linked to the malware this indicator i
 	"type": "relationship",
 	"spec_version": "2.1",
 	"id": "relationship--<UUIDV5>",
-    "created": "<Listingdate>",
-    "modified": "<Listingdate>",
+    "created": "<Listingdate> of row for file object",
+    "modified": "<Listingdate> of row for file object",
     "relationship_type": "detects",
     "source_ref": "indicator--<ID>",
     "target_ref": "file--<ID>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
     ]
 }
 ```
 
 UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` and `source_ref+target_ref`
 
-All the generated objects are placed into STIX bundles in the `stix2_objects` directory. A bundle is generated per `<Listingreason>`
+All the generated objects are placed into STIX bundles directory (`bundles/abuse_ch/sslblacklist`). A bundle is generated per `<Listingreason>`
 
 ```json
 {
@@ -151,6 +155,6 @@ All the generated objects are placed into STIX bundles in the `stix2_objects` di
 }
 ```
 
-The UUID is generated using the namespace `418465b1-2dbe-41b7-b994-19817164e793` the `name` of the malware object for the `<Listingreason>` and the last update date line shown in the header e.g `KINS MITM + # Last updated: 2024-07-11 07:15:27 UTC`
+The UUID is generated using the namespace `418465b1-2dbe-41b7-b994-19817164e793` and an md5 of all the sorted objects in the bundle.
 
-The bundle file is also names in the format `<name>.json`. Where `name` is in camel case and all `.` charachters are replaced with `_`
+The bundle file is also names in the format `<name>.json`. Where `name` is all lower case and all `.`, `-` and ` ` charachters are replaced with `_`

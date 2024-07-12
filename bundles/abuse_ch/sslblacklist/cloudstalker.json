@@ -1,6 +1,6 @@
 {
     "type": "bundle",
-    "id": "bundle--6ecf6944-3425-57a9-beeb-2227383fe37b",
+    "id": "bundle--c6149617-6ec9-5a72-a24e-3057d9df1a3e",
     "objects": [
         {
             "type": "marking-definition",
@@ -37,6 +37,21 @@
             "contact_information": "https://www.dogesec.com/contact/"
         },
         {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
             "type": "file",
             "spec_version": "2.1",
             "id": "file--a1dfb43f-a10e-5fc1-ab50-20c120dd09b7",
@@ -47,7 +62,7 @@
         {
             "type": "malware",
             "spec_version": "2.1",
-            "id": "malware--aa81e477-beaa-59fe-a268-cf190dc3467a",
+            "id": "malware--95fa88c8-49ce-5305-bff8-c8c975ef3ace",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2021-06-06T06:20:37.000Z",
             "modified": "2021-06-06T06:20:37.000Z",
@@ -61,13 +76,14 @@
             ],
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--aa81e477-beaa-59fe-a268-cf190dc3467a",
+            "id": "indicator--95fa88c8-49ce-5305-bff8-c8c975ef3ace",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2021-06-06T06:20:37.000Z",
             "modified": "2021-06-06T06:20:37.000Z",
@@ -81,20 +97,22 @@
             "valid_from": "2021-06-06T06:20:37Z",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--aa233a49-02b7-527c-9a73-d9515c9d9013",
+            "id": "relationship--427781c7-74b3-5122-a122-0b8c669589c8",
             "created": "2021-06-06T06:20:37.000Z",
             "modified": "2021-06-06T06:20:37.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--aa81e477-beaa-59fe-a268-cf190dc3467a",
+            "source_ref": "indicator--95fa88c8-49ce-5305-bff8-c8c975ef3ace",
             "target_ref": "file--a1dfb43f-a10e-5fc1-ab50-20c120dd09b7",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         }

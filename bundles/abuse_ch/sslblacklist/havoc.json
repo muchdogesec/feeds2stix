@@ -1,6 +1,6 @@
 {
     "type": "bundle",
-    "id": "bundle--b18921e1-6971-5a1b-8ea9-a82ba2c3f450",
+    "id": "bundle--d1cd2a80-84d9-55e7-86bc-506b9cde3b37",
     "objects": [
         {
             "type": "marking-definition",
@@ -37,6 +37,21 @@
             "contact_information": "https://www.dogesec.com/contact/"
         },
         {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
             "type": "file",
             "spec_version": "2.1",
             "id": "file--b9056749-d46d-5013-b99d-4b21ee61a3d3",
@@ -71,7 +86,7 @@
         {
             "type": "malware",
             "spec_version": "2.1",
-            "id": "malware--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "id": "malware--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2023-05-25T12:56:26.000Z",
             "modified": "2024-07-12T07:46:58.000Z",
@@ -88,13 +103,14 @@
             ],
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "id": "indicator--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
             "created": "2023-05-25T12:56:26.000Z",
             "modified": "2024-07-12T07:46:58.000Z",
@@ -108,62 +124,67 @@
             "valid_from": "2023-05-25T12:56:26Z",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--aa1bdc1c-d2d5-5c6c-b0be-cbb6bcd78059",
+            "id": "relationship--eda4ecba-7ffa-5559-b0df-c8b58e4bd223",
             "created": "2024-07-12T07:46:58.000Z",
             "modified": "2024-07-12T07:46:58.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "source_ref": "indicator--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "target_ref": "file--b9056749-d46d-5013-b99d-4b21ee61a3d3",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--f0b1c12e-4045-5daa-bbc1-e81686604409",
+            "id": "relationship--d7ca0602-414d-544d-a583-a52c0cb88d3f",
             "created": "2023-12-04T09:28:43.000Z",
             "modified": "2023-12-04T09:28:43.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "source_ref": "indicator--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "target_ref": "file--5bc97d19-9d6b-5db6-9786-acbbfc0553df",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--b79a729e-46f1-5cc4-b29d-5bb699d05439",
+            "id": "relationship--3c8558d5-07b0-552e-8e88-4247eb068534",
             "created": "2023-11-26T09:29:11.000Z",
             "modified": "2023-11-26T09:29:11.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "source_ref": "indicator--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "target_ref": "file--1a0705bd-6b31-5eed-b740-4145b1e9cbf0",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--065a76aa-6c83-59db-a111-80ba8b49f2ec",
+            "id": "relationship--cea47eee-33dc-5001-83a8-e09fb448d9bf",
             "created": "2023-05-25T12:56:26.000Z",
             "modified": "2023-05-25T12:56:26.000Z",
             "relationship_type": "detects",
-            "source_ref": "indicator--8ab6c01d-adde-59c1-ac90-bba1aaba02f1",
+            "source_ref": "indicator--b0a70bb6-4bcd-578c-bf30-4109c0bfadf4",
             "target_ref": "file--702b3ccb-072c-50f1-afdf-d068c3449cad",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
             ]
         }

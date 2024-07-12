@@ -2,7 +2,7 @@
 
 ## Overview
 
-A vendor agnostic set of scripts that take data from threat intelligence feeds and converts it into STIX 2.1 objects.
+A set of scripts that take data from threat intelligence feeds and converts it into STIX 2.1 objects.
 
 The aim of this repository is to make it easy for anyone to get structured cyber threat intelligence into downstream tools.
 
