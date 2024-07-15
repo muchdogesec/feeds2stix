@@ -153,3 +153,9 @@ A bundle is generated per year (containing all objects with `modified` time in t
 ```
 
 The UUID is generated using the namespace `387824ed-ce3e-43b2-9be7-b121b2b917d9` and an md5 of all the sorted objects in the bundle.
+
+## Run the script
+
+```shell
+python3 processors/abuse_ch/sslblacklist_agressive/sslblacklist_agressive.py
+```

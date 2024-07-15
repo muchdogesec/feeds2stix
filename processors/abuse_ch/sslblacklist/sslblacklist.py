@@ -206,6 +206,7 @@ for listing_reason, data in malware_mapping.items():
             id="relationship--" + relationship_id,
             created=listing_date,
             modified=listing_date,
+            created_by_ref=identity.id,
             relationship_type="detects",
             source_ref=indicator_obj.id,
             target_ref=file_obj.id,

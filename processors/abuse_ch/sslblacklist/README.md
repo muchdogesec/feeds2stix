@@ -167,3 +167,9 @@ All the generated objects are placed into STIX bundles directory (`bundles/abuse
 The UUID is generated using the namespace `418465b1-2dbe-41b7-b994-19817164e793` and an md5 of all the sorted objects in the bundle.
 
 The bundle file is also names in the format `<name>.json`. Where `name` is all lower case and all `.`, `-` and ` ` charachters are replaced with `_`
+
+## Run the script
+
+```shell
+python3 processors/abuse_ch/sslblacklist/sslblacklist.py
+```

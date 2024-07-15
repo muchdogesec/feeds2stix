@@ -188,6 +188,7 @@ for dst_ip, data in indicator_mapping.items():
         id="relationship--" + indicator_id,
         created=indicator_obj.created,
         modified=indicator_obj.modified,
+        created_by_ref=identity.id,
         relationship_type="detects",
         source_ref=indicator_obj.id,
         target_ref=ipv4_objects[dst_ip].id,
