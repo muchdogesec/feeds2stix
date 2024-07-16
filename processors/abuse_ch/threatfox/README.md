@@ -47,48 +47,9 @@ Where `[...more records...]` is more rows removed for brevity here.
 
 The last row should be ignored.
 
-The results of this file are sorted by `first_seen_utc` in descending day order. The results inside a day are not nessarily in the time order. e.g. results will always be in order `2024-07-16`, `2024-07-15`, `2024-07-14`, etc. but could be in order `2024-07-16 06:45:19`, `2024-07-16 08:11:39`, `2024-07-16 05:25:36`
+The results of this file are sorted by `first_seen_utc` in descending day order. The results inside a day are not necessarily in the time order. e.g. results will always be in order `2024-07-16`, `2024-07-15`, `2024-07-14`, etc. but could be in order `2024-07-16 06:45:19`, `2024-07-16 08:11:39`, `2024-07-16 05:25:36`
 
 ## Data Normalisation
-
-Because CSV's can be annoying to parse (and this file is very large), the script first breaks the data into csvs for each unique `malware_printable`
-
-JSON filenames are created from `malware_printable` with `(` and `)` characters removed (e.g. `loki_password_stealer_pws.json`) and are stored in `bundles/abuse_ch/threatfox/tmp`
-
-e.g.
-
-```
-# "first_seen_utc","ioc_id","ioc_value","ioc_type","threat_type","fk_malware","malware_alias","malware_printable","last_seen_utc","confidence_level","reference","tags","anonymous","reporter"
-"2024-07-16 06:45:19", "1301611", "http://rocheholding.top/rudolph/five/fre.php", "url", "botnet_cc", "win.lokipws", "Burkina,Loki,LokiBot,LokiPWS", "Loki Password Stealer (PWS)", "2024-07-16 08:11:39", "75", "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/", "lokibot", "0", "abuse_ch"
-```
-
-is added to `loki_password_stealer_pws.json` as follows
-
-```
-{
-    "first_seen_utc": "2024-07-16 06:45:19",
-    "ioc_id": "1301611",
-    "ioc_value": "http://rocheholding.top/rudolph/five/fre.php",
-    "ioc_type": "url",
-    "threat_type": "botnet_cc",
-    "fk_malware": "win.lokipws",
-    "malware_alias": [
-        "Burkina",
-        "Loki",
-        "LokiBot",
-        "LokiPWS"
-    ],
-    "malware_printable": "Loki Password Stealer (PWS)",
-    "last_seen_utc": "2024-07-16 08:11:39",
-    "confidence_level": "75",
-    "reference": "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/",
-    "tags": [
-        "lokibot"
-    ],
-    "anonymous": "0",
-    "reporter": "abuse_ch"
-}
-```
 
 Note `last_seen_utc` does not always have a value in the input CSV, in which case it inherits `first_seen_utc`
 
@@ -100,6 +61,28 @@ Note `last_seen_utc` does not always have a value in the input CSV, in which cas
 * identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json
 
 ### Generated object mappings
+
+#### Marking Definition
+
+This is hardcoded and never changes;
+
+```json
+{
+    "type": "marking-definition",
+    "spec_version": "2.1",
+    "id": "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "created": "2020-01-01T00:00:00.000Z",
+    "definition_type": "statement",
+    "definition": {
+        "statement": "Origin data source: https://threatfox.abuse.ch/export/csv/full/"
+    },
+    "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+    ]
+}
+```
 
 #### Observables 
 
@@ -185,29 +168,7 @@ For `protocols`, if `DstPort` =
 }
 ```
 
-#### Marking Definition
-
-This is hardcoded and never changes;
-
-```json
-{
-    "type": "marking-definition",
-    "spec_version": "2.1",
-    "id": "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "2020-01-01T00:00:00.000Z",
-    "definition_type": "statement",
-    "definition": {
-        "statement": "Origin data source: https://threatfox.abuse.ch"
-    },
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ]
-}
-```
-
-#### Indicators / Malware
+#### Malware
 
 For each unique `malware_printable` entry a Malware objects is created as follows;
 
@@ -250,6 +211,8 @@ For each unique `malware_printable` entry a Malware objects is created as follow
 Note `<last_seen_utc>` might be `null` for all observables. In which case it is replaced with `first_seen_utc` so `modified` time can be populated.
 
 UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `name` value
+
+#### Indicators 
 
 Each row has a `reference` and `reporter` value. All observables with the same `malware_printable` , `reference` and `reporter` are grouped and an Indicator objects is created as follows...
 
@@ -354,6 +317,8 @@ A bundle is per malware `name`;
 ```
 
 The UUID is generated using the namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and an md5 of all the sorted objects in the bundle.
+
+Any `(` and `)` characters in the `name` value are removed before saving the bundle filename. All `-` characters are replaced with `_`
 
 ## Run the script
 
