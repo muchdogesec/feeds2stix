@@ -5,8 +5,10 @@
 The script works like so
 
 1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv`
-2. turns the entries found in the csv doc into STIX objects (as described in this doc).
+2. turns the entries found in the csv doc into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/sslipblacklist_aggressive/stix2_objects`.
 3. the stix objects are stored in STIX bundles by year `2024.json`, `2023.json`, etc. The year is based on the records lowest `Firstseen` in the csv.
+
+Note this script can handle updates to data in a graceful way. Because a copy of all STIX `bundles/abuse_ch/threatfox/stix2_objects` is stored the script does not need to process all data on each run. On update runs the script will only consider data greater than the highest `modified` time of all indicators
 
 ## Overview
 
@@ -165,5 +167,9 @@ The UUID is generated using the namespace `387824ed-ce3e-43b2-9be7-b121b2b917d9`
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.py
+python3 processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.py --update
 ```
+
+Where: 
+
+* `update` (optional): if passed will search for the highest `modified` time in the malware objects that match the input. The script will identify if any new data has been added since `modified` and script run time for all indicators. If true, then the new observables will be added, and indicator/bundles updated / added to reflect changes.

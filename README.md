@@ -52,6 +52,10 @@ source feeds2stix-venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
+## Useful supporting tools
+
+* [This repository contains Open Source freely usable Threat Intel feeds that can be used without additional requirements. Contains multiple types such as IP, URL, CVE and Hash.](https://github.com/Bert-JanP/Open-Source-Threat-Intel-Feeds)
+
 ## Support
 
 [Minimal support provided via the DOGESEC community](https://community.dogesec.com/).

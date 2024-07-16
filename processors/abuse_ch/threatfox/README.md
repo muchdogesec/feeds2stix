@@ -4,14 +4,13 @@
 
 The script works like so
 
-1. If no `malware` value passed to cli, gets `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malware_list" }'` malware list
-2. takes a `malware` name (either from list or via user entry in CLI) and hits `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "<malware_printable>", "limit": 1000, "skip": 0'`
-3. reads the body of the response, only considering `first_seen` and `last_seen` times that fall within `first_seen_min` and `last_seen_max` (if used)
-4. pages through the response 1000 records at a time, until no more data that matches the CLI input is found
-5. creates a single, temporary json doc from all matching records returned in the API pages
-6. turns the entries found in the json doc into STIX objects (as described in this doc). STIX objects are temporarily stored to the filesystemstore in `bundles/abuse_ch/threatfox/stix2_objects`
-7. the created objects are packaged in a STIX 2.1 bundle
-8. If no `malware` value passed to cli, script moves to next malware object in list to start the process again.
+1. Downloads the data from `https://threatfox.abuse.ch/export/csv/full/`
+2. reads the body of the response, only considering CLI argument values entered by user
+3. for user entered malware entry or first unique malware entry identified in csv, turns the entries found in the csv into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/threatfox/stix2_objects`.
+4. the created objects are packaged in a STIX 2.1 bundle
+5. If no `malware` value passed to cli, script moves back to step 3 to next malware object until all malwares are covered
+
+Note this script can handle updates to data in a graceful way. Because a copy of all STIX `bundles/abuse_ch/threatfox/stix2_objects` is stored the script does not need to process all data on each run. On update runs the script will only consider data greater than the highest `modified` time for the malware specified.
 
 ## Overview
 
@@ -21,273 +20,77 @@ https://threatfox.abuse.ch/
 
 ## Data source
 
-To get a list of all malware you can use the query
-
-```shell
-curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malware_list" }'
-```
-
-A 200 response looks like this:
-
-```json
-{
-  "query_status": "ok",
-  "data": {
-      "win.sparksrv": {
-          "malware_printable": "Sparksrv",
-          "malware_alias": null
-      },
-      "win.sslmm": {
-          "malware_printable": "SslMM",
-          "malware_alias": null
-      },
-      "win.hermes_ransom": {
-          "malware_printable": "Hermes Ransomware",
-          "malware_alias": null
-      },
-      "apk.doublelocker": {
-          "malware_printable": "DoubleLocker",
-          "malware_alias": null
-      },
-      [...]
-}
-```
-
-Using each `malware_printable` value, you can then get all data linked to it using the following endpoint and filters (adjust as needed)
-
-```shell
-curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "Cobalt Strike", "limit": 1000, "skip": 0 }'
-```
-
-To page through the ThreatFox API, you need to use the limit and skip parameters in your request payload. The limit parameter controls how many results you want to retrieve in one request, while the skip parameter allows you to skip a certain number of results, effectively paginating through the data.
-
-This will return results that look as follows;
-
-```json
-{
-    "query_status": "ok",
-    "data": [
-        {
-            "id": "21",
-            "ioc": "43.255.30.192:8848",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.cobalt_strike",
-            "malware_printable": "Cobalt Strike",
-            "malware_alias": "Agentemis,BEACON,CobaltStrike",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.cobalt_strike",
-            "confidence_level": 50,
-            "first_seen": "2020-12-06 09:47:30 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "abuse_ch",
-            "tags": null
-        },
-        {
-            "id": "13",
-            "ioc": "http:\/\/94.103.84.81\/",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "url",
-            "ioc_type_desc": "URL that is used for botnet Command&control (C&C)",
-            "malware": "win.cobalt_strike",
-            "malware_printable": "Cobalt Strike",
-            "malware_alias": "Agentemis,BEACON,CobaltStrike",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.cobalt_strike",
-            "confidence_level": 50,
-            "first_seen": "2020-12-06 09:16:18 UTC",
-            "last_seen": null,
-            "reference": "https:\/\/twitter.com\/d4rksystem\/status\/1333848341239582721",
-            "reporter": "abuse_ch",
-            "tags": [
-                "CobaltStrike",
-                "exe"
-            ]
-        }
-    ]
-}
-```
-
-Paging through all data for a malware gives enough information to create a STIX Bundle for it.
-
-Note, you cannot filter this endpoint by time, and many malwares return more than 1000 results (the max `limit` allowed). Therefore the script manually contains the logic to ignore records that do not match the times entered by user in CLI input.
-
-To illustrate the point, in the response below only the following `id`s (from API query `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "NjRAT", "limit": 1000, "skip": 0 }')` would be considered:
-
-* `1297478`
-* `1297457`
-* `1297196`
-* `1296815`
-* `1296825`
-
-```json
-{
-    "query_status": "ok",
-    "query_info": {
-        "search_scope": "1 month",
-        "result_count": 1000,
-        "result_max": "1000"
-    },
-    "data": [
-        {
-            "id": "1297681",
-            "ioc": "eeeb0c4cdb143621c6a37caafe42b145a4d30e2c",
-            "threat_type": "payload",
-            "threat_type_desc": "Indicator that identifies a malware sample (payload)",
-            "ioc_type": "sha1_hash",
-            "ioc_type_desc": "SHA1 hash of a malware sample (payload)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 95,
-            "first_seen": "2024-07-14 03:03:39 UTC",
-            "last_seen": "2024-07-14 04:31:18 UTC",
-            "reference": null,
-            "reporter": "Grim",
-            "tags": null
-        },
-        {
-            "id": "1297478",
-            "ioc": "147.185.221.20:36100",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 100,
-            "first_seen": "2024-07-13 02:50:06 UTC",
-            "last_seen": "2024-07-13 19:08:53 UTC",
-            "reference": null,
-            "reporter": "abuse_ch",
-            "tags": [
-                "njrat"
-            ]
-        },
-        {
-            "id": "1297457",
-            "ioc": "engine-cheers.gl.at.ply.gg",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "domain",
-            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-12 21:07:50 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1297196",
-            "ioc": "147.185.221.21:9212",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-12 07:24:51 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296815",
-            "ioc": "commission-machines.gl.at.ply.gg",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "domain",
-            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-11 06:10:25 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296825",
-            "ioc": "147.185.221.21:6732",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-11 06:10:22 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296824",
-            "ioc": "196.64.248.166:10000",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 100,
-            "first_seen": "2024-07-10 22:50:11 UTC",
-            "last_seen": "2024-07-10 23:07:15 UTC",
-            "reference": null,
-            "reporter": "abuse_ch",
-            "tags": [
-                "njrat"
-            ]
-        }
-    ]
-}
-```
-
-It's also worth noting the responses are always sorted by `first_seen` descending. The means the script can easily determine when to stop paging, when `first_seen` time is lower than user CLI value (if entered, else considered all)
-
-This is then done for each malware entry returned by the first query listing all malwares (if user does not select specific malware in CLI input)
+https://threatfox.abuse.ch/export/csv/full/
 
 ## Data schema
 
-See Data source
+```
+################################################################
+# ThreatFox IOCs: additions - CSV format (full dump)           #
+# Last updated: 2024-07-16 06:45:19 UTC                        #
+#                                                              #
+# Terms Of Use: https://threatfox.abuse.ch/faq/#tos            #
+# For questions please contact threatfox [at] abuse.ch         #
+################################################################
+#
+# "first_seen_utc","ioc_id","ioc_value","ioc_type","threat_type","fk_malware","malware_alias","malware_printable","last_seen_utc","confidence_level","reference","tags","anonymous","reporter"
+"2024-07-16 06:45:19", "1301611", "http://rocheholding.top/rudolph/five/fre.php", "url", "botnet_cc", "win.lokipws", "Burkina,Loki,LokiBot,LokiPWS", "Loki Password Stealer (PWS)", "2024-07-16 08:11:39", "75", "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/", "lokibot", "0", "abuse_ch"
+"2024-07-16 05:25:36", "1301610", "8.134.12.90:7777", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-987654321", "0", "abuse_ch"
+"2024-07-16 05:25:35", "1301609", "172.245.184.135:8888", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-987654321", "0", "abuse_ch"
+"2024-07-16 05:25:34", "1301608", "91.208.73.75:82", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-100000", "0", "abuse_ch"
+"2024-07-16 05:25:33", "1301606", "8.223.20.63:443", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike", "0", "abuse_ch"
+[...more records...]
+# Number of entries: 1217668
+```
+
+Where `[...more records...]` is more rows removed for brevity here.
+
+The last row should be ignored.
+
+The results of this file are sorted by `first_seen_utc` in descending day order. The results inside a day are not nessarily in the time order. e.g. results will always be in order `2024-07-16`, `2024-07-15`, `2024-07-14`, etc. but could be in order `2024-07-16 06:45:19`, `2024-07-16 08:11:39`, `2024-07-16 05:25:36`
 
 ## Data Normalisation
 
-n/a
+Because CSV's can be annoying to parse (and this file is very large), the script first breaks the data into csvs for each unique `malware_printable`
+
+JSON filenames are created from `malware_printable` with `(` and `)` characters removed (e.g. `loki_password_stealer_pws.json`) and are stored in `bundles/abuse_ch/threatfox/tmp`
+
+e.g.
+
+```
+# "first_seen_utc","ioc_id","ioc_value","ioc_type","threat_type","fk_malware","malware_alias","malware_printable","last_seen_utc","confidence_level","reference","tags","anonymous","reporter"
+"2024-07-16 06:45:19", "1301611", "http://rocheholding.top/rudolph/five/fre.php", "url", "botnet_cc", "win.lokipws", "Burkina,Loki,LokiBot,LokiPWS", "Loki Password Stealer (PWS)", "2024-07-16 08:11:39", "75", "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/", "lokibot", "0", "abuse_ch"
+```
+
+is added to `loki_password_stealer_pws.json` as follows
+
+```
+{
+    "first_seen_utc": "2024-07-16 06:45:19",
+    "ioc_id": "1301611",
+    "ioc_value": "http://rocheholding.top/rudolph/five/fre.php",
+    "ioc_type": "url",
+    "threat_type": "botnet_cc",
+    "fk_malware": "win.lokipws",
+    "malware_alias": [
+        "Burkina",
+        "Loki",
+        "LokiBot",
+        "LokiPWS"
+    ],
+    "malware_printable": "Loki Password Stealer (PWS)",
+    "last_seen_utc": "2024-07-16 08:11:39",
+    "confidence_level": "75",
+    "reference": "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/",
+    "tags": [
+        "lokibot"
+    ],
+    "anonymous": "0",
+    "reporter": "abuse_ch"
+}
+```
+
+Note `last_seen_utc` does not always have a value in the input CSV, in which case it inherits `first_seen_utc`
 
 ## STIX objects
 
@@ -300,18 +103,18 @@ n/a
 
 #### Observables 
 
-For each entry from the malwareinfo endpoint, observables can be created as follows;
+For each unique `ioc_value` entry, observables can be created as follows;
 
 ##### ioc_type=ip:port
 
-If `ioc_type=ip:port` then the `ioc_value` is split at the `:` charachter. The left part is the `ipv4-addr` the right part is the `network-traffic` port.
+If `ioc_type=ip:port` then the `ioc_value` is split at the `:` character. The left part is the `ipv4-addr` the right part is the `network-traffic` port.
 
 ```json
 {
 	"type": "ipv4-addr",
 	"spec_version": "2.1",
 	"id": "ipv4-addr--<GENERATED BY STIX2 LIB>",
-	"value": "<VALUE IPV4>"
+	"value": "<ioc_value>"
 }
 ```
 
@@ -321,7 +124,7 @@ If `ioc_type=ip:port` then the `ioc_value` is split at the `:` charachter. The l
 	"spec_version": "2.1",
 	"id": "network-traffic--<GENERATED BY STIX2 LIB>",
 	"dst_ref": "<CORRESPONDING IPV4 ADDR OBJECT>",
-	"dst_port": "<VALUE PORT>",
+	"dst_port": "<ioc_value>",
 	"protocols": [
 		"<SEE DICTIONARY IN NOTES>"
 	]
@@ -341,7 +144,7 @@ For `protocols`, if `DstPort` =
 	"type": "url",
 	"spec_version": "2.1",
 	"id": "url--<GENERATED BY STIX2 LIB>",
-	"value": "<VALUE>"
+	"value": "<ioc_value>"
 }
 ```
 
@@ -352,7 +155,7 @@ For `protocols`, if `DstPort` =
 	"type": "domain-name",
 	"spec_version": "2.1",
 	"id": "domain-name--<GENERATED BY STIX2 LIB>",
-	"value": "<VALUE>"
+	"value": "<ioc_value>"
 }
 ```
 
@@ -364,7 +167,7 @@ For `protocols`, if `DstPort` =
 	"spec_version": "2.1",
 	"id": "file--<GENERATED BY STIX2 LIB>",
 	"hashes": {
-		"MD5": "<VALUE>"
+		"MD5": "<ioc_value>"
 	}
 }
 ```
@@ -377,7 +180,7 @@ For `protocols`, if `DstPort` =
 	"spec_version": "2.1",
 	"id": "file--<GENERATED BY STIX2 LIB>",
 	"hashes": {
-		"SHA-256": "<VALUE>"
+		"SHA-256": "<ioc_value>"
 	}
 }
 ```
@@ -406,7 +209,7 @@ This is hardcoded and never changes;
 
 #### Indicators / Malware
 
-For each `malware_printable` entry Indicator and Malware objects are created as follows;
+For each unique `malware_printable` entry a Malware objects is created as follows;
 
 ```json
 {
@@ -414,9 +217,9 @@ For each `malware_printable` entry Indicator and Malware objects are created as 
 	"spec_version": "2.1",
 	"id": "malware--<UUIDV5>",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-	"created": "Earliest <data.first_seen> for all observables linked to malware",
-	"modified": "Latest <data.last_seen> for all observables linked to malware",
-	"name": "<KEY.malware_printable>",
+	"created": "Earliest <first_seen_utc> for all observables linked to this malware",
+	"modified": "Latest <last_seen_utc> for all observables linked to this malware",
+	"name": "<malware_printable>",
 	"malware_types": [
 		"unknown"
 	],
@@ -433,7 +236,7 @@ For each `malware_printable` entry Indicator and Malware objects are created as 
 	"external_references": [
 		{
 			"source_name": "threatfox_malware",
-			"external_id": "<KEY>"
+			"external_id": "<threatfox_malware>"
 	    },
 	],
     "object_marking_refs": [
@@ -444,11 +247,11 @@ For each `malware_printable` entry Indicator and Malware objects are created as 
 }
 ```
 
-Note `<data.last_seen>` might be `null` for all observables returned by the API. In which case it is replaced with `KEY.first_seen_utc` so `modified` time can be populated.
+Note `<last_seen_utc>` might be `null` for all observables. In which case it is replaced with `first_seen_utc` so `modified` time can be populated.
 
 UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `name` value
 
-For every unique `reference` and `reporter` value in the obsevables response, an Indicator objects is created.
+Each row has a `reference` and `reporter` value. All observables with the same `malware_printable` , `reference` and `reporter` are grouped and an Indicator objects is created as follows...
 
 ```json
 {
@@ -456,19 +259,19 @@ For every unique `reference` and `reporter` value in the obsevables response, an
     "spec_version": "2.1",
     "id": "indicator--<UUIDV5>",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "Earliest <data.first_seen> for all observables linked to indicator",
-    "modified": "Latest <data.last_seen> for all observables linked to indicator",
+    "created": "Earliest <first_seen_utc> for all observables linked to this indicator",
+    "modified": "Latest <last_seen_utc> for all observables linked to this indicator",
     "indicator_types": [
     	"malicious-activity"
     ],
-    "name": "<KEY.malware_printable>",
+    "name": "<malware_printable>",
     "pattern": "<STIX PATTERN FOR EACH SCO LINKED TO MALWARE AND FROM THIS REFERENCE/REPORTED JOINED WITH OR OPERATORS>",
     "pattern_type": "stix",
-    "valid_from": "Same as created value",
+    "valid_from": "Same as `created` value",
     "labels": [
         "all unique tags for observables linked to this malware as a list"
     ],
-	"confidence": "highest <confidence_level>",
+	"confidence": "highest <confidence_level> for all observables linked to this indicator",
 	"external_references": [
 	 	{
 			"source_name": "threatfox_reporter",
@@ -489,7 +292,7 @@ For every unique `reference` and `reporter` value in the obsevables response, an
 
 UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `name` and `external_references.external_id` (where `external_references.source_name==threatfox_reporter`
  
-Note `<data.last_seen>` might be `null` for all observables returned by the API. In which case it is replaced with `KEY.first_seen_utc` so `modified` time can be populated.
+Note `<last_seen_utc>` might be `null` for all observables returned. In which case it is replaced with `first_seen_utc` so `modified` time can be populated.
 
 Each indicator created is then linked to the malware objects like so;
 
@@ -521,8 +324,8 @@ And each object listed in the pattern of the Indicator is linked to it like so;
 	"type": "relationship",
 	"spec_version": "2.1",
 	"id": "relationship--<UUIDV5>",
-    "created": "<first_seen> for target_ref object",
-    "modified": "<last_seen> for target_ref object",
+    "created": "<first_seen_utc> value for target_ref observable",
+    "modified": "<last_seen_utc> value for target_ref observable",
     "relationship_type": "detects",
     "source_ref": "indicator--<ID>",
     "target_ref": "<OBJECT_ID>",
@@ -536,9 +339,9 @@ And each object listed in the pattern of the Indicator is linked to it like so;
 
 UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `source_ref+target_ref`
 
-All the generated objects are placed into STIX bundles directory (`bundles/abuse_ch/threatfox`).
+All the generated objects are placed into STIX bundles in the directory `bundles/abuse_ch/threatfox`.
 
-A bundle is per malware `name`
+A bundle is per malware `name`;
 
 ```json
 {
@@ -552,25 +355,22 @@ A bundle is per malware `name`
 
 The UUID is generated using the namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and an md5 of all the sorted objects in the bundle.
 
-Bundle names are created from the Malware `name` with `(` and `)` charachters removed.
-
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NAME" --first_seen_min YYYY-MM-DD
+python3 processors/abuse_ch/threatfox/threatfox.py --malware "NAME" --update
 ```
 
 Where:
 
-* `malware` (optional, dictionary): the name is the `malware_printable` value returned via the endpoint `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malware_list" }'`
+* `malware` (optional, dictionary): the name is the `malware_printable` value to filter on
     * default is all
-* `first_seen_min` (optional, date): the date entered by user for this parameter indicates the earliest first_seen time in the data you want. So if you enter `2020-01-01` only results with a `first_seen` time higher than this value would be considered
-    * default is all time
+* `update` (optional): if passed will search for the highest `modified` time in the malware objects that match the input. The script will identify if any new data has been added since `modified` and script run time for that malware. If true, then the new observables will be added, and indicator/malware/bundle updated / added to reflect changes.
 
 e.g. 
 
 ```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NjRAT" --first_seen_min 2024-07-11
+python3 processors/abuse_ch/threatfox/threatfox.py --malware "NjRAT"
 ```
 
-Would only return results for `NjRAT` between the dates `2024-07-11` and the script run time.
+Would only process results for `NjRAT`.

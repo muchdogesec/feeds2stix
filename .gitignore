@@ -10,3 +10,4 @@ feeds2stix-venv/
 
 .python-version
 __pycache__/
+bundles/
