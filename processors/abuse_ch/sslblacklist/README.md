@@ -5,8 +5,10 @@
 The script works like so
 
 1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslblacklist.csv`
-2. turns the entries found in the csv doc into STIX objects (as described in this doc).
+2. turns the entries found in the csv doc into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/sslblacklist/stix2_objects`.
 3. the stix objects are stored in STIX bundles by the malware they are linked to in the data (`Listingreason` column of input csv)
+
+Note this script can handle updates to data in a graceful way. Because a copy of all STIX `bundles/abuse_ch/sslblacklist/stix2_objects` is stored the script does not need to process all data on each run. On update runs the script will only consider data greater than the highest `modified` time of all malware objects.
 
 ## Overview
 
@@ -179,5 +181,9 @@ The bundle file is also names in the format `<name>.json`. Where `name` is all l
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/sslblacklist/sslblacklist.py
+python3 processors/abuse_ch/sslblacklist/sslblacklist.py --update
 ```
+
+Where:
+
+* `update` (optional): if passed will search for the highest `modified` time in the malware objects . The script will identify if any new data has been added since `modified` and script run time. If true, then the new observables will be added, and indicator/malware/bundle updated / added to reflect changes.
