@@ -1,4 +1,17 @@
-# abuse.ch SSLBL Botnet C2 IP Blacklist - Aggressive
+# threatfox
+
+## tl;dr logic of the script
+
+The script works like so
+
+1. If no `malware` value passed to cli, gets `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malware_list" }'` malware list
+2. takes a `malware` name (either from list or via user entry in CLI) and hits `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "<malware_printable>", "limit": 1000, "skip": 0'`
+3. reads the body of the response, only considering `first_seen` and `last_seen` times that fall within `first_seen_min` and `last_seen_max` (if used)
+4. pages through the response 1000 records at a time, until no more data that matches the CLI input is found
+5. creates a single, temporary json doc from all matching records returned in the API pages
+6. turns the entries found in the json doc into STIX objects (as described in this doc). STIX objects are temporarily stored to the filesystemstore in `bundles/abuse_ch/threatfox/stix2_objects`
+7. the created objects are packaged in a STIX 2.1 bundle
+8. If no `malware` value passed to cli, script moves to next malware object in list to start the process again.
 
 ## Overview
 
@@ -40,10 +53,10 @@ A 200 response looks like this:
 }
 ```
 
-Using each `malware_printable` value, you can then get all data linked to it using the following endpoint
+Using each `malware_printable` value, you can then get all data linked to it using the following endpoint and filters (adjust as needed)
 
 ```shell
-curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "Cobalt Strike", "limit": 100, "skip": 0 }'
+curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "Cobalt Strike", "limit": 1000, "skip": 0 }'
 ```
 
 To page through the ThreatFox API, you need to use the limit and skip parameters in your request payload. The limit parameter controls how many results you want to retrieve in one request, while the skip parameter allows you to skip a certain number of results, effectively paginating through the data.
@@ -99,7 +112,174 @@ This will return results that look as follows;
 
 Paging through all data for a malware gives enough information to create a STIX Bundle for it.
 
-This is then done for each malware entry returned by the first query listing all malwares.
+Note, you cannot filter this endpoint by time, and many malwares return more than 1000 results (the max `limit` allowed). Therefore the script manually contains the logic to ignore records that do not match the times entered by user in CLI input.
+
+To illustrate the point, in the response below only the following `id`s (from API query `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malwareinfo", "malware": "NjRAT", "limit": 1000, "skip": 0 }')` would be considered:
+
+* `1297478`
+* `1297457`
+* `1297196`
+* `1296815`
+* `1296825`
+
+```json
+{
+    "query_status": "ok",
+    "query_info": {
+        "search_scope": "1 month",
+        "result_count": 1000,
+        "result_max": "1000"
+    },
+    "data": [
+        {
+            "id": "1297681",
+            "ioc": "eeeb0c4cdb143621c6a37caafe42b145a4d30e2c",
+            "threat_type": "payload",
+            "threat_type_desc": "Indicator that identifies a malware sample (payload)",
+            "ioc_type": "sha1_hash",
+            "ioc_type_desc": "SHA1 hash of a malware sample (payload)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 95,
+            "first_seen": "2024-07-14 03:03:39 UTC",
+            "last_seen": "2024-07-14 04:31:18 UTC",
+            "reference": null,
+            "reporter": "Grim",
+            "tags": null
+        },
+        {
+            "id": "1297478",
+            "ioc": "147.185.221.20:36100",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "ip:port",
+            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 100,
+            "first_seen": "2024-07-13 02:50:06 UTC",
+            "last_seen": "2024-07-13 19:08:53 UTC",
+            "reference": null,
+            "reporter": "abuse_ch",
+            "tags": [
+                "njrat"
+            ]
+        },
+        {
+            "id": "1297457",
+            "ioc": "engine-cheers.gl.at.ply.gg",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "domain",
+            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 75,
+            "first_seen": "2024-07-12 21:07:50 UTC",
+            "last_seen": null,
+            "reference": null,
+            "reporter": "SarlackLab",
+            "tags": [
+                "njrat",
+                "RAT"
+            ]
+        },
+        {
+            "id": "1297196",
+            "ioc": "147.185.221.21:9212",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "ip:port",
+            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 75,
+            "first_seen": "2024-07-12 07:24:51 UTC",
+            "last_seen": null,
+            "reference": null,
+            "reporter": "SarlackLab",
+            "tags": [
+                "njrat",
+                "RAT"
+            ]
+        },
+        {
+            "id": "1296815",
+            "ioc": "commission-machines.gl.at.ply.gg",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "domain",
+            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 75,
+            "first_seen": "2024-07-11 06:10:25 UTC",
+            "last_seen": null,
+            "reference": null,
+            "reporter": "SarlackLab",
+            "tags": [
+                "njrat",
+                "RAT"
+            ]
+        },
+        {
+            "id": "1296825",
+            "ioc": "147.185.221.21:6732",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "ip:port",
+            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 75,
+            "first_seen": "2024-07-11 06:10:22 UTC",
+            "last_seen": null,
+            "reference": null,
+            "reporter": "SarlackLab",
+            "tags": [
+                "njrat",
+                "RAT"
+            ]
+        },
+        {
+            "id": "1296824",
+            "ioc": "196.64.248.166:10000",
+            "threat_type": "botnet_cc",
+            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
+            "ioc_type": "ip:port",
+            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
+            "malware": "win.njrat",
+            "malware_printable": "NjRAT",
+            "malware_alias": "Bladabindi,Lime-Worm",
+            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
+            "confidence_level": 100,
+            "first_seen": "2024-07-10 22:50:11 UTC",
+            "last_seen": "2024-07-10 23:07:15 UTC",
+            "reference": null,
+            "reporter": "abuse_ch",
+            "tags": [
+                "njrat"
+            ]
+        }
+    ]
+}
+```
+
+It's also worth noting the responses are always sorted by `first_seen` descending. The means the script can easily determine when to stop paging, when `first_seen` time is lower than user CLI value (if entered, else considered all)
+
+This is then done for each malware entry returned by the first query listing all malwares (if user does not select specific malware in CLI input)
 
 ## Data schema
 
@@ -377,185 +557,20 @@ Bundle names are created from the Malware `name` with `(` and `)` charachters re
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NAME" --first_seen_min YYYY-MM-DD --last_seen_max YYYY-MM-DD
+python3 processors/abuse_ch/threatfox/threatfox.py --malware "NAME" --first_seen_min YYYY-MM-DD
 ```
 
 Where:
 
 * `malware` (optional, dictionary): the name is the `malware_printable` value returned via the endpoint `curl -X POST https://threatfox-api.abuse.ch/api/v1/ -d '{ "query": "malware_list" }'`
     * default is all
-* `first_seen_min` (optional, date): the date entered by user for this parameter indicates the earliest first_seen time in the data you want. So if you enter 2020-01-01 only results with a first_seen time higher than this value would be considered
-    * default is all time
-* `last_seen_max` (optional, date): the date entered by user for this parameter indicates the latest last_seen time in the data you want. So if you enter 2020-01-01 only results with a last_seen time lower than this value would be considered. Note `last_seen` is often `null` in the data, in which case `first_seen` time is considered
+* `first_seen_min` (optional, date): the date entered by user for this parameter indicates the earliest first_seen time in the data you want. So if you enter `2020-01-01` only results with a `first_seen` time higher than this value would be considered
     * default is all time
 
 e.g. 
 
 ```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NjRAT" --first_seen_min 2024-07-11 --last_seen_max 2024-07-13
+python3 processors/abuse_ch/threatfox/threatfox.py --malware "NjRAT" --first_seen_min 2024-07-11
 ```
 
-Would only return results for `NjRAT` between the dates `2024-07-11` and `2024-07-13`.
-
-To illustrate the point, in the response below only the following `id`s would be considered:
-
-* `1297478`
-* `1297457`
-* `1297196`
-* `1296815`
-* `1296825`
-
-```json
-{
-    "query_status": "ok",
-    "query_info": {
-        "search_scope": "1 month",
-        "result_count": 300,
-        "result_max": "300"
-    },
-    "data": [
-        {
-            "id": "1297681",
-            "ioc": "eeeb0c4cdb143621c6a37caafe42b145a4d30e2c",
-            "threat_type": "payload",
-            "threat_type_desc": "Indicator that identifies a malware sample (payload)",
-            "ioc_type": "sha1_hash",
-            "ioc_type_desc": "SHA1 hash of a malware sample (payload)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 95,
-            "first_seen": "2024-07-14 03:03:39 UTC",
-            "last_seen": "2024-07-14 04:31:18 UTC",
-            "reference": null,
-            "reporter": "Grim",
-            "tags": null
-        },
-        {
-            "id": "1297478",
-            "ioc": "147.185.221.20:36100",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 100,
-            "first_seen": "2024-07-13 02:50:06 UTC",
-            "last_seen": "2024-07-13 19:08:53 UTC",
-            "reference": null,
-            "reporter": "abuse_ch",
-            "tags": [
-                "njrat"
-            ]
-        },
-        {
-            "id": "1297457",
-            "ioc": "engine-cheers.gl.at.ply.gg",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "domain",
-            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-12 21:07:50 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1297196",
-            "ioc": "147.185.221.21:9212",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-12 07:24:51 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296815",
-            "ioc": "commission-machines.gl.at.ply.gg",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "domain",
-            "ioc_type_desc": "Domain that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-11 06:10:25 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296825",
-            "ioc": "147.185.221.21:6732",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 75,
-            "first_seen": "2024-07-11 06:10:22 UTC",
-            "last_seen": null,
-            "reference": null,
-            "reporter": "SarlackLab",
-            "tags": [
-                "njrat",
-                "RAT"
-            ]
-        },
-        {
-            "id": "1296824",
-            "ioc": "196.64.248.166:10000",
-            "threat_type": "botnet_cc",
-            "threat_type_desc": "Indicator that identifies a botnet command&control server (C&C)",
-            "ioc_type": "ip:port",
-            "ioc_type_desc": "ip:port combination that is used for botnet Command&control (C&C)",
-            "malware": "win.njrat",
-            "malware_printable": "NjRAT",
-            "malware_alias": "Bladabindi,Lime-Worm",
-            "malware_malpedia": "https:\/\/malpedia.caad.fkie.fraunhofer.de\/details\/win.njrat",
-            "confidence_level": 100,
-            "first_seen": "2024-07-10 22:50:11 UTC",
-            "last_seen": "2024-07-10 23:07:15 UTC",
-            "reference": null,
-            "reporter": "abuse_ch",
-            "tags": [
-                "njrat"
-            ]
-        }
-    ]
-}
-```
+Would only return results for `NjRAT` between the dates `2024-07-11` and the script run time.

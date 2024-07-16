@@ -1,5 +1,13 @@
 # abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
 
+## tl;dr logic of the script
+
+The script works like so
+
+1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslblacklist.csv`
+2. turns the entries found in the csv doc into STIX objects (as described in this doc).
+3. the stix objects are stored in STIX bundles by the malware they are linked to in the data (`Listingreason` column of input csv)
+
 ## Overview
 
 > The SSL Certificate Blacklist (CSV) is a CSV that contains SHA1 Fingerprint of all SSL certificates blacklisted on SSLBL. This format is useful if you want to process the blacklisted SSL certificate further, e.g. loading them into your SIEM. The CSV contains the following values:

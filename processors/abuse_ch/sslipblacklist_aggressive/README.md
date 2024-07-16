@@ -1,5 +1,13 @@
 # abuse.ch SSLBL Botnet C2 IP Blacklist - Aggressive
 
+## tl;dr logic of the script
+
+The script works like so
+
+1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv`
+2. turns the entries found in the csv doc into STIX objects (as described in this doc).
+3. the stix objects are stored in STIX bundles by year `2024.json`, `2023.json`, etc. The year is based on the records lowest `Firstseen` in the csv.
+
 ## Overview
 
 > An SSL certificate can be associated with one or more servers (IP address:port combination). SSLBL collects IP addresses that are running with an SSL certificate blacklisted on SSLBL. These are usually botnet Command&Control servers (C&C). SSLBL hence publishes a blacklist containing these IPs which can be used to detect botnet C2 traffic from infected machines towards the internet, leaving your network. The CSV format is useful if you want to process the blacklisted IP addresses further, e.g. loading them into your SIEM. The CSV contains the following values:
@@ -140,7 +148,7 @@ Note, because the Indicator represents a single ipv4-addr, only one relationship
 
 All the generated objects are placed into STIX bundles directory (`bundles/abuse_ch/sslipblacklist_aggressive`).
 
-A bundle is generated per year (containing all objects with `modified` time in the year, and all linked ipv4-addr and network-traffic object) and named as follows 2024.json, 2023.json, etc
+A bundle is generated per year (containing all objects with `modified` time in the year, and all linked ipv4-addr and network-traffic object) and named as follows `2024.json`, `2023.json`, etc
 
 ```json
 {
@@ -157,5 +165,5 @@ The UUID is generated using the namespace `387824ed-ce3e-43b2-9be7-b121b2b917d9`
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/sslblacklist_agressive/sslblacklist_agressive.py
+python3 processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.py
 ```
