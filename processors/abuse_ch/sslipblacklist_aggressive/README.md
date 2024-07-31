@@ -164,6 +164,55 @@ A bundle is generated per year (containing all objects with `modified` time in t
 
 The UUID is generated using the namespace `387824ed-ce3e-43b2-9be7-b121b2b917d9` and an md5 of all the sorted objects in the bundle.
 
+## Aging out data
+
+The CSV file delivers the entire payload of know
+
+It is possible that data is removed between updates.
+
+This is why the `stix2_objects` directory is created by the filesystem store.
+
+If an entry is removed between updates, then the indicator object is updated, and the entry removed from the `pattern` property.
+
+If the `pattern` property become empty because of the update, then the Indicator has the key `revoked` with value `true` added to it. It is also moved to a special bundle called `revoked_indicators.json`.
+
+The related `ipv4-addr` and `network-traffic `
+
+## Output structure
+
+```txt
+.
+└── output/
+    └── abuse_ch/
+        └── sslipblacklist_aggressive
+            ├── bundles
+            │   ├── 2024.json
+            │   ├── YYYY.json
+            │   └── revoked_indicators.json   
+            └── stix2_objects
+                ├── indicator
+                ├── relationship
+                ├── ipv4-addr
+                └── network-traffic
+```
+
+Note, the `stix2_objects` are kept
+
+## Tests
+
+The test directory contains two sets of demo data:
+
+* sslipblacklist_aggressive_1.csv
+* sslipblacklist_aggressive_2.csv
+
+You can run the script using the `--test` flag to replace the `csv_url` variable with the a test csv file passed as the value to this flag.
+
+e.g. 
+
+```shell
+python3 processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.py --test sslipblacklist_aggressive_1.csv
+```
+
 ## Run the script
 
 ```shell
