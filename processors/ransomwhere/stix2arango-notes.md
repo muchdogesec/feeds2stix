@@ -55,11 +55,17 @@ LET results = (
         LET doc = FIRST(
             FOR d IN mitre_attack_enterprise_vertex_collection
                 FILTER d.type == "malware" AND (LOWER(d.name) == lowerName OR lowerName IN LOWER(d.aliases[*]))
-                RETURN { name: d.name, id: d.id }
+                LET attack_id = FIRST(
+                    FOR ref IN d.external_references
+                        FILTER ref.source_name == "mitre-attack"
+                        RETURN ref.external_id
+                )
+                RETURN { name: d.name, id: d.id, attack_id: attack_id }
         )
         RETURN {
             name: name,
-            id: doc ? doc.id : null
+            id: doc ? doc.id : null,
+            attack_id: doc ? doc.attack_id : null
         }
 )
 LET sortedResults = (
@@ -69,4 +75,5 @@ LET sortedResults = (
 )
 
 RETURN sortedResults
+
 ```
