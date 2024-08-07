@@ -159,8 +159,8 @@ Here is the detail...
 
 * Cryptocurrency Transaction Extension Definition: https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/extension-definitions/scos/cryptocurrency-transaction.json
 * Cryptocurrency Wallet Extension Definition: https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/extension-definitions/scos/cryptocurrency-wallet.json
-* ransomwhere2stix Identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/ransomwhere2stix.json
-* ransomwhere2stix Marking Definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/ransomwhere2stix.json
+* feeds2stix_identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json
+* feeds2stix_marking_definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json
 
 ### Marking Definition
 
@@ -171,14 +171,14 @@ All generate objects are attributed back to Ransomwhere using the following Exte
     "type": "marking-definition",
     "spec_version": "2.1",
     "id": "marking-definition--27557362-b745-4161-96e8-ccd62ce4cb26",
-    "created_by_ref": "identity--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "2022-01-01T00:00:00.000Z",
     "definition_type": "statement",
     "definition": {
         "statement": "Cable, Jack. (2022). Ransomwhere: A Crowdsourced Ransomware Payment Dataset (1.0.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6512123"
     },
     "object_marking_refs": [
-        "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
     ]
 }
@@ -252,20 +252,49 @@ For every distinct `family` a STIX Malware object is created
   "type": "malware",
   "spec_version": "2.1",
   "id": "malware--<UUID V5>",
-  "created_by": "identity--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+  "created_by": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
   "created": "<EARLIEST CRYPTOCURRENCY TRANSACTION RELATED TO FAMILY>",
   "modified": "<EARLIEST CRYPTOCURRENCY TRANSACTION RELATED TO FAMILY>",
   "name": "<FAMILY>",
   "malware_types": ["ransomware"],
   "is_family": true,
   "object_marking_refs": [
-      "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+      "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
       "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+  ],
+  "external_references": [
+    {
+      "source_name": "mitre-attack",
+      "url": "https://attack.mitre.org/groups/<attack_id for malware name>",
+      "external_id": "<attack_id for malware name>"
+    }
   ]
 }
 ```
 
-The UUID is generated using the namespace `904ac99b-7539-5de7-9ffa-23186f0e07b6` and the `name` value.
+The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the `name` value.
+
+Note, not all Malware objects have `external_references`. Only the following that are linked to ATT&CK
+
+|ransomwhere_name  |created_stix_object_id                       |attack_stix_id                               |attack_id|
+|------------------|---------------------------------------------|---------------------------------------------|---------|
+|SynAck            |malware--987f4ce2-d51d-55d0-a6e1-00c6d9adfe71|malware--04227b24-7817-4de1-9050-b7b1b57f5866|S0242    |
+|WannaCry          |malware--9a7e0dbf-69aa-56b4-a644-03d26f464bb8|malware--75ecdbf1-c2bb-4afc-a3f9-c8da4de8c661|S0366    |
+|NotPetya          |malware--05cf1494-f682-5262-8368-e9dffebd4485|malware--5719af9d-6b16-46f9-9b28-fb019541ddbb|S0368    |
+|SamSam            |malware--08a2bbbe-b987-5da1-874f-92673cd06bd6|malware--4d56e6e9-1a6d-46e3-896c-dfdf3cc96e62|S0370    |
+|Ryuk              |malware--b4a7bb88-4385-5073-81e5-d2010e1b116a|malware--a020a61c-423f-4195-8c46-ba1d21abba37|S0446    |
+|Netwalker (Mailto)|malware--6749fd15-fb86-5cef-a222-3794a0611efb|malware--754effde-613c-4244-a83e-fb659b2a4d06|S0457    |
+|REvil / Sodinokibi|malware--c65911e3-77ab-5cc0-b7eb-2a4d9872458e|malware--ac61f1f9-7bb1-465e-9b8a-c2ce8e88baf5|S0496    |
+|Egregor           |malware--d67e2148-ead4-5cdf-8a25-6d3e2fbec2f0|malware--cc4c1287-9c86-4447-810c-744f3880ec37|S0554    |
+|Conti             |malware--797d9ae1-1b00-5621-8ed7-b973c790e13f|malware--4dea7d8e-af94-4bfb-afe4-7ff54f59308b|S0575    |
+|HelloKitty        |malware--2b1afb53-3b4e-5c0f-8f3e-3af9dca00024|malware--5d11d418-95dd-4377-b782-23160dfa17b4|S0617    |
+|Cuba              |malware--16c1cf00-43c6-520b-bbc4-a3f0b0db1c57|malware--6cd07296-14aa-403d-9229-6343d03d4752|S0625    |
+|Avaddon           |malware--afb07690-b99d-519a-8cba-1bd1481751c9|malware--58c5a3a1-928f-4094-9e98-a5a4e56dd5f3|S0640    |
+|AvosLocker        |malware--3012ffc1-a4e4-5f6a-b384-274afb782d12|malware--0945a1a5-a79a-47c8-9079-10c16cdfcb5d|S1053    |
+|BlackCat          |malware--f471ae33-97e1-5a7d-9ad6-14f5d5c429a0|malware--50c44c34-3abb-48ae-9433-a2337de5b0bc|S1068    |
+|Black Basta       |malware--5fcf9972-c2c1-5cee-9d45-735af16e6736|malware--8d242fb4-9033-4f13-8a88-4b9b4bcd9a53|S1070    |
+|Akira             |malware--683edbcf-fb51-5b96-a205-fa2eb5740741|malware--6f6b2353-4b39-40ce-9d6d-d00b7a61e656|S1129    |
+
 
 ### Indicator
 
@@ -276,7 +305,7 @@ For every Malware object created, a corresponding Indicator object is created
   "type": "indicator",
   "spec_version": "2.1",
   "id": "indicator--<RELATED MALWARE UUID>",
-  "created_by": "identity--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+  "created_by": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
   "created": "<MALWARE CREATED TIME>",
   "modified": "<MALWARE MODIFIED TIME>",
   "name": "<MALWARE NAME> Cryptocurrency Wallets",
@@ -288,7 +317,7 @@ For every Malware object created, a corresponding Indicator object is created
   "pattern_type": "stix",
   "valid_from": "<CREATED TIME>",
   "object_marking_refs": [
-      "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+      "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
       "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
   ]
 }
@@ -307,7 +336,7 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
     "type": "relationship",
     "spec_version": "2.1",
     "id": "relationship--<UUIDV5 GENERATION LOGIC>",
-    "created_by_ref": "identity--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<INDICATOR CREATED PROPERTY>",
     "modified": "<INDICATOR MODIFIED PROPERTY>",
     "relationship_type": "pattern-contains",
@@ -315,12 +344,12 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
     "target_ref": "cryptocurrency-wallet-<TRANSACTION ID>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     ]
 }
 ```
 
-The UUID is generated using the namespace `904ac99b-7539-5de7-9ffa-23186f0e07b6` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 Indicator objects are also linked to their corresponding Malware object like so
 
@@ -329,7 +358,7 @@ Indicator objects are also linked to their corresponding Malware object like so
     "type": "relationship",
     "spec_version": "2.1",
     "id": "relationship--<UUIDV5 GENERATION LOGIC>",
-    "created_by_ref": "identity--904ac99b-7539-5de7-9ffa-23186f0e07b6",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<MALWARE CREATED PROPERTY>",
     "modified": "<MALWARE MODIFIED PROPERTY>",
     "relationship_type": "indicates",
@@ -337,16 +366,16 @@ Indicator objects are also linked to their corresponding Malware object like so
     "target_ref": "malware-<MALWARE ID>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     ]
 }
 ```
 
-The UUID is generated using the namespace `904ac99b-7539-5de7-9ffa-23186f0e07b6` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 ### Bundle
 
-This script outputs all the objects into a single STIX 2.1 bundle `ransomwhere-bundle.json`
+This script outputs all the objects into a single STIX 2.1 bundle `bundles/ransomwhere/ransomwhere-bundle.json`
 
 ```json
 {
@@ -358,18 +387,10 @@ This script outputs all the objects into a single STIX 2.1 bundle `ransomwhere-b
 }
 ```
 
-The UUID is generated using the namespace `904ac99b-7539-5de7-9ffa-23186f0e07b6` and the md5 hash of all objects sorted in the bundle.
+The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the md5 hash of all objects sorted in the bundle.
 
 ## Useful supporting tools
 
 * [ransomwhe.re](https://ransomwhe.re/)
 * To generate STIX 2.1 Objects: [stix2 Python Lib](https://stix2.readthedocs.io/en/latest/)
 * The STIX 2.1 specification: [STIX 2.1 docs](https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.html)
-
-## Support
-
-[Minimal support provided via the DOGESEC community](https://community.dogesec.com/).
-
-## License
-
-[Apache 2.0](/LICENSE).
