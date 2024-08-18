@@ -10,6 +10,9 @@ import pandas as pd
 import time
 import argparse
 from stix2extensions.cryptocurrency_wallet import CryptocurrencyWallet
+from datetime import datetime
+import base64
+import sys 
 
 # Constants and Configuration
 GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1hF76TV48LLjmgZ80aFl5CpWWn4geQkQM50EUcYqAQyY/export?format=csv"
@@ -17,8 +20,8 @@ DOWNLOAD_ID = "1hF76TV48LLjmgZ80aFl5CpWWn4geQkQM50EUcYqAQyY"
 OUTPUT_DIR = "bundles/wallet_explorer/"
 STIX_OBJECTS_DIR = "bundles/wallet_explorer/stix2_objects"
 TMP_DIR = "bundles/wallet_explorer/tmp_object_store"
-OASIS_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7") # oasis namespace
-NAMESPACE = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0") # this is feed2stix uuidv4
+OASIS_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")  # OASIS STIX namespace
+NAMESPACE = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")  # Feeds2STIX UUIDv4 namespace
 WALLET_API = "https://www.walletexplorer.com/api/1/wallet-addresses"
 MARKING_DEFINITION_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json"
 IDENTITY_OBJECT_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
@@ -42,9 +45,8 @@ def clean_output_directory():
 
 # Download the Google Sheet as a CSV file using gdown
 def download_spreadsheet():
+    ensure_directories_exist()  # Ensure directories are created before downloading
     print("Downloading the spreadsheet...")
-    if not os.path.exists(TMP_DIR):
-        os.makedirs(TMP_DIR)
     csv_url = f"https://docs.google.com/spreadsheets/d/{DOWNLOAD_ID}/export?format=csv"
     gdown.download(url=csv_url, output=f"{TMP_DIR}/wallet_explorer_sheet.csv", quiet=False)
     print("Download complete.")
@@ -61,6 +63,10 @@ def fetch_stix_objects():
         return marking_definition, identity_object
     else:
         raise Exception(f"Failed to download STIX objects. Marking Definition HTTP Status: {marking_definition_response.status_code}, Identity Object HTTP Status: {identity_object_response.status_code}")
+
+# Convert dates to STIX-compliant format
+def convert_to_stix_datetime(date_str):
+    return datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
 
 # Store each STIX object in the filesystem, organized by type
 def store_stix_object(stix_object):
@@ -79,9 +85,11 @@ def store_stix_object(stix_object):
     
     print(f"Stored STIX object {object_id} at {filepath}")
 
-# Collect all STIX objects by type and create bundles
+# Collect all STIX objects by type and create individual bundles in batches
 def create_stix_bundles():
     stix_objects = []
+    batch_size = 1000  # Adjust this size based on memory and performance considerations
+    bundle_count = 0
 
     # Traverse the directories in stix2_objects and collect all STIX objects
     for root, _, files in os.walk(STIX_OBJECTS_DIR):
@@ -92,8 +100,24 @@ def create_stix_bundles():
                     stix_object = json.load(f)
                     stix_objects.append(stix2.parse(stix_object))
 
-    # Generate the bundle ID using the serialized objects
-    bundle_id = f"bundle--{uuid.uuid5(NAMESPACE, hashlib.md5(json.dumps([obj.serialize() for obj in stix_objects], sort_keys=True).encode()).hexdigest())}"
+            # Create a bundle every `batch_size` objects
+            if len(stix_objects) >= batch_size:
+                create_and_store_bundle(stix_objects, bundle_count)
+                stix_objects = []  # Reset for the next batch
+                bundle_count += 1
+
+    # Create the final bundle for any remaining objects
+    if stix_objects:
+        create_and_store_bundle(stix_objects, bundle_count)
+
+    print(f"Created {bundle_count + 1} bundles.")
+
+# Create a bundle and store it in the output directory
+def create_and_store_bundle(stix_objects, bundle_count):
+    # Generate the bundle ID using the base64 encoded CLI command
+    cli_command = ' '.join(sys.argv)
+    cli_command_encoded = base64.b64encode(cli_command.encode()).decode()
+    bundle_id = f"bundle--{uuid.uuid5(NAMESPACE, cli_command_encoded)}"
     
     # Create the STIX bundle
     bundle = stix2.Bundle(
@@ -103,11 +127,43 @@ def create_stix_bundles():
     )
     
     # Write the bundle to a file
-    bundle_filename = "wallet_explorer_bundle.json"
+    bundle_filename = f"wallet_explorer_bundle_part_{bundle_count}.json"
     bundle_filepath = os.path.join(OUTPUT_DIR, bundle_filename)
     with open(bundle_filepath, "w") as file:
         file.write(bundle.serialize(pretty=True))
-    print(f"STIX bundle created and saved to {bundle_filepath}")
+    print(f"STIX bundle {bundle_filename} created and saved to {bundle_filepath}")
+
+# Merge all individual bundles into a final bundle
+def merge_bundles():
+    merged_objects = []
+    
+    # Read all individual bundles and merge their objects
+    for filename in os.listdir(OUTPUT_DIR):
+        if filename.startswith("wallet_explorer_bundle_part_"):
+            bundle_filepath = os.path.join(OUTPUT_DIR, filename)
+            with open(bundle_filepath, "r") as file:
+                bundle = json.load(file)
+                merged_objects.extend(bundle["objects"])
+            os.remove(bundle_filepath)  # Delete the temporary bundle after processing
+
+    # Generate the final bundle ID
+    cli_command = ' '.join(sys.argv)
+    cli_command_encoded = base64.b64encode(cli_command.encode()).decode()
+    final_bundle_id = f"bundle--{uuid.uuid5(NAMESPACE, cli_command_encoded)}"
+    
+    # Create the final merged bundle
+    final_bundle = stix2.Bundle(
+        type="bundle",
+        id=final_bundle_id,
+        objects=merged_objects
+    )
+    
+    # Write the final merged bundle to a file
+    final_bundle_filename = "wallet_explorer_bundle.json"
+    final_bundle_filepath = os.path.join(OUTPUT_DIR, final_bundle_filename)
+    with open(final_bundle_filepath, "w") as file:
+        file.write(final_bundle.serialize(pretty=True))
+    print(f"Final STIX bundle created and saved to {final_bundle_filepath}")
 
 # Parse the CSV file and process exchanges into STIX objects
 def process_exchanges(record_urls=None, process_wallets=False):
@@ -121,7 +177,7 @@ def process_exchanges(record_urls=None, process_wallets=False):
     if record_urls:
         df = df[df['record_url'].isin(record_urls)]
 
-    # Assuming the columns are: record_id, record_name, record_description, record_url, record_country
+    # Assuming the columns are: record_id, record_name, record_description, record_url, record_country, record_created, record_modified
     for index, row in df.iterrows():
         record_id = row['record_id']
         record_name = row['record_name']
@@ -130,11 +186,12 @@ def process_exchanges(record_urls=None, process_wallets=False):
         record_country = row['record_country']
         record_is_active = row['record_is_active']
         record_type = row['record_type']
+        record_created = convert_to_stix_datetime(row['record_created'])
+        record_modified = convert_to_stix_datetime(row['record_modified'])
 
         print(f"Creating STIX Identity object for exchange: {record_name}")
 
         identity_id = f"identity--{uuid.uuid5(NAMESPACE, record_name)}"
-        created_date = stix2.utils.STIXdatetime.now()
 
         # Create Identity object for the exchange
         identity = stix2.Identity(
@@ -142,8 +199,8 @@ def process_exchanges(record_urls=None, process_wallets=False):
             spec_version="2.1",
             id=identity_id,
             created_by_ref=identity_object.id,
-            created=created_date,
-            modified=created_date,
+            created=record_created,
+            modified=record_modified,
             name=record_name,
             description=record_description,
             sectors=["financial-services", "technology"],
@@ -157,11 +214,6 @@ def process_exchanges(record_urls=None, process_wallets=False):
                 {
                     "source_name": "feeds2stix-id",
                     "external_id": record_id
-
-                },
-                {
-                    "source_name": "feeds2stix-type",
-                    "external_id": record_type
 
                 },
                 {
@@ -183,7 +235,7 @@ def process_exchanges(record_urls=None, process_wallets=False):
 
         # Create Location and Relationship objects
         if record_country and record_country != "Unknown":
-            create_location_and_relationship(identity, record_country, marking_definition, identity_object)
+            create_location_and_relationship(identity, record_country, marking_definition, identity_object, record_created, record_modified)
 
     print("Finished processing exchanges.")
 
@@ -238,7 +290,7 @@ def fetch_wallets(record_url, identity_id):
         time.sleep(delay)
 
 # Create Location and Relationship STIX objects
-def create_location_and_relationship(identity, record_country, marking_definition, identity_object):
+def create_location_and_relationship(identity, record_country, marking_definition, identity_object, record_created, record_modified):
     print(f"Linking exchange {identity.name} with location {record_country}")
     location_lookup = load_location_data()
     location_obj = next((loc for loc in location_lookup['objects'] if loc.get('country') == record_country), None)
@@ -257,8 +309,8 @@ def create_location_and_relationship(identity, record_country, marking_definitio
             spec_version="2.1",
             id=relationship_id,
             created_by_ref=identity_object.id,
-            created=identity.created,
-            modified=identity.modified,
+            created=record_created,
+            modified=record_modified,
             relationship_type="located-in",
             source_ref=identity.id,
             target_ref=location.id,
@@ -297,14 +349,16 @@ def main():
 
     ensure_directories_exist()  # Ensure TMP_DIR, OUTPUT_DIR, and STIX_OBJECTS_DIR exist
     clean_output_directory()  # Deletes and recreates OUTPUT_DIR
-    
-    download_spreadsheet()  # Download the spreadsheet after ensuring directories exist
+    download_spreadsheet()
 
     record_urls = args.record_url.split(',') if args.record_url else None
     process_exchanges(record_urls, process_wallets=args.process_wallets)
     
-    # Create the final STIX bundle with all objects
+    # Create individual bundles with all objects
     create_stix_bundles()
+
+    # Merge all individual bundles into a final bundle
+    merge_bundles()
 
     # Print the structure of the stix2_objects directory
     print("Directory structure of stix2_objects:")

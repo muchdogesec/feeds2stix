@@ -397,3 +397,5 @@ Thanks to Jack Cable who created [ransomwhe.re](https://ransomwhe.re/) and decid
 
 * To generate STIX 2.1 Objects: [stix2 Python Lib](https://stix2.readthedocs.io/en/latest/)
 * The STIX 2.1 specification: [STIX 2.1 docs](https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.html)
+* [Insert this date into a ArangoDB for analysis using stix2arango](https://github.com/muchdogesec/stix2arango/)
+  * also see stix2arango-notes.md for how to do this / some useful queries
