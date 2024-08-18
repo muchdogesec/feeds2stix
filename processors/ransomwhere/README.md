@@ -389,8 +389,11 @@ This script outputs all the objects into a single STIX 2.1 bundle `bundles/ranso
 
 The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the md5 hash of all objects sorted in the bundle.
 
+## Thanks to...
+
+Thanks to Jack Cable who created [ransomwhe.re](https://ransomwhe.re/) and decided to keep the data open. Without this, we would have to generate our own data collection techniques.
+
 ## Useful supporting tools
 
-* [ransomwhe.re](https://ransomwhe.re/)
 * To generate STIX 2.1 Objects: [stix2 Python Lib](https://stix2.readthedocs.io/en/latest/)
 * The STIX 2.1 specification: [STIX 2.1 docs](https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.html)

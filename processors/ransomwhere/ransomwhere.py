@@ -27,7 +27,7 @@ RANSOMWHERE_API_URL = "https://api.ransomwhe.re/export"
 STIX_DIRECTORY = "bundles/ransomwhere/"
 BUNDLE_FILE = os.path.join(STIX_DIRECTORY, "ransomwhere-bundle.json")
 # Use a predefined namespace UUID for generating UUIDv5
-NAMESPACE_UUID = uuid.UUID("51fe4ca9-320b-4ea8-9d3c-1f46383a5144")  # marking def id, used to generate sdos/sros
+NAMESPACE_UUID = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")  # feeds2stix uuid, used to generate sdos/sros
 OASIS_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7") # used to generate scos
 # URLs for external objects
 EXTERNAL_OBJECTS_URLS = {
@@ -36,23 +36,6 @@ EXTERNAL_OBJECTS_URLS = {
     "feeds2stix_identity": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json",
     "feeds2stix_marking_definition": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
 }
-
-# Additional marking definition
-extra_marking_definition = MarkingDefinition(
-    type="marking-definition",
-    spec_version="2.1",
-    id="marking-definition--51fe4ca9-320b-4ea8-9d3c-1f46383a5144",
-    created_by_ref="identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    created="2020-01-01T00:00:00.000Z",
-    definition_type="statement",
-    definition={
-        "statement": "Origin data source: https://api.ransomwhe.re/export"
-    },
-    object_marking_refs=[
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ]
-)
 
 # Mapping of ransomware to ATT&CK details
 attack_mapping = {
@@ -103,19 +86,6 @@ def generate_relationship_id(source_ref, target_ref):
 def generate_malware_id(name):
     return f"malware--{str(uuid.uuid5(NAMESPACE_UUID, name))}"
 
-def get_marking_definition():
-    return MarkingDefinition(
-        id="marking-definition--27557362-b745-4161-96e8-ccd62ce4cb26",
-        created_by_ref="identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        created="2022-01-01T00:00:00.000Z",
-        definition_type="statement",
-        definition={"statement": "Cable, Jack. (2022). Ransomwhere: A Crowdsourced Ransomware Payment Dataset (1.0.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6512123"},
-        object_marking_refs=[
-            "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6",
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
-        ]
-    )
-
 def get_wallet_object(address):
     return CryptocurrencyWallet(
         id=generate_stix_id("cryptocurrency-wallet", address),
@@ -160,9 +130,8 @@ def get_malware_object(family, earliest_transaction_time):
         malware_types=["ransomware"],
         is_family=True,
         object_marking_refs=[
-            "marking-definition--904ac99b-7539-5de7-9ffa-23186f0e07b6",
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--51fe4ca9-320b-4ea8-9d3c-1f46383a5144"
+            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
         ],
         external_references=external_references if external_references else None
     )
@@ -271,11 +240,6 @@ existing_ids = {obj['id'] for obj in fs.query()}
 # Download and store external objects
 external_objects = download_and_store_external_objects(EXTERNAL_OBJECTS_URLS, existing_ids)
 
-# Add the extra marking definition to the filestore
-if extra_marking_definition.id not in existing_ids:
-    fs.add(extra_marking_definition)
-    existing_ids.add(extra_marking_definition.id)
-
 # Fetch data
 response = requests.get(RANSOMWHERE_API_URL)
 data = response.json()
@@ -342,8 +306,8 @@ for indicator in indicator_objects.values():
         wallet = wallet_objects[address]
         all_stix_objects.append(get_indicator_wallet_relationship(indicator, wallet))
 
-# Add external objects, extra marking definition, and the main marking definition to the bundle once
-all_stix_objects = external_objects + [extra_marking_definition, get_marking_definition()] + all_stix_objects
+# Add external objects, and the main marking definition to the bundle once
+all_stix_objects = external_objects + all_stix_objects
 
 # Log all objects before bundling
 logging.debug(f"Total number of STIX objects: {len(all_stix_objects)}")
