@@ -1,11 +1,22 @@
 # abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
 
+## tl;dr logic of the script
+
+The script works like so
+
+1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslblacklist.csv`
+2. turns the entries found in the csv doc into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/sslblacklist/stix2_objects`.
+3. the stix objects are stored in STIX bundles by the malware they are linked to in the data (`Listingreason` column of input csv)
+
+Note this script can handle updates to data in a graceful way. Because a copy of all STIX `bundles/abuse_ch/sslblacklist/stix2_objects` is stored the script does not need to process all data on each run. On update runs the script will only consider data greater than the highest `modified` time of all malware objects.
+
 ## Overview
 
 > The SSL Certificate Blacklist (CSV) is a CSV that contains SHA1 Fingerprint of all SSL certificates blacklisted on SSLBL. This format is useful if you want to process the blacklisted SSL certificate further, e.g. loading them into your SIEM. The CSV contains the following values:
 > * Listing date (UTC)
 > * SHA1 Fingerprint of the blacklisted SSL certificate
 > * Listing reason
+> The SSL Certificate Blacklist (CSV) gets generated every 5 minutes. Please do not fetch it more often than every 5 minutes.
 
 https://sslbl.abuse.ch/blacklist/#ssl-certificates-csv
 
@@ -124,13 +135,12 @@ UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` (feed
     "valid_from": "<Listingdate>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     ]
   }
 ```
 
-The pattern contains all file sha1 hashes linked to the malware this indicator is representing
+The `pattern` contains all file sha1 hashes linked to the malware this indicator is representing. All SCOs referenced in the `pattern` are linked from the Indicator to the File SCO
 
 ```json
 {
@@ -144,13 +154,31 @@ The pattern contains all file sha1 hashes linked to the malware this indicator i
     "target_ref": "file--<ID>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     ]
 }
 ```
 
 UUIDv5 is generated using namespace `418465b1-2dbe-41b7-b994-19817164e793` and `source_ref+target_ref`
+
+A relationship is also created linking the Malware objects to the Indicator for each malware entry
+
+```json
+{
+    "type": "relationship",
+    "spec_version": "2.1",
+    "id": "relationship--<UUIDV5>",
+    "created": "<created> time in Indicator",
+    "modified": "<modified> time in Indicator",
+    "relationship_type": "detects",
+    "source_ref": "indicator--<ID>",
+    "target_ref": "malware--<ID>",
+    "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+    ]
+}
+```
 
 All the generated objects are placed into STIX bundles directory (`bundles/abuse_ch/sslblacklist`). A bundle is generated per `<Listingreason>`
 
@@ -167,3 +195,77 @@ All the generated objects are placed into STIX bundles directory (`bundles/abuse
 The UUID is generated using the namespace `418465b1-2dbe-41b7-b994-19817164e793` and an md5 of all the sorted objects in the bundle.
 
 The bundle file is also names in the format `<name>.json`. Where `name` is all lower case and all `.`, `-` and ` ` charachters are replaced with `_`
+
+### What this looks like on a graph
+
+<iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVKwqZNss=/?moveToViewport=-1001,-446,2096,1087&embedId=588433717546" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+
+## Aging out data
+
+The CSV file delivers the entire payload of known data each time:
+
+> The SSL Certificate Blacklist (CSV) gets generated every 5 minutes. Please do not fetch it more often than every 5 minutes.
+
+https://sslbl.abuse.ch/blacklist/#ssl-certificates-csv
+
+It is possible that data is removed between these updates.
+
+This is why the `stix2_objects` directory is created, and object all stored in the filesystem store as well as bundles, to track all objects detected over time.
+
+If an entry is removed between updates, then the objects are updated as follows;
+
+1. the Indicator entries `pattern` objects is updated with the removed file entry removed and `modified` time updated (using regular script logic)
+2. the relationship linking the `file` to the indicator has the key `revoked` with value `true` added to it and `modified` time updated accordingly
+3. if deleting the `pattern` value in the Indicator results in an empty pattern field, then the Indicator has the key `revoked` with value `true` added to it and the property `valid_until` added to it with the same value as the `modified` time. The `pattern` with the aged out value remains (this is needed, as `pattern` is a required field)
+4. if Indicator is marked as `revoked==true` then the relationship linking the Indicator to Malware is also marked as `revoked==true`
+5. all revoked Indicators and Relationships are moved to a new bundle `revoked_objects.json`
+
+The `file` objects are never modified. Nor are the malware objects, as the historic data in the malware is useful.
+
+## Output structure
+
+```txt
+.
+└── output/
+    └── abuse_ch/
+        └── sslipblacklist
+            ├── bundles
+            │   ├── MALWARE_1.json
+            │   ├── MALWARE_2.json
+            │   └── revoked_objects.json   
+            └── stix2_objects
+                ├── indicator
+                ├── relationship
+                ├── file
+                ├── marking-definition
+                └── identity
+```
+
+Note, the `stix2_objects` are kept between each run, meaning a copy of all historical objects is kept.
+
+## Tests
+
+The test directory contains two sets of demo data:
+
+* sslipblacklist_aggressive_1.csv
+* sslipblacklist_aggressive_2.csv
+
+You can run the script using the `--test` flag to replace the `csv_url` variable with the a test csv file passed as the value to this flag.
+
+e.g. 
+1
+```shell
+python3 processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.py --test sslipblacklist_aggressive_1.csv
+```
+
+
+
+## Run the script
+
+```shell
+python3 processors/abuse_ch/sslblacklist/sslblacklist.py --update
+```
+
+Where:
+
+* `update` (optional): if passed will search for the highest `modified` time in the malware objects . The script will identify if any new data has been added since `modified` and script run time. If true, then the new observables will be added, and indicator/malware/bundle updated / added to reflect changes.
