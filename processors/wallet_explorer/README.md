@@ -2,6 +2,8 @@
 
 ## Overview
 
+![](processors/abuse_ch/wallet_explorer/wallet_explorer.png)
+
 Wallet Explorer tags crypto wallets that belongs to crypto exchanges, marketplaces and other online platforms used for crypto transactions.
 
 By tracking down the platform that handled a transaction (identified using the wallet address in a transaction), it is often possible to track it down to an individual who received the funds the transaction (by getting a court order for the exchange to release information about the person who signed up).
@@ -49,9 +51,9 @@ python3 processors/wallet_explorer/wallet_explorer.py \
 Wallet Explorer provides a variety of API endpoints
 
 * Get wallet addresses for an entity (e.g. exchange)
-    * e.g. http://www.walletexplorer.com/api/1/wallet-addresses?wallet=Huobi.com&caller=https://github.com/muchdogesec/feeds2stix
+    * e.g. http://www.walletexplorer.com/api/1/wallet-addresses?wallet=Huobi.com&from=0&count=100&&caller=https://github.com/muchdogesec/feeds2stix
 * Get transaction details
-    * e.g. http://www.walletexplorer.com/api/1/tx?txid=99fd988bf60ff67847488ceeb76d08a8fcca7bde80bb0b06be2ef4a0055c3ba7&caller=https://github.com/muchdogesec/feeds2stix
+    * e.g. http://www.walletexplorer.com/api/1/tx?txid=99fd988bf60ff67847488ceeb76d08a8fcca7bde80bb0b06be2ef4a0055c3ba7&from=0&count=100&&caller=https://github.com/muchdogesec/feeds2stix
 * Get wallet details
     * e.g. http://www.walletexplorer.com/api/1/address?address=14hSMo1zBP4JE5r8soe3mmbhowrXdjHT8J&from=0&count=100&caller=https://github.com/muchdogesec/feeds2stix
 
@@ -80,7 +82,7 @@ The data in the spreadsheet then uses the STIX2 python library to create STIX ob
 
 At a high-level the graph of STIX objects created is as follows;
 
-https://miro.com/app/board/uXjVKotYvUg=/
+https://miro.com/app/board/uXjVKwqZNss=/
 
 #### Automatically imported objects
 
@@ -94,7 +96,7 @@ https://miro.com/app/board/uXjVKotYvUg=/
 	"type": "identity",
 	"spec_version": "2.1",
 	"id": "identity--<UUIDV5>",
-	"created_by_ref": "identity--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+	"created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
 	"created": "<record_created>",
 	"modified": "<record_modified>",
 	"name": "<exchange_name>",
@@ -106,14 +108,14 @@ https://miro.com/app/board/uXjVKotYvUg=/
   	"identity_class": "organization",
   	"contact_information": "<exchange_url>",
   	"object_marking_refs": [
-  		"marking-definition--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7"
+  		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
   		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
   	],
 
 }
 ```
 
-The UUIDv5 is generated using the namespace `9b9c892f-bab3-5be5-b3bf-d2b5c21775b7` and the `name` value.
+The UUIDv5 is generated using the namespace and the `name` value.
 
 #### Location (for each exchange)
 
@@ -170,20 +172,21 @@ To link the `location` to the `identity` a STIX relationship object is created a
     "type": "relationship",
     "spec_version": "2.1",
     "id": "relationship--<UUIDV5 GENERATION LOGIC>",
-    "created_by_ref": "identity--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<IDENTITY CREATED PROPERTY>",
     "modified": "<IDENTITY MODIFIED PROPERTY>",
     "relationship_type": "located-in",
+    "description": "<IDENTITY OBJECT NAME> is located in <LOCATION NAME>",
     "source_ref": "identity--<IDENTITY ID>",
     "target_ref": "location-<LOCATION ID>",
     "object_marking_refs": [
-    	"marking-definition--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+    	"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
     ]
 }
 ```
 
-The UUIDv5 is generated using the namespace `9b9c892f-bab3-5be5-b3bf-d2b5c21775b7` and the `<relationship_type>+<source_ref>+<target_ref>` value.
+The UUIDv5 is generated using the namespace and the `<relationship_type>+<source_ref>+<target_ref>` value.
 
 #### Cryptocurrency wallet
 
@@ -292,9 +295,61 @@ feeds2stix also creates a STIX 2.1 Bundle JSON object containing all the other S
 }
 ```
 
-To generate the id of the SRO, a UUIDv5 is generated using the namespace `9b9c892f-bab3-5be5-b3bf-d2b5c21775b7` and `<MD5 HASH OF THE SORTED OBJECTS PAYLOAD IN BUNDLE JSON>`.
+The UUID is generated using the namespace and the base64 encoded value of the cli of all objects sorted in the bundle.
 
 The bundle is named; `wallet_explorer_bundle.json`
+
+```txt
+.
+└── bundles/
+    └── wallet_explorer/
+        ├── bundles
+        │   └── wallet_explorer_bundle.json   
+        └── stix2_objects
+            ├── cryptocurrency-wallet
+            ├── identity
+            ├── location
+            ├── marking-definition
+            └── relationship
+```
+
+## Tools that inspired us
+
+* [Chainabuse: Report malicious crypto activity, covers much more than just ransomware (e.g. blackmail)](https://www.chainabuse.com/)
+* [ransomwatch trails the extortion sites used by ransomware groups and surfaces an aggregated feed of claims](https://ransomwatch.telemetry.ltd/#/)
+* [ransomware.live Another Ransomware gang tracker, also contains ransom notes](https://www.ransomware.live/)
+* [A resource containing all the tools each ransomware gangs uses](https://github.com/BushidoUK/Ransomware-Tool-Matrix)
+* [Ransomwhere is the open, crowdsourced ransomware payment tracker, includes wallet and transaction info](https://ransomwhe.re/)
+    * a better API for Ransomwhere: https://www.opensanctions.org/datasets/ransomwhere/
+
+## More advance commercial alternatives
+
+* https://platform.arkhamintelligence.com/explorer/entity/lazarus-group
+* https://metasleuth.io/result/eth/0xf3701f445b6bdafedbca97d1e477357839e4120d
+    * https://blocksecteam.medium.com/metasleuth-how-to-use-metasleuth-to-analyze-a-phishing-attack-b525caac14c5
+    * https://github.com/blocksecteam/metasleuth_resources
+    * https://docs.metasleuth.io/tutorials/crypto-tracking-starting-with-a-transaction
+* https://www.ransom-db.com/
+
+## Other good crypto intel resources
+
+* [Ransomware power ranking (similar to Gartner style grpahs) by Halcyon](https://www.halcyon.ai/top-ransomware-groups)
+* https://twitter.com/zachxbt?s=11&t=kWkJgiFyqEQ-15ldAcQtsA
+* https://twitter.com/realscamsniffer?s=11&t=kWkJgiFyqEQ-15ldAcQtsA
+* https://github.com/OffcierCia/Crypto-OpSec-SelfGuard-RoadMap
+* https://github.com/aaarghhh/awesome_osint_criypto_web3_stuff
+* https://start.me/p/RM1EKa/cryptocurrency-investigations
+* https://start.me/p/onEm1Y/07-finint-cryptocurrency
+* https://start.me/p/kx5DJ9/cryptocurrency-osint
+* https://www.aware-online.com/en/osint-tools/cryptocurrency-tools/
+* https://github.com/OffcierCia/On-Chain-Investigations-Tools-List
+* https://start.me/p/QRg5ad/officercia
+* https://www.web3isgoinggreat.com
+* https://hacked.slowmist.io
+* https://cryptopanic.com
+* https://twitter.com/tayvano_
+* https://twitter.com/zachxbt
+* https://solidityscan.com/web3hackhub
 
 ## Thanks to...
 

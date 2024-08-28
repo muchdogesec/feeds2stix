@@ -303,7 +303,7 @@ def create_location_and_relationship(identity, record_country, marking_definitio
         # Generate the UUID for the relationship using the specified format
         relationship_id = f"relationship--{uuid.uuid5(NAMESPACE, f'located-in+{identity.id}+{location.id}')}"
         
-        # Create the relationship object
+        # Create the relationship object with a description
         relationship = stix2.Relationship(
             type="relationship",
             spec_version="2.1",
@@ -312,6 +312,7 @@ def create_location_and_relationship(identity, record_country, marking_definitio
             created=record_created,
             modified=record_modified,
             relationship_type="located-in",
+            description=f"{identity.name} is located in {location.name}",
             source_ref=identity.id,
             target_ref=location.id,
             object_marking_refs=[

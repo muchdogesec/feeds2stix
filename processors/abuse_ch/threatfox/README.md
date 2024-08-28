@@ -1,5 +1,7 @@
 # threatfox
 
+TO BE BUILT -- THIS IS A DRAFT SPEC
+
 ## tl;dr logic of the script
 
 The script works like so

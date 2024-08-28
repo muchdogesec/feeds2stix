@@ -151,7 +151,7 @@ The wallets are linked to Malware and not Actors in this database. That means ma
 
 We model the data in STIX 2.1 as follows;
 
-<iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVK7NkJ9A=/?moveToViewport=-576,-274,1152,548&embedId=81782626451" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+https://miro.com/app/board/uXjVKwqZNss=/
 
 Here is the detail...
 
@@ -161,28 +161,6 @@ Here is the detail...
 * Cryptocurrency Wallet Extension Definition: https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/extension-definitions/scos/cryptocurrency-wallet.json
 * feeds2stix_identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json
 * feeds2stix_marking_definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json
-
-### Marking Definition
-
-All generate objects are attributed back to Ransomwhere using the following Extension Definition:
-
-```json
-{
-    "type": "marking-definition",
-    "spec_version": "2.1",
-    "id": "marking-definition--27557362-b745-4161-96e8-ccd62ce4cb26",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "2022-01-01T00:00:00.000Z",
-    "definition_type": "statement",
-    "definition": {
-        "statement": "Cable, Jack. (2022). Ransomwhere: A Crowdsourced Ransomware Payment Dataset (1.0.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6512123"
-    },
-    "object_marking_refs": [
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
-    ]
-}
-```
 
 ### Wallets
 
@@ -202,7 +180,7 @@ For every distinct `address` returned by the API a `cryptocurrency-wallet` is cr
 }
 ```
 
-The UUID is generated using the namespace `00abedb4-aa42-466c-9c01-fed23315a9b7` (OASIS STIX namespace) and the `address` value.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` (OASIS STIX namespace) and the `address` value.
 
 ### Transaction
 
@@ -241,7 +219,7 @@ Note,
     * currently `blockchain` values are always Bitcoin which are converted to `BTC`
 * one or more `output`s might exist where the transaction sends money from a source wallet to one or more destination objects
 
-The UUID is generated using the namespace `00abedb4-aa42-466c-9c01-fed23315a9b7` (OASIS STIX namespace) and the `hash` value.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` (OASIS STIX namespace) and the `hash` value.
 
 ### Malware
 
@@ -272,7 +250,7 @@ For every distinct `family` a STIX Malware object is created
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the `name` value.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the `name` value.
 
 Note, not all Malware objects have `external_references`. Only the following that are linked to ATT&CK
 
@@ -340,6 +318,7 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
     "created": "<INDICATOR CREATED PROPERTY>",
     "modified": "<INDICATOR MODIFIED PROPERTY>",
     "relationship_type": "pattern-contains",
+    "description": "<INDICATOR NAME> identifies <cryptocurrency-wallet address>",
     "source_ref": "indicator--<INDICATOR ID>",
     "target_ref": "cryptocurrency-wallet-<TRANSACTION ID>",
     "object_marking_refs": [
@@ -349,7 +328,7 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 Indicator objects are also linked to their corresponding Malware object like so
 
@@ -361,7 +340,8 @@ Indicator objects are also linked to their corresponding Malware object like so
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<MALWARE CREATED PROPERTY>",
     "modified": "<MALWARE MODIFIED PROPERTY>",
-    "relationship_type": "indicates",
+    "relationship_type": "detects",
+    "description": "<INDICATOR NAME> detects <MALWARE NAME>",
     "source_ref": "indicator--<INDICATOR ID>",
     "target_ref": "malware-<MALWARE ID>",
     "object_marking_refs": [
@@ -371,7 +351,7 @@ Indicator objects are also linked to their corresponding Malware object like so
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 ### Bundle
 
@@ -387,7 +367,26 @@ This script outputs all the objects into a single STIX 2.1 bundle `bundles/ranso
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the md5 hash of all objects sorted in the bundle.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the md5 hash of all objects sorted in the bundle.
+
+## Output structure
+
+```txt
+.
+└── bundles/
+    └── ransomwhere/
+        ├── bundles
+        │   └── ransomwhere-bundle.json   
+        └── stix2_objects
+            ├── cryptocurrency-transaction
+            ├── cryptocurrency-wallet
+            ├── extension-definition
+            ├── identity
+            ├── indicator
+            ├── malware
+            ├── marking-definition
+            └── relationship
+```
 
 ## Thanks to...
 
