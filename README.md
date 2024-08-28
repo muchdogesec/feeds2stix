@@ -43,9 +43,7 @@ To give you can idea of what the data for each script looks like, we've included
 
 ## Adding new processors
 
-Installing the script
-
-To install crypto2stix;
+Installing the script;
 
 ```shell
 # clone the latest code
@@ -57,6 +55,8 @@ source feeds2stix-venv/bin/activate
 # install requirements
 pip3 install -r requirements.txt
 ```
+
+TODO
 
 ## Useful supporting tools
 
