@@ -150,6 +150,7 @@ The `pattern` contains all file sha1 hashes linked to the malware this indicator
     "modified": "<Listingdate> of row for file object",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "relationship_type": "pattern-contains",
+    "description": "<INDICATOR NAME> identifies the file: <FILE HASHES.SHA-1>",
     "source_ref": "indicator--<ID>",
     "target_ref": "file--<ID>",
     "object_marking_refs": [
@@ -172,6 +173,7 @@ A relationship is also created linking the Malware objects to the Indicator for 
     "created": "<created> time in Indicator",
     "modified": "<modified> time in Indicator",
     "relationship_type": "detects",
+    "description": "<INDICATOR NAME> detects the malware: <FILE HASHES.SHA-1>",
     "source_ref": "indicator--<ID>",
     "target_ref": "malware--<ID>",
     "object_marking_refs": [

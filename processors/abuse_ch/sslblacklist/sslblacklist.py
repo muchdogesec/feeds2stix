@@ -216,6 +216,7 @@ for listing_reason, data in malware_mapping.items():
         modified=indicator_obj.modified,
         created_by_ref=identity.id,
         relationship_type="detects",
+        description=f"{indicator_obj.name} detects the malware: {malware_obj.name}",
         source_ref=indicator_obj.id,
         target_ref=malware_obj.id,
         object_marking_refs=[
@@ -238,6 +239,7 @@ for listing_reason, data in malware_mapping.items():
             modified=listing_date,
             created_by_ref=identity.id,
             relationship_type="pattern-contains",
+            description=f"{indicator_obj.name} identifies the file: {file_obj.hashes['SHA-1']}",
             source_ref=indicator_obj.id,
             target_ref=file_obj.id,
             object_marking_refs=[

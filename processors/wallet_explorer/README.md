@@ -2,6 +2,8 @@
 
 ## Overview
 
+![](processors/abuse_ch/wallet_explorer/wallet_explorer.png)
+
 Wallet Explorer tags crypto wallets that belongs to crypto exchanges, marketplaces and other online platforms used for crypto transactions.
 
 By tracking down the platform that handled a transaction (identified using the wallet address in a transaction), it is often possible to track it down to an individual who received the funds the transaction (by getting a court order for the exchange to release information about the person who signed up).
@@ -80,7 +82,7 @@ The data in the spreadsheet then uses the STIX2 python library to create STIX ob
 
 At a high-level the graph of STIX objects created is as follows;
 
-https://miro.com/app/board/uXjVKotYvUg=/
+https://miro.com/app/board/uXjVKwqZNss=/
 
 #### Automatically imported objects
 
@@ -94,7 +96,7 @@ https://miro.com/app/board/uXjVKotYvUg=/
 	"type": "identity",
 	"spec_version": "2.1",
 	"id": "identity--<UUIDV5>",
-	"created_by_ref": "identity--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+	"created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
 	"created": "<record_created>",
 	"modified": "<record_modified>",
 	"name": "<exchange_name>",
@@ -106,7 +108,7 @@ https://miro.com/app/board/uXjVKotYvUg=/
   	"identity_class": "organization",
   	"contact_information": "<exchange_url>",
   	"object_marking_refs": [
-  		"marking-definition--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7"
+  		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
   		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
   	],
 
@@ -170,14 +172,15 @@ To link the `location` to the `identity` a STIX relationship object is created a
     "type": "relationship",
     "spec_version": "2.1",
     "id": "relationship--<UUIDV5 GENERATION LOGIC>",
-    "created_by_ref": "identity--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<IDENTITY CREATED PROPERTY>",
     "modified": "<IDENTITY MODIFIED PROPERTY>",
     "relationship_type": "located-in",
+    "description": "<IDENTITY OBJECT NAME> is located in <LOCATION NAME>",
     "source_ref": "identity--<IDENTITY ID>",
     "target_ref": "location-<LOCATION ID>",
     "object_marking_refs": [
-    	"marking-definition--9b9c892f-bab3-5be5-b3bf-d2b5c21775b7",
+    	"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
     ]
 }
@@ -295,6 +298,20 @@ feeds2stix also creates a STIX 2.1 Bundle JSON object containing all the other S
 The UUID is generated using the namespace and the base64 encoded value of the cli of all objects sorted in the bundle.
 
 The bundle is named; `wallet_explorer_bundle.json`
+
+```txt
+.
+└── bundles/
+    └── wallet_explorer/
+        ├── bundles
+        │   └── wallet_explorer_bundle.json   
+        └── stix2_objects
+            ├── cryptocurrency-wallet
+            ├── identity
+            ├── location
+            ├── marking-definition
+            └── relationship
+```
 
 ## Tools that inspired us
 

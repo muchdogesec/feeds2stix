@@ -118,6 +118,7 @@ UUIDv5 is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` (feed
     "modified": "Same as source_ref indicator",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "relationship_type": "detects",
+    "description": "<INDICATOR NAME> detects <IPV4-ADDR VALUE>",
     "source_ref": "indicator--<ID>",
     "target_ref": "ipv4-addr--<ID>",
     "object_marking_refs": [

@@ -560,6 +560,7 @@
             "created": "2020-05-01T15:07:34.000Z",
             "modified": "2021-08-02T17:30:25.000Z",
             "relationship_type": "detects",
+            "description": "BazaLoader detects the malware: BazaLoader",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "malware--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "object_marking_refs": [
@@ -575,6 +576,7 @@
             "created": "2021-08-02T17:30:25.000Z",
             "modified": "2021-08-02T17:30:25.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 14d0b902caad60435ad3c32a025a24c1f97929be",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--571a2e2b-ee77-52d3-b6da-2715269873fc",
             "object_marking_refs": [
@@ -590,6 +592,7 @@
             "created": "2021-08-02T17:30:00.000Z",
             "modified": "2021-08-02T17:30:00.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 511cdfe4eb4b2aa10b6e4e153c7f8d2fde0baaa0",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--f87f30ba-5997-55c4-b3cb-b45720654143",
             "object_marking_refs": [
@@ -605,6 +608,7 @@
             "created": "2021-08-01T06:43:55.000Z",
             "modified": "2021-08-01T06:43:55.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: be741a5045c0ca95f8b78683d004e4a34562e3a9",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--30b28bc3-4107-5cd1-87b9-13e6ac0d82ef",
             "object_marking_refs": [
@@ -620,6 +624,7 @@
             "created": "2021-07-31T06:41:31.000Z",
             "modified": "2021-07-31T06:41:31.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 1d515bdb771dad480db077e214ac7de947e593ff",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--e6b2e942-55b8-5c85-b1fa-40bc306ba320",
             "object_marking_refs": [
@@ -635,6 +640,7 @@
             "created": "2021-07-31T06:41:30.000Z",
             "modified": "2021-07-31T06:41:30.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: f760eef17a056d0dbca8ffa7614ac2965997f8eb",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--080f40a3-adc3-5d18-8ef5-f9caceffa770",
             "object_marking_refs": [
@@ -650,6 +656,7 @@
             "created": "2021-07-31T06:40:42.000Z",
             "modified": "2021-07-31T06:40:42.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: fa310de69957a073acb83219ebead3d3d8c2b380",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--bc128c8f-757e-5825-b96c-80d76e037835",
             "object_marking_refs": [
@@ -665,6 +672,7 @@
             "created": "2021-07-31T06:40:41.000Z",
             "modified": "2021-07-31T06:40:41.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 140b7a09d2448d688ab2569cee7e932dce7cc6dc",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--de2d78a4-e868-5608-95d4-5bcda0cc9bd8",
             "object_marking_refs": [
@@ -680,6 +688,7 @@
             "created": "2021-07-19T15:19:12.000Z",
             "modified": "2021-07-19T15:19:12.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 3f9ff233186cf48138a90190b0af5801404064f8",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--f510fd98-f96c-593a-8b18-aa81483ae010",
             "object_marking_refs": [
@@ -695,6 +704,7 @@
             "created": "2021-07-19T06:28:04.000Z",
             "modified": "2021-07-19T06:28:04.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: dff6ef75f8f5c88c1a4b49fd2999d858d09c17b0",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--9d351c74-7dce-5dfc-91f3-5b38c74f5fc8",
             "object_marking_refs": [
@@ -710,6 +720,7 @@
             "created": "2021-07-19T06:28:03.000Z",
             "modified": "2021-07-19T06:28:03.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 719cce11b3f0ea6f1e0fff0fb434ecbb6caa3540",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--db1feaf7-2f4e-5e1d-890c-42e82958c004",
             "object_marking_refs": [
@@ -725,6 +736,7 @@
             "created": "2021-07-16T07:46:42.000Z",
             "modified": "2021-07-16T07:46:42.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 5d64578798fe792c1ff4c671d3c08db426dc55ca",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--4830d8b2-0662-54a2-9952-ad7593d8de50",
             "object_marking_refs": [
@@ -740,6 +752,7 @@
             "created": "2021-07-16T07:46:41.000Z",
             "modified": "2021-07-16T07:46:41.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 4caf3f1cc0086325ff3006b7a264a32d2d93d37a",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--b2bd5892-e4a6-53d3-a57a-9e9f559feffb",
             "object_marking_refs": [
@@ -755,6 +768,7 @@
             "created": "2021-07-12T06:28:40.000Z",
             "modified": "2021-07-12T06:28:40.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: e3c59893af55099aaaf2f0b1bbbc51d5f5b69296",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--17460796-e90b-5ea2-b327-f53ae3d33442",
             "object_marking_refs": [
@@ -770,6 +784,7 @@
             "created": "2021-07-12T06:28:39.000Z",
             "modified": "2021-07-12T06:28:39.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 8bcf4b429da1a42b077d8e7350a5b4c6fa0bbe2a",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--3dd8cb3d-5f96-5d2a-ae4e-b3238003de98",
             "object_marking_refs": [
@@ -785,6 +800,7 @@
             "created": "2021-07-08T09:17:37.000Z",
             "modified": "2021-07-08T09:17:37.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: ff42c4d852ed4ec12c76ebedef25594254b76f0d",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--26d9bf7c-8eaf-5b60-b5a2-456dac6c4815",
             "object_marking_refs": [
@@ -800,6 +816,7 @@
             "created": "2021-07-07T19:04:14.000Z",
             "modified": "2021-07-07T19:04:14.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 0fa737e6069d650d7014f01ebe679f47b6288a93",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--d52a2f25-c81f-5366-8e2b-7c03756566c6",
             "object_marking_refs": [
@@ -815,6 +832,7 @@
             "created": "2021-06-18T12:23:46.000Z",
             "modified": "2021-06-18T12:23:46.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 16004c0b5575453b3bff2fa2f23328fc2670c50d",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--a733201d-03f6-53c6-a07f-3d0f4b2d5e43",
             "object_marking_refs": [
@@ -830,6 +848,7 @@
             "created": "2021-06-18T12:23:42.000Z",
             "modified": "2021-06-18T12:23:42.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 9be47170095e6c828fcba747205c12be0f8707ec",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--0bbe2223-04ea-589b-be69-a18f05512f8c",
             "object_marking_refs": [
@@ -845,6 +864,7 @@
             "created": "2021-05-20T13:52:12.000Z",
             "modified": "2021-05-20T13:52:12.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 62fea672d5bd77c0a9b6e7ea502e2216f0771f87",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--5678f442-ae36-59a9-828a-61bdc5207485",
             "object_marking_refs": [
@@ -860,6 +880,7 @@
             "created": "2021-05-20T13:52:11.000Z",
             "modified": "2021-05-20T13:52:11.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 8177aa396c1c82c0ed7dd48548e13647de853ac4",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--8565059b-b854-5010-8233-c77faad70a46",
             "object_marking_refs": [
@@ -875,6 +896,7 @@
             "created": "2020-11-04T06:03:53.000Z",
             "modified": "2020-11-04T06:03:53.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 6efb3ed85502b2e19c31e2e5acef93cd6ee141a7",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--8a3e4ce2-eda5-5a75-9b4d-a0a3e03e720b",
             "object_marking_refs": [
@@ -890,6 +912,7 @@
             "created": "2020-11-04T06:02:49.000Z",
             "modified": "2020-11-04T06:02:49.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 8a5ad798b4542cf68f3add68bc1aa3e7bba9f533",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--0557c023-af2d-5139-917e-018503e261f7",
             "object_marking_refs": [
@@ -905,6 +928,7 @@
             "created": "2020-11-03T05:50:15.000Z",
             "modified": "2020-11-03T05:50:15.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 1e153b4cccda96fdcf7f415f4ca146181304408b",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--29f6d027-7a62-5d52-846a-a773acbe3af8",
             "object_marking_refs": [
@@ -920,6 +944,7 @@
             "created": "2020-11-03T05:50:12.000Z",
             "modified": "2020-11-03T05:50:12.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: cfd8c3f0068bd5b81880f38ebe1ba62539b746b9",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--996964ab-a7fd-5600-93f1-9bbcba82a295",
             "object_marking_refs": [
@@ -935,6 +960,7 @@
             "created": "2020-10-30T08:03:58.000Z",
             "modified": "2020-10-30T08:03:58.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 4ec0fbf2d44886ebeb8b960d150727262480ac01",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--08bbc280-8650-5b20-a36a-2bfd969fdd5c",
             "object_marking_refs": [
@@ -950,6 +976,7 @@
             "created": "2020-10-29T18:30:25.000Z",
             "modified": "2020-10-29T18:30:25.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 2891714bf49e145099faff05fc1647fdba906ff1",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--def3d0fa-5d55-54f1-91b6-d228edf2da67",
             "object_marking_refs": [
@@ -965,6 +992,7 @@
             "created": "2020-10-29T18:30:24.000Z",
             "modified": "2020-10-29T18:30:24.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: fdc0ada78668f422a80f3ccbd8118169ccc093e9",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--31776449-cff9-5ed5-9aa1-b171788ece66",
             "object_marking_refs": [
@@ -980,6 +1008,7 @@
             "created": "2020-10-26T14:56:40.000Z",
             "modified": "2020-10-26T14:56:40.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: c8432be3add81d083b3eaf67235ebe546de9d7b7",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--aa1ff981-36d8-5b49-bb2c-aa61d12adf5d",
             "object_marking_refs": [
@@ -995,6 +1024,7 @@
             "created": "2020-10-26T14:56:38.000Z",
             "modified": "2020-10-26T14:56:38.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 25f6475d1a6dc6cc5ec253e064e8b10df6fb5752",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--9545bc7c-041c-58b6-a138-1e5d16adfd49",
             "object_marking_refs": [
@@ -1010,6 +1040,7 @@
             "created": "2020-10-21T08:55:11.000Z",
             "modified": "2020-10-21T08:55:11.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: af3590c1313edcbd4b9a3b89617b3177bf41600c",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--9353f3ff-5793-5ea9-8117-3c493e0749d8",
             "object_marking_refs": [
@@ -1025,6 +1056,7 @@
             "created": "2020-10-21T07:57:40.000Z",
             "modified": "2020-10-21T07:57:40.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 15b428538476983abd09c384b44f18b3a5b798be",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--85301570-541d-5bb8-b637-4df1437f340f",
             "object_marking_refs": [
@@ -1040,6 +1072,7 @@
             "created": "2020-10-20T14:56:36.000Z",
             "modified": "2020-10-20T14:56:36.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 49329a24bcb298d8fb9247fdb2d779c513cce642",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--6cd47c64-2290-5d26-b773-402a41bcc39e",
             "object_marking_refs": [
@@ -1055,6 +1088,7 @@
             "created": "2020-10-20T14:56:36.000Z",
             "modified": "2020-10-20T14:56:36.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: b2f5b84c0d70dd02efe659cd883026a9a85783be",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--ee5d22ff-7734-5c63-9c2e-c49d064a2c20",
             "object_marking_refs": [
@@ -1070,6 +1104,7 @@
             "created": "2020-10-16T09:05:11.000Z",
             "modified": "2020-10-16T09:05:11.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 7839b6073e05919840ba0c75474c97ca9a82ab7f",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--bde49869-ea40-5483-b515-2b70c7d57d3c",
             "object_marking_refs": [
@@ -1085,6 +1120,7 @@
             "created": "2020-10-16T09:05:08.000Z",
             "modified": "2020-10-16T09:05:08.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 28579be67cf58041a22fb8b82c8c3118a67d70f8",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--5c73960c-2f1e-5772-ac18-4e8c1d7c2d69",
             "object_marking_refs": [
@@ -1100,6 +1136,7 @@
             "created": "2020-10-13T14:35:27.000Z",
             "modified": "2020-10-13T14:35:27.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: d5aeffa5547fceff7d6c3ec11e474ddb10ef4dae",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--9653cc8b-5ca5-5173-943d-71e793c7eb29",
             "object_marking_refs": [
@@ -1115,6 +1152,7 @@
             "created": "2020-10-13T14:32:54.000Z",
             "modified": "2020-10-13T14:32:54.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: c10baaa40751e2d2c547ae627fee7a6030e84015",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--5aafc1de-cc04-5ed7-85a2-f986e58568b8",
             "object_marking_refs": [
@@ -1130,6 +1168,7 @@
             "created": "2020-10-11T07:34:08.000Z",
             "modified": "2020-10-11T07:34:08.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 562a2a148a57d83f6d81aa64b08f26fcb82058f9",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--944950b1-b9c7-56c1-b8dc-f271b75a7185",
             "object_marking_refs": [
@@ -1145,6 +1184,7 @@
             "created": "2020-10-11T07:34:07.000Z",
             "modified": "2020-10-11T07:34:07.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 1ea9f91da2978db63d857c0b5cffb9a8af689b5c",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--fa147797-2414-5ac1-b4cb-022d7a18e7da",
             "object_marking_refs": [
@@ -1160,6 +1200,7 @@
             "created": "2020-10-11T07:31:03.000Z",
             "modified": "2020-10-11T07:31:03.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 3f2b5f892b5e565db4ddcc19b398db2bd0bf57fe",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--24766385-2a3c-5280-8eb2-9dacf2e7a020",
             "object_marking_refs": [
@@ -1175,6 +1216,7 @@
             "created": "2020-10-10T06:09:50.000Z",
             "modified": "2020-10-10T06:09:50.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 843f76bd25ed1570ee9086de2ae19c015d3b5394",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--ca679d06-089f-52bf-8151-b2061c9df2b4",
             "object_marking_refs": [
@@ -1190,6 +1232,7 @@
             "created": "2020-10-10T06:09:50.000Z",
             "modified": "2020-10-10T06:09:50.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 01876b9f02deeec369d62b2885e704f626da738b",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--178605c9-8143-5f9f-80b9-ef9031de945c",
             "object_marking_refs": [
@@ -1205,6 +1248,7 @@
             "created": "2020-10-09T06:03:35.000Z",
             "modified": "2020-10-09T06:03:35.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 3c401a1f40c5fd68d7f1c76effcb6c7391e4b026",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--51794223-5861-57ce-945e-99f627b26ba1",
             "object_marking_refs": [
@@ -1220,6 +1264,7 @@
             "created": "2020-10-09T06:00:56.000Z",
             "modified": "2020-10-09T06:00:56.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 3d1d67c61b6cf96945107419df6875c354f1e186",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--55251557-3cf9-599c-b29d-f2c26b1311a7",
             "object_marking_refs": [
@@ -1235,6 +1280,7 @@
             "created": "2020-10-08T17:42:48.000Z",
             "modified": "2020-10-08T17:42:48.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: f89d3c496eec13be93706fbbdc0bdb745e44875f",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--b2f0001e-6ffd-5763-8de5-0c550b80ce2d",
             "object_marking_refs": [
@@ -1250,6 +1296,7 @@
             "created": "2020-10-08T17:42:40.000Z",
             "modified": "2020-10-08T17:42:40.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 2713a6c1faa14572df4cc9493632dfd2e40bb8d3",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--ed88b684-141f-5d87-9038-6ed6743efb3f",
             "object_marking_refs": [
@@ -1265,6 +1312,7 @@
             "created": "2020-10-08T15:23:04.000Z",
             "modified": "2020-10-08T15:23:04.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 8791b47aef867b5bffdfa33c9b4681934ee5bf75",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--11c6f1a1-db70-5e45-8d75-ba1b5ef21d48",
             "object_marking_refs": [
@@ -1280,6 +1328,7 @@
             "created": "2020-10-08T14:10:14.000Z",
             "modified": "2020-10-08T14:10:14.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 083f01cb4afae8bc97caa25f86a1fbc8c0718098",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--b1fd4ca0-0ff9-510c-b96f-2e7bda3bf260",
             "object_marking_refs": [
@@ -1295,6 +1344,7 @@
             "created": "2020-10-08T14:10:14.000Z",
             "modified": "2020-10-08T14:10:14.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 27ab0c2a759d6c8182c7eca9a2c53f3bfc0854db",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--887b385e-5a09-5f6e-acdf-48d74234adea",
             "object_marking_refs": [
@@ -1310,6 +1360,7 @@
             "created": "2020-06-17T18:25:26.000Z",
             "modified": "2020-06-17T18:25:26.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: aa22bad89ababb3272d3ba0e839aed3204b89555",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--c0adc487-8d14-5942-9d79-e31371fe9214",
             "object_marking_refs": [
@@ -1325,6 +1376,7 @@
             "created": "2020-06-17T18:25:24.000Z",
             "modified": "2020-06-17T18:25:24.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: a71442e65bba03e9dd5deef83eeb3442b014170b",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--a4f5d7f1-29d7-5aba-952a-ae59fa02fbff",
             "object_marking_refs": [
@@ -1340,6 +1392,7 @@
             "created": "2020-06-17T18:23:00.000Z",
             "modified": "2020-06-17T18:23:00.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 4874594cfb32ce7c38d453b3ef56b835d43dd2ac",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--d203274f-c71d-5ff5-a742-ddfa2d29e96d",
             "object_marking_refs": [
@@ -1355,6 +1408,7 @@
             "created": "2020-05-01T15:07:34.000Z",
             "modified": "2020-05-01T15:07:34.000Z",
             "relationship_type": "pattern-contains",
+            "description": "BazaLoader identifies the file: 84fa28bc4a69561a09fd1c419c5bea687a7da58a",
             "source_ref": "indicator--b1ab6e24-6ed8-585c-b497-d2b8c4b0a23b",
             "target_ref": "file--a818b020-72b7-5a33-90c6-7b62263aafe2",
             "object_marking_refs": [

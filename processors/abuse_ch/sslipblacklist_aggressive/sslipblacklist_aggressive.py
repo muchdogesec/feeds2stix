@@ -10,7 +10,7 @@ from stix2.datastore.filesystem import FileSystemStore
 from datetime import datetime
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # URLs for external STIX objects
@@ -183,17 +183,19 @@ for dst_ip, data in indicator_mapping.items():
     )
     stix_objects.append(indicator_obj)
 
+    # Create a Relationship between Indicator and the corresponding IPv4Address
     relationship_obj = Relationship(
         id="relationship--" + indicator_id,
         created=indicator_obj.created,
         modified=indicator_obj.modified,
         created_by_ref=identity.id,
         relationship_type="detects",
+        description=f"{indicator_obj.name} detects {dst_ip}",  # Use the correct IPv4 address for each relationship
         source_ref=indicator_obj.id,
         target_ref=ipv4_objects[dst_ip].id,
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
+            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
         ]
     )
     stix_objects.append(relationship_obj)

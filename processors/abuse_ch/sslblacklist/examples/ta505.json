@@ -299,6 +299,7 @@
             "created": "2019-11-22T14:01:45.000Z",
             "modified": "2020-09-09T15:02:54.000Z",
             "relationship_type": "detects",
+            "description": "TA505 detects the malware: TA505",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "malware--7e9fc741-1f00-5408-a8a6-68130998403c",
             "object_marking_refs": [
@@ -314,6 +315,7 @@
             "created": "2020-09-09T15:02:54.000Z",
             "modified": "2020-09-09T15:02:54.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: b716ac6b4ca64d9d9c42e242e9ab966292523f29",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--64873f5a-2c8c-5da7-8f5d-61a5852572ce",
             "object_marking_refs": [
@@ -329,6 +331,7 @@
             "created": "2020-09-03T13:02:08.000Z",
             "modified": "2020-09-03T13:02:08.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 46f0f03f6fc98c7fc6e70fd2d7bdefcdd5116f73",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--72bd7218-43b8-5985-b1b5-16322a616431",
             "object_marking_refs": [
@@ -344,6 +347,7 @@
             "created": "2020-08-07T13:15:18.000Z",
             "modified": "2020-08-07T13:15:18.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 7c919d192569245deca6ae6c000dd85253141655",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--86b23928-6963-53e8-a87b-70237b9ea94e",
             "object_marking_refs": [
@@ -359,6 +363,7 @@
             "created": "2020-07-06T15:08:24.000Z",
             "modified": "2020-07-06T15:08:24.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 59dadee6d837d3f49fe04d422fecd2a6aafa2029",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--d304ce1a-859a-5917-ae09-a012030398d4",
             "object_marking_refs": [
@@ -374,6 +379,7 @@
             "created": "2020-07-03T12:42:12.000Z",
             "modified": "2020-07-03T12:42:12.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 3dd0fbef1a0638e0c1ca9b2b1af7cd619154d4df",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--0e6d097a-0d93-5dd2-84ee-6407200b71e9",
             "object_marking_refs": [
@@ -389,6 +395,7 @@
             "created": "2020-07-02T12:35:48.000Z",
             "modified": "2020-07-02T12:35:48.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 5fa3c518f6fc2b1e65601b71c78db1d34873898a",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--179db423-caf0-52b7-b316-3838720b8856",
             "object_marking_refs": [
@@ -404,6 +411,7 @@
             "created": "2020-06-29T12:41:50.000Z",
             "modified": "2020-06-29T12:41:50.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 3407d4127719e1cf0dc996b5c8723217a9eb8218",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--d6d9a097-1dc8-5f46-bb81-6c67addb65f8",
             "object_marking_refs": [
@@ -419,6 +427,7 @@
             "created": "2020-06-26T15:41:57.000Z",
             "modified": "2020-06-26T15:41:57.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 2ef2ab8eda495fcd0aa240d7628f16b633416209",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--a63b2583-f58c-56ff-a6f5-63f493fa4649",
             "object_marking_refs": [
@@ -434,6 +443,7 @@
             "created": "2020-06-25T12:56:51.000Z",
             "modified": "2020-06-25T12:56:51.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: f1a82aea2322a8d4cce5eb6299a9bbde0943d800",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--fc00b1ba-5d59-54da-93c2-b7e706d7c54a",
             "object_marking_refs": [
@@ -449,6 +459,7 @@
             "created": "2020-06-24T13:23:22.000Z",
             "modified": "2020-06-24T13:23:22.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 2156dca1e39a76ffb03189b3721bf2af5bd50fe4",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--1ac11a87-a46a-50cd-8c20-22d5df985f46",
             "object_marking_refs": [
@@ -464,6 +475,7 @@
             "created": "2020-06-23T13:33:29.000Z",
             "modified": "2020-06-23T13:33:29.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 5bc6e48ddf8424b52f1daf1b6108c8f93516cdfb",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--95dd0305-b014-5f2f-88ab-1e448fa9a7c4",
             "object_marking_refs": [
@@ -479,6 +491,7 @@
             "created": "2020-06-22T13:42:17.000Z",
             "modified": "2020-06-22T13:42:17.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: cec8efab6c0d767ffdc8de9fdaa550eaa79c4596",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--56d54442-25b4-5b0e-be5d-2586cc3e95b4",
             "object_marking_refs": [
@@ -494,6 +507,7 @@
             "created": "2020-06-18T12:50:40.000Z",
             "modified": "2020-06-18T12:50:40.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 94307fc231543b66fd1f07c8344dc01eec70073c",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--3029924e-e9da-5a28-a3fe-6be880c5e72b",
             "object_marking_refs": [
@@ -509,6 +523,7 @@
             "created": "2020-06-16T12:45:20.000Z",
             "modified": "2020-06-16T12:45:20.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: a8db303f1b5aecceaeb4a92352df35af880c5ab4",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--7985a780-265e-5b14-99df-9ed667bb9b97",
             "object_marking_refs": [
@@ -524,6 +539,7 @@
             "created": "2020-06-15T14:21:33.000Z",
             "modified": "2020-06-15T14:21:33.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 6edace5350997ab9c932850b1d8f0ba35a00ebe8",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--683eb7d1-f108-5800-baec-3da67b4967aa",
             "object_marking_refs": [
@@ -539,6 +555,7 @@
             "created": "2020-06-12T20:28:38.000Z",
             "modified": "2020-06-12T20:28:38.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 15ef78c616027ddf4602e039a71f505a22d67565",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--1bddc6f4-c1fc-5c71-8364-42613d8afbb8",
             "object_marking_refs": [
@@ -554,6 +571,7 @@
             "created": "2020-02-23T12:30:44.000Z",
             "modified": "2020-02-23T12:30:44.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 5f4af875f90b39d1531bf95261367ebcf8fcdfba",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--7bc8ace7-33bc-545c-ba44-82193d71fc21",
             "object_marking_refs": [
@@ -569,6 +587,7 @@
             "created": "2020-02-21T14:22:48.000Z",
             "modified": "2020-02-21T14:22:48.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 1facb1de1a463de4b6d5213c7ccd62835d2b6a36",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--122fdd9a-f785-5cdf-a805-68a0c5fbc54b",
             "object_marking_refs": [
@@ -584,6 +603,7 @@
             "created": "2020-02-13T12:37:16.000Z",
             "modified": "2020-02-13T12:37:16.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 1d9c0e06ae5d470dd383c35c2f1ae0df4677f16e",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--f44209ed-721f-53a1-a303-8eb411d84a4e",
             "object_marking_refs": [
@@ -599,6 +619,7 @@
             "created": "2020-02-05T14:16:15.000Z",
             "modified": "2020-02-05T14:16:15.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 4dc1bd19a1cc3d43232eeeea1f9976561ea4d215",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--f9b1251e-a118-5d36-9342-cef5058d9b5d",
             "object_marking_refs": [
@@ -614,6 +635,7 @@
             "created": "2020-01-23T14:20:53.000Z",
             "modified": "2020-01-23T14:20:53.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 9ed32cf21ca244a785da6a6254c2a7b8f41e6153",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--e0952dfc-9083-5b64-bec2-aa95e4cf01ef",
             "object_marking_refs": [
@@ -629,6 +651,7 @@
             "created": "2020-01-17T17:19:15.000Z",
             "modified": "2020-01-17T17:19:15.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 59615b462f9c3958a9beacbac2db85606d6c2357",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--17f2e96c-3de8-5d64-b5c6-13f30e8511bb",
             "object_marking_refs": [
@@ -644,6 +667,7 @@
             "created": "2019-12-10T08:41:56.000Z",
             "modified": "2019-12-10T08:41:56.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 5ce2ba0aafba416b18d5ff23d5c49a941d6da9db",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--8b1c642f-22e8-5c49-b2cf-844fa7d9ddbb",
             "object_marking_refs": [
@@ -659,6 +683,7 @@
             "created": "2019-11-22T14:01:45.000Z",
             "modified": "2019-11-22T14:01:45.000Z",
             "relationship_type": "pattern-contains",
+            "description": "TA505 identifies the file: 6953081218a0bd0229b1b0bf6397378ead0660cf",
             "source_ref": "indicator--7e9fc741-1f00-5408-a8a6-68130998403c",
             "target_ref": "file--d5e605cf-9e73-5b10-bdc9-38dbe58a9851",
             "object_marking_refs": [
