@@ -16,11 +16,6 @@ The key parts of this repository are structured as follows;
 
 ```txt
 .
-├── examples/ # examples of processor output
-│   ├── producer1/
-│   │   └── bundle.json
-│   └── producer2/
-│       └── bundle.json
 ├── processors/
 │   ├── producer1/
 │   │	├── README.md # describes the mapping of the feed.py files
@@ -44,7 +39,7 @@ The key parts of this repository are structured as follows;
 
 The `processors` directory contains the scripts that generate the data. These scripts output the data they create into the `bundles` directory (this directory will only exist once you run one of the processor scripts).
 
-To give you can idea of what the data for each script looks like, we've included an `examples` directory containing output bundles.
+To give you can idea of what the data for each script looks like, we've included an `examples` directory containing output bundles in the respective producers `processors` directory.
 
 ## Adding new processors
 
