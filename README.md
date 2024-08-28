@@ -2,6 +2,8 @@
 
 ## Overview
 
+![](processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.png)
+
 A set of scripts that take data from threat intelligence feeds and convert them it into STIX 2.1 objects.
 
 The aim of this repository is to demonstrate how easy it is for anyone to get structured cyber threat intelligence as STIX 2.1 objects into downstream tools.
@@ -69,7 +71,6 @@ pip3 install -r requirements.txt
 
 [Minimal support provided via the DOGESEC community](https://community.dogesec.com/).
 
-## Licenses
+## License
 
-* Code: [AGPLv3](/LICENSE).
-* Content: [Creative Commons Attribution 4.0 International Public License](/LICENSE-CONTENT)
+[Apache 2.0](/LICENSE).

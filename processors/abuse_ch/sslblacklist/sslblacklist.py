@@ -22,16 +22,29 @@ csv_url = "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
 marking_definition = parse(requests.get(marking_definition_url).json())
 identity = parse(requests.get(identity_url).json())
 
-# Create a filesystem store
-output_dir = "bundles/abuse_ch/sslblacklist"
-if os.path.exists(output_dir):
-    shutil.rmtree(output_dir)
-os.makedirs(output_dir)
+# Create base directory structure
+base_output_dir = "bundles/abuse_ch/sslblacklist"
+bundle_output_dir = os.path.join(base_output_dir, "bundles")
+stix_objects_dir = os.path.join(base_output_dir, "stix2_objects")
 
-store = FileSystemStore(output_dir)
+# Ensure clean directories: Delete output_dir to start fresh on each run
+if os.path.exists(base_output_dir):
+    logger.info(f"Deleting existing directory: {base_output_dir}")
+    shutil.rmtree(base_output_dir)
+
+# Create the necessary directories
+os.makedirs(bundle_output_dir, exist_ok=True)
+os.makedirs(stix_objects_dir, exist_ok=True)
+
+# Create subdirectories for each STIX object type
+for stix_type in ['indicator', 'relationship', 'file', 'marking-definition', 'identity']:
+    os.makedirs(os.path.join(stix_objects_dir, stix_type), exist_ok=True)
+
+# Initialize the filesystem store
+store = FileSystemStore(stix_objects_dir)
 
 # Use a predefined namespace UUID for generating UUIDv5
-namespace_uuid = uuid.UUID('418465b1-2dbe-41b7-b994-19817164e793')  # marking definition uuid for feed
+namespace_uuid = uuid.UUID('a1cb37d2-3bd3-5b23-8526-47a22694b7e0')  # marking definition uuid for feed
 
 # Function to generate UUIDv5
 def generate_uuid(namespace, name):
@@ -43,6 +56,11 @@ def generate_bundle_id(namespace, objects):
     for obj in sorted(objects, key=lambda x: x['id']):
         md5.update(obj['id'].encode('utf-8'))
     return generate_uuid(namespace, md5.hexdigest())
+
+# Save the imported STIX objects to the filesystem store
+logger.info("Saving external STIX objects (marking definition and identity) to the filesystem store.")
+store.add(marking_definition)
+store.add(identity)
 
 # Download and parse the CSV data
 logger.info("Downloading and parsing CSV data.")
@@ -115,6 +133,9 @@ for row in reader:
         "listing_date": listing_date_stix
     }
 
+    # Save File object using FileSystemStore
+    store.add(file_obj)
+
     # Map listing_reason to file objects
     if listing_reason not in malware_mapping:
         malware_mapping[listing_reason] = {
@@ -131,22 +152,7 @@ logger.info("Creating Malware, Indicator, and Relationship objects.")
 for listing_reason, data in malware_mapping.items():
     stix_objects = [
         marking_definition,
-        identity,
-        {
-            "type": "marking-definition",
-            "spec_version": "2.1",
-            "id": "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
-            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "created": "2020-01-01T00:00:00.000Z",
-            "definition_type": "statement",
-            "definition": {
-                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
-            },
-            "object_marking_refs": [
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-            ]
-        }
+        identity
     ]
     stix_objects.extend(data["stix_objects"])
     file_refs = [file.id for file in data["files"]]
@@ -164,11 +170,13 @@ for listing_reason, data in malware_mapping.items():
         sample_refs=file_refs,
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
             marking_definition.id
         ]
     )
     stix_objects.append(malware_obj)
+
+    # Save Malware object using FileSystemStore
+    store.add(malware_obj)
 
     # Generate the pattern in chunks to avoid recursion depth issues
     pattern_parts = []
@@ -192,31 +200,55 @@ for listing_reason, data in malware_mapping.items():
         valid_from=earliest_date.isoformat() + "Z",
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
             marking_definition.id
         ]
     )
     stix_objects.append(indicator_obj)
 
-    # Create Relationship objects
+    # Save Indicator object using FileSystemStore
+    store.add(indicator_obj)
+
+    # Create Relationships between Indicator and Malware
+    malware_relationship_id = generate_uuid(namespace_uuid, f"{indicator_obj.id}+{malware_obj.id}")
+    malware_relationship_obj = Relationship(
+        id="relationship--" + malware_relationship_id,
+        created=indicator_obj.created,
+        modified=indicator_obj.modified,
+        created_by_ref=identity.id,
+        relationship_type="detects",
+        source_ref=indicator_obj.id,
+        target_ref=malware_obj.id,
+        object_marking_refs=[
+            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+            marking_definition.id
+        ]
+    )
+    stix_objects.append(malware_relationship_obj)
+
+    # Save Malware-Indicator Relationship using FileSystemStore
+    store.add(malware_relationship_obj)
+
+    # Create Relationships between Indicator and each File
     for file_obj in data["files"]:
         listing_date = file_objects[file_obj.hashes['SHA-1']]['listing_date']
-        relationship_id = generate_uuid(namespace_uuid, f"{indicator_obj.id}+{file_obj.id}")
-        relationship_obj = Relationship(
-            id="relationship--" + relationship_id,
+        file_relationship_id = generate_uuid(namespace_uuid, f"{indicator_obj.id}+{file_obj.id}")
+        file_relationship_obj = Relationship(
+            id="relationship--" + file_relationship_id,
             created=listing_date,
             modified=listing_date,
             created_by_ref=identity.id,
-            relationship_type="detects",
+            relationship_type="pattern-contains",
             source_ref=indicator_obj.id,
             target_ref=file_obj.id,
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--418465b1-2dbe-41b7-b994-19817164e793",
                 marking_definition.id
             ]
         )
-        stix_objects.append(relationship_obj)
+        stix_objects.append(file_relationship_obj)
+
+        # Save Indicator-File Relationship using FileSystemStore
+        store.add(file_relationship_obj)
 
     # Create and save the bundle for this listing_reason
     bundle_id = generate_bundle_id(namespace_uuid, stix_objects)
@@ -227,11 +259,11 @@ for listing_reason, data in malware_mapping.items():
 
     # Save the bundle to a file
     name = listing_reason.replace('.', '_').replace('-', '_').replace(' ', '_').lower()
-    bundle_path = os.path.join(output_dir, f"{name}.json")
+    bundle_path = os.path.join(bundle_output_dir, f"{name}.json")
     logger.info(f"Saving the bundle to {bundle_path}.")
     with open(bundle_path, 'w') as bundle_file:
         serialized_bundle = bundle.serialize(pretty=True)
         bundle_file.write(serialized_bundle)
         logger.info(f"Finished writing the bundle to {bundle_path}.")
 
-logger.info(f"All STIX bundles have been saved in the directory: {output_dir}")
+logger.info(f"All STIX bundles and objects have been saved in the directory: {base_output_dir}")

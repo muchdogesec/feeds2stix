@@ -22,33 +22,28 @@ csv_url = "https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv"
 marking_definition = parse(requests.get(marking_definition_url).json())
 identity = parse(requests.get(identity_url).json())
 
-# Additional marking definition
-extra_marking_definition = {
-    "type": "marking-definition",
-    "spec_version": "2.1",
-    "id": "marking-definition--387824ed-ce3e-43b2-9be7-b121b2b917d9",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "2020-01-01T00:00:00.000Z",
-    "definition_type": "statement",
-    "definition": {
-        "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv"
-    },
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ]
-}
+# Create base directory structure
+base_output_dir = "bundles/abuse_ch/sslipblacklist_aggressive"
+bundle_output_dir = os.path.join(base_output_dir, "bundles")
+stix_objects_dir = os.path.join(base_output_dir, "stix2_objects")
 
-# Create a filesystem store
-output_dir = "bundles/abuse_ch/sslipblacklist_aggressive"
-if os.path.exists(output_dir):
-    shutil.rmtree(output_dir)
-os.makedirs(output_dir)
+# Ensure clean directories: Delete base_output_dir to start fresh on each run
+if os.path.exists(base_output_dir):
+    logger.info(f"Deleting existing directory: {base_output_dir}")
+    shutil.rmtree(base_output_dir)
 
-store = FileSystemStore(output_dir)
+# Create the necessary directories
+os.makedirs(bundle_output_dir, exist_ok=True)
+os.makedirs(stix_objects_dir, exist_ok=True)
+
+# Create subdirectories for each STIX object type
+for stix_type in ['indicator', 'relationship', 'ipv4-addr', 'network-traffic']:
+    os.makedirs(os.path.join(stix_objects_dir, stix_type), exist_ok=True)
+
+store = FileSystemStore(stix_objects_dir)
 
 # Use a predefined namespace UUID for generating UUIDv5
-namespace_uuid = uuid.UUID('387824ed-ce3e-43b2-9be7-b121b2b917d9')  # marking definition uuid for feed
+namespace_uuid = uuid.UUID('a1cb37d2-3bd3-5b23-8526-47a22694b7e0')  # marking definition uuid for feed
 
 # Function to generate UUIDv5
 def generate_uuid(namespace, name):
@@ -178,7 +173,6 @@ for dst_ip, data in indicator_mapping.items():
         valid_from=earliest_date.isoformat() + "Z",
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--387824ed-ce3e-43b2-9be7-b121b2b917d9",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
         ]
     )
@@ -194,7 +188,6 @@ for dst_ip, data in indicator_mapping.items():
         target_ref=ipv4_objects[dst_ip].id,
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--387824ed-ce3e-43b2-9be7-b121b2b917d9",
             "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
         ]
     )
@@ -204,10 +197,17 @@ for dst_ip, data in indicator_mapping.items():
     if year not in bundles:
         bundles[year] = [
             marking_definition,
-            identity,
-            extra_marking_definition
+            identity
         ]
     bundles[year].extend(stix_objects)
+
+    # Save individual STIX objects to their respective directories
+    for obj in stix_objects:
+        obj_type = obj.type
+        if obj_type in ['indicator', 'relationship', 'ipv4-addr', 'network-traffic']:
+            obj_path = os.path.join(stix_objects_dir, obj_type, f"{obj.id}.json")
+            with open(obj_path, 'w') as obj_file:
+                obj_file.write(obj.serialize(pretty=True))
 
 # Create and save bundles per year
 for year, stix_objects in bundles.items():
@@ -218,11 +218,12 @@ for year, stix_objects in bundles.items():
         objects=list(unique_stix_objects)
     )
 
-    bundle_path = os.path.join(output_dir, f"{year}.json")
+    bundle_path = os.path.join(bundle_output_dir, f"{year}.json")
     logger.info(f"Saving the bundle to {bundle_path}.")
     with open(bundle_path, 'w') as bundle_file:
         serialized_bundle = bundle.serialize(pretty=True)
         bundle_file.write(serialized_bundle)
         logger.info(f"Finished writing the bundle to {bundle_path}.")
 
-logger.info(f"All STIX bundles have been saved in the directory: {output_dir}")
+logger.info(f"All STIX bundles have been saved in the directory: {bundle_output_dir}")
+logger.info(f"Individual STIX objects have been saved in the directory: {stix_objects_dir}")
