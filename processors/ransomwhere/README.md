@@ -250,7 +250,7 @@ For every distinct `family` a STIX Malware object is created
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the `name` value.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the `name` value.
 
 Note, not all Malware objects have `external_references`. Only the following that are linked to ATT&CK
 
@@ -318,6 +318,7 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
     "created": "<INDICATOR CREATED PROPERTY>",
     "modified": "<INDICATOR MODIFIED PROPERTY>",
     "relationship_type": "pattern-contains",
+    "description": "<INDICATOR NAME> identifies <cryptocurrency-wallet address>",
     "source_ref": "indicator--<INDICATOR ID>",
     "target_ref": "cryptocurrency-wallet-<TRANSACTION ID>",
     "object_marking_refs": [
@@ -327,7 +328,7 @@ To create a graph structure, STIX SROs are used to link Indicator objects to the
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 Indicator objects are also linked to their corresponding Malware object like so
 
@@ -339,7 +340,8 @@ Indicator objects are also linked to their corresponding Malware object like so
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "<MALWARE CREATED PROPERTY>",
     "modified": "<MALWARE MODIFIED PROPERTY>",
-    "relationship_type": "indicates",
+    "relationship_type": "detects",
+    "description": "<INDICATOR NAME> detects <MALWARE NAME>",
     "source_ref": "indicator--<INDICATOR ID>",
     "target_ref": "malware-<MALWARE ID>",
     "object_marking_refs": [
@@ -349,7 +351,7 @@ Indicator objects are also linked to their corresponding Malware object like so
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the value `<SOURCE_REF>+<TARGET_REF>`.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the value `<SOURCE_REF>+<TARGET_REF>`.
 
 ### Bundle
 
@@ -365,7 +367,7 @@ This script outputs all the objects into a single STIX 2.1 bundle `bundles/ranso
 }
 ```
 
-The UUID is generated using the namespace `27557362-b745-4161-96e8-ccd62ce4cb26` and the md5 hash of all objects sorted in the bundle.
+The UUID is generated using the namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the md5 hash of all objects sorted in the bundle.
 
 ## Output structure
 

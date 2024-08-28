@@ -214,12 +214,12 @@ https://miro.com/app/board/uXjVKwqZNss=/
             │   ├── MALWARE_1.json
             │   └── MALWARE_2.json  
             └── stix2_objects
+                ├── file
+                ├── identity
                 ├── indicator
                 ├── malware
-                ├── relationship
-                ├── file
                 ├── marking-definition
-                └── identity
+                └── identity                
 ```
 
 ## Tests

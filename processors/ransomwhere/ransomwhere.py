@@ -23,18 +23,22 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 # Constants
 RANSOMWHERE_API_URL = "https://api.ransomwhe.re/export"
-# output directory
-STIX_DIRECTORY = "bundles/ransomwhere/"
-BUNDLE_FILE = os.path.join(STIX_DIRECTORY, "ransomwhere-bundle.json")
+# Output directory
+BASE_OUTPUT_DIR = "bundles/ransomwhere/"
+BUNDLE_OUTPUT_DIR = os.path.join(BASE_OUTPUT_DIR, "bundles")
+STIX_OBJECTS_DIR = os.path.join(BASE_OUTPUT_DIR, "stix2_objects")
+BUNDLE_FILE = os.path.join(BUNDLE_OUTPUT_DIR, "ransomwhere-bundle.json")
+
 # Use a predefined namespace UUID for generating UUIDv5
 NAMESPACE_UUID = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")  # feeds2stix uuid, used to generate sdos/sros
 OASIS_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7") # used to generate scos
+
 # URLs for external objects
 EXTERNAL_OBJECTS_URLS = {
     "cryptocurrency_transaction_extension": "https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/extension-definitions/scos/cryptocurrency-transaction.json",
     "cryptocurrency_wallet_extension": "https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/extension-definitions/scos/cryptocurrency-wallet.json",
-    "feeds2stix_identity": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json",
-    "feeds2stix_marking_definition": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
+    "feeds2stix_identity": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json",
+    "feeds2stix_marking_definition": "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json"
 }
 
 # Mapping of ransomware to ATT&CK details
@@ -167,6 +171,7 @@ def get_indicator_wallet_relationship(indicator_obj, wallet_obj):
         created=indicator_obj.created,
         modified=indicator_obj.modified,
         relationship_type="pattern-contains",
+        description=f"{indicator_obj.name} pattern identifies crypto wallet hash: {wallet_obj.address}",
         source_ref=indicator_obj.id,
         target_ref=wallet_obj.id,
         object_marking_refs=indicator_obj.object_marking_refs
@@ -179,7 +184,8 @@ def get_indicator_malware_relationship(indicator_obj, malware_obj):
         created_by_ref="identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         created=malware_obj.created,
         modified=malware_obj.modified,
-        relationship_type="indicates",
+        relationship_type="detects",
+        description=f"{indicator_obj.name} detects the Malware: {malware_obj.name}",
         source_ref=indicator_obj.id,
         target_ref=malware_obj.id,
         object_marking_refs=indicator_obj.object_marking_refs
@@ -227,12 +233,19 @@ def store_in_bundle(stix_objects):
     logging.info(f"STIX bundle created successfully at {BUNDLE_FILE}")
 
 # Delete existing STIX directory and create a new one
-if os.path.exists(STIX_DIRECTORY):
-    shutil.rmtree(STIX_DIRECTORY)
-os.makedirs(STIX_DIRECTORY)
+if os.path.exists(BASE_OUTPUT_DIR):
+    shutil.rmtree(BASE_OUTPUT_DIR)
+
+# Create the necessary directories
+os.makedirs(BUNDLE_OUTPUT_DIR, exist_ok=True)
+os.makedirs(STIX_OBJECTS_DIR, exist_ok=True)
+
+# Create subdirectories for each STIX object type
+for stix_type in ['cryptocurrency-transaction', 'cryptocurrency-wallet', 'extension-definition', 'identity', 'indicator', 'malware', 'marking-definition', 'relationship']:
+    os.makedirs(os.path.join(STIX_OBJECTS_DIR, stix_type), exist_ok=True)
 
 # Initialize STIX filestore
-fs = FileSystemStore(STIX_DIRECTORY)
+fs = FileSystemStore(STIX_OBJECTS_DIR)
 
 # Fetch existing IDs
 existing_ids = {obj['id'] for obj in fs.query()}
@@ -326,7 +339,7 @@ for obj in all_stix_objects:
         except Exception as e:
             logging.error(f"Error adding object {obj.id}: {e}")
 
-logging.info(f"STIX objects have been created and saved to {STIX_DIRECTORY}")
+logging.info(f"STIX objects have been created and saved to {STIX_OBJECTS_DIR}")
 
 # Create and store the bundle
 logging.info("Starting to create STIX bundle.")

@@ -161,10 +161,12 @@ https://miro.com/app/board/uXjVKwqZNss=/
             │   ├── YYYY.json
             │   └── revoked_indicators.json   
             └── stix2_objects
+                ├── identity
                 ├── indicator
-                ├── relationship
                 ├── ipv4-addr
-                └── network-traffic
+                ├── marking-definition
+                ├── network-traffic
+                └── relationship
 ```
 
 ## Tests

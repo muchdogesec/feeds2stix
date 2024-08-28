@@ -37,10 +37,15 @@ os.makedirs(bundle_output_dir, exist_ok=True)
 os.makedirs(stix_objects_dir, exist_ok=True)
 
 # Create subdirectories for each STIX object type
-for stix_type in ['indicator', 'relationship', 'ipv4-addr', 'network-traffic']:
+for stix_type in ['indicator', 'relationship', 'ipv4-addr', 'network-traffic', 'marking-definition', 'identity']:
     os.makedirs(os.path.join(stix_objects_dir, stix_type), exist_ok=True)
 
 store = FileSystemStore(stix_objects_dir)
+
+# Save the imported STIX objects to the filesystem store
+logger.info("Saving external STIX objects (marking definition and identity) to the filesystem store.")
+store.add(marking_definition)
+store.add(identity)
 
 # Use a predefined namespace UUID for generating UUIDv5
 namespace_uuid = uuid.UUID('a1cb37d2-3bd3-5b23-8526-47a22694b7e0')  # marking definition uuid for feed
@@ -208,6 +213,13 @@ for dst_ip, data in indicator_mapping.items():
             obj_path = os.path.join(stix_objects_dir, obj_type, f"{obj.id}.json")
             with open(obj_path, 'w') as obj_file:
                 obj_file.write(obj.serialize(pretty=True))
+
+# Save the marking-definition and identity objects explicitly
+for obj in [marking_definition, identity]:
+    obj_type = obj.type
+    obj_path = os.path.join(stix_objects_dir, obj_type, f"{obj.id}.json")
+    with open(obj_path, 'w') as obj_file:
+        obj_file.write(obj.serialize(pretty=True))
 
 # Create and save bundles per year
 for year, stix_objects in bundles.items():
