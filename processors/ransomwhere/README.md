@@ -11,8 +11,13 @@ The data is reported by Ransomwhere is in a custom JSON format. To ensure easy i
 ## Run the script
 
 ```shell
-python3 processors/ransomwhere/ransomwhere.py
+python3 processors/ransomwhere/ransomwhere.py \
+  --family <NAME>
 ```
+
+Where; 
+
+* `family`: is the name of the malware family. Must match the family name reported by ransomwhe.re. You can obtain these on [ransomwhe.re](https://ransomwhe.re/). e.g. `BlackCat`
 
 ## The data
 

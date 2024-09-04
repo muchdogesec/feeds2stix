@@ -4,6 +4,7 @@ import requests
 import uuid
 import json
 import logging
+import argparse
 from datetime import datetime
 from stix2 import (
     FileSystemStore,
@@ -232,6 +233,11 @@ def store_in_bundle(stix_objects):
         f.write(json.dumps(json.loads(bundle_of_all_objects.serialize()), indent=4))
     logging.info(f"STIX bundle created successfully at {BUNDLE_FILE}")
 
+# Argument parsing
+parser = argparse.ArgumentParser(description="Generate STIX bundles related to a specific ransomware family.")
+parser.add_argument("--family", type=str, help="The ransomware family to filter by", required=True)
+args = parser.parse_args()
+
 # Delete existing STIX directory and create a new one
 if os.path.exists(BASE_OUTPUT_DIR):
     shutil.rmtree(BASE_OUTPUT_DIR)
@@ -269,14 +275,17 @@ for item in data['result']:
     blockchain = item['blockchain']
     family = item['family']
     transactions = item['transactions']
+
+    if family != args.family:
+        continue  # Skip this item if it does not match the specified family
     
     wallet_id = generate_stix_id("cryptocurrency-wallet", address)
     wallet_objects[address] = get_wallet_object(address)
     
     if transactions:  # Ensure there is at least one transaction
         for transaction in transactions:
-            transaction_hash = transaction['hash']
             transaction['wallet_id'] = wallet_id
+            transaction_hash = transaction['hash']
 
             if transaction_hash not in transaction_objects_by_hash:
                 transaction_objects_by_hash[transaction_hash] = []  # Initialize list here

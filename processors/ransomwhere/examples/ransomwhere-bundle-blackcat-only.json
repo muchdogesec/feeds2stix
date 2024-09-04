@@ -1,0 +1,318 @@
+{
+    "type": "bundle",
+    "id": "bundle--f457bf2f-6e06-5d84-9ce9-ab15e1f52644",
+    "objects": [
+        {
+            "type": "extension-definition",
+            "spec_version": "2.1",
+            "id": "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "Cryptocurrency Transaction",
+            "description": "This extension creates a new SCO that can be used to represent cryptocurrency transactions.",
+            "schema": "https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/schemas/scos/cryptocurrency-transaction.json",
+            "version": "1.0",
+            "extension_types": [
+                "new-sco"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--60c0f466-511a-5419-9f7e-4814e696da40"
+            ]
+        },
+        {
+            "type": "extension-definition",
+            "spec_version": "2.1",
+            "id": "extension-definition--be78509e-6958-51b1-8b26-d17ee0eba2d7",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "Cryptocurrency Wallet",
+            "description": "This extension creates a new SCO that can be used to represent cryptocurrency wallets.",
+            "schema": "https://raw.githubusercontent.com/muchdogesec/stix2extensions/main/schemas/scos/cryptocurrency-wallet.json",
+            "version": "1.0",
+            "extension_types": [
+                "new-sco"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--60c0f466-511a-5419-9f7e-4814e696da40"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogsec/feeds2stix",
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "cryptocurrency-wallet",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+            "address": "14Q5xgBHAkWxDVrnHautcm4PPGmy5cfw6b",
+            "extensions": {
+                "extension-definition--be78509e-6958-51b1-8b26-d17ee0eba2d7": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--f2c7167f-8fce-5553-bf86-d4a9d609c313",
+            "symbol": "BTC",
+            "hash": "5068651ac1b390aafe45c2477a7fabcbacfe67718b464e5e7c79b89066d52a3d",
+            "execution_time": "2024-03-03T18:28:21Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 0.211148
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--a64e05c6-1a8c-55b4-9baa-1767195c7ff4",
+            "symbol": "BTC",
+            "hash": "0638cde84571c5f14c32909ba9c1e461d6cdc1dc5979e7252e562acef2c26ba8",
+            "execution_time": "2024-03-03T18:28:06Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 50.211368
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--fcd9cce0-8a35-5cda-b926-3c55cda4ef65",
+            "symbol": "BTC",
+            "hash": "fc1ec51cba958011fe3f98ecb989e15475b3d45e1b4239013d058e76523fde02",
+            "execution_time": "2024-03-03T18:27:32Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 100.211588
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--0de242e3-aa93-5ba6-a079-492b6c337d17",
+            "symbol": "BTC",
+            "hash": "e47821201f1da9b2b067082fa31b394485057d4d855c15834f90980deb96dce8",
+            "execution_time": "2024-03-03T18:27:08Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 150.211808
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--2559e3e1-c642-5979-80c9-3c8e5596145c",
+            "symbol": "BTC",
+            "hash": "fadaef3b685106d21f53176b446dbbbaeda1e4f56d792841298a901b6a699b11",
+            "execution_time": "2024-03-03T18:26:54Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 200.212028
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--49a43ce1-d073-5807-98a4-4e268fa54777",
+            "symbol": "BTC",
+            "hash": "45cd1479e907e6187263d121789d3b670ef767d70535404242c3a5696c8c94f8",
+            "execution_time": "2024-03-03T18:26:38Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 250.212248
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--d0ba2343-0ba8-5499-b07e-a66eb26145dc",
+            "symbol": "BTC",
+            "hash": "383559d4a8cf4359a748ff7dacff5b0f00d1b161595da39082b2b66a4d43856c",
+            "execution_time": "2024-03-03T18:26:29Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 300.212468
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "cryptocurrency-transaction",
+            "spec_version": "2.1",
+            "id": "cryptocurrency-transaction--58055ee8-5051-55da-9c72-c006b62c37ee",
+            "symbol": "BTC",
+            "hash": "9467a41c9c966b0ff990b8b8753dd44f60d7e20ed299c15f77695c40f3df5d27",
+            "execution_time": "2024-03-01T22:40:23Z",
+            "output": [
+                {
+                    "address_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+                    "amount": 350.21268866
+                }
+            ],
+            "extensions": {
+                "extension-definition--151d042d-4dcf-5e44-843f-1024440318e5": {
+                    "extension_type": "new-sco"
+                }
+            }
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--5305ede6-e26a-5c9d-9b91-c4f4de5c545f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-03-03T18:28:21.000Z",
+            "modified": "2024-03-03T18:28:21.000Z",
+            "name": "BlackCat",
+            "malware_types": [
+                "ransomware"
+            ],
+            "is_family": true,
+            "external_references": [
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/software/S1068",
+                    "external_id": "S1068"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5305ede6-e26a-5c9d-9b91-c4f4de5c545f",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-03-03T18:28:21.000Z",
+            "modified": "2024-03-03T18:28:21.000Z",
+            "name": "BlackCat Cryptocurrency Wallets",
+            "description": "Known Cryptocurrency Wallets associated with BlackCat",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[cryptocurrency-wallet:address = '14Q5xgBHAkWxDVrnHautcm4PPGmy5cfw6b']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2024-03-03T18:28:21Z",
+            "object_marking_refs": [
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9a3696e6-d22f-51cc-93d8-9b543dc9bacb",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-03-03T18:28:21.000Z",
+            "modified": "2024-03-03T18:28:21.000Z",
+            "relationship_type": "detects",
+            "description": "BlackCat Cryptocurrency Wallets detects the Malware: BlackCat",
+            "source_ref": "indicator--5305ede6-e26a-5c9d-9b91-c4f4de5c545f",
+            "target_ref": "malware--5305ede6-e26a-5c9d-9b91-c4f4de5c545f",
+            "object_marking_refs": [
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e42df254-b026-53c8-bc73-9ef2d8f972f2",
+            "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created": "2024-03-03T18:28:21.000Z",
+            "modified": "2024-03-03T18:28:21.000Z",
+            "relationship_type": "pattern-contains",
+            "description": "BlackCat Cryptocurrency Wallets pattern identifies crypto wallet hash: 14Q5xgBHAkWxDVrnHautcm4PPGmy5cfw6b",
+            "source_ref": "indicator--5305ede6-e26a-5c9d-9b91-c4f4de5c545f",
+            "target_ref": "cryptocurrency-wallet--f0eae333-f4ad-5385-978c-0d9fa18de9dc",
+            "object_marking_refs": [
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"
+            ]
+        }
+    ]
+}
