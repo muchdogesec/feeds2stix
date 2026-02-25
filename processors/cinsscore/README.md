@@ -103,21 +103,23 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 
 ## Github action
 
-The processor should also be linked to a Github action that downloads data from the feed every 24 hours (after feed update schedule)
+The processor is linked to a GitHub action that downloads data from the feed daily at 04:00 UTC.
 
-The issue with this feed is `created` and `modified` times are not included in the feed.
+### Setup
 
-To solve this we need a GitHub action that has a CTX API key to see if object exists.
+Configure the following in your GitHub repository:
 
-If run in Github action mode, the script will do an additional check
+**Secrets** (Settings → Secrets and variables → Actions):
+* `CTX_BASE_URL`: The base URL for your CTX instance (e.g., `https://api.cyberthreatexchange.com`)
+* `CTX_API_KEY`: Your CTX API key for authentication
 
-1. see if indicator exists in feed
-2. if:
-	* false: normal behaviour
-	* true: indicator / sco not submitted
+**Variables**:
+* `CINSSCORE_FEED_ID`: The CTX feed ID where CINS Score data should be uploaded
 
-You need to set the following variables in the Github actions environment `cyberthreatexchange-updates`
+### Manual Processing
 
-* `CYBERTHREATEXCHANGE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
-* `CYBERTHREATEXCHANGE_API_KEY`: for team that owns the feed ID selected
-* `CYBERTHREATEXCHANGE_FEED_ID`: the feed ID
+You can manually trigger the workflow from the GitHub Actions tab, or run locally:
+
+```bash
+python processors/cinsscore/cinsscore.py
+```

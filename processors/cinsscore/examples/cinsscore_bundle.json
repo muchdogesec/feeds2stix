@@ -1,0 +1,153 @@
+{
+    "type": "bundle",
+    "id": "bundle--f1205876-4aa3-457e-bd86-71ab8c45520f",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogesec/feeds2stix",
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/",
+            "confidence": 100,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "CINS",
+            "description": "Collective Intelligence Network Security (CINS, pronounced \"sins,\" get it?) is our effort to use this information to significantly improve the security of our customers' networks. We also provide this vital information to the InfoSec community free of charge.",
+            "identity_class": "system",
+            "contact_information": "https://cinsarmy.com/",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin: https://cinsscore.com/list/ci-badguys.txt"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "id": "ipv4-addr--9ae516f8-cada-5285-85bf-9d9fb5c80626",
+            "value": "1.0.164.165"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--0390e917-a89c-5126-8953-a41763be3e8b",
+            "created_by_ref": "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",
+            "created": "2026-02-24T15:46:13.000Z",
+            "modified": "2026-02-24T15:46:13.000Z",
+            "name": "IPv4: 1.0.164.165",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ipv4-addr:value='1.0.164.165']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:46:13Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7"
+            ]
+        },
+        {
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "id": "ipv4-addr--6522aaf4-dbe7-5b33-8bd3-9e457d8c3246",
+            "value": "1.10.247.65"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--decb1153-3d72-544d-8240-287c6d3b86b0",
+            "created_by_ref": "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",
+            "created": "2026-02-24T15:46:13.000Z",
+            "modified": "2026-02-24T15:46:13.000Z",
+            "name": "IPv4: 1.10.247.65",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ipv4-addr:value='1.10.247.65']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:46:13Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7"
+            ]
+        },
+        {
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "id": "ipv4-addr--a080da4a-ef35-5022-88b1-26dcb98076cf",
+            "value": "1.11.132.194"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bb70ba6b-bfb8-5e21-b3f1-14e3cdcca457",
+            "created_by_ref": "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",
+            "created": "2026-02-24T15:46:13.000Z",
+            "modified": "2026-02-24T15:46:13.000Z",
+            "name": "IPv4: 1.11.132.194",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ipv4-addr:value='1.11.132.194']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:46:13Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7"
+            ]
+        }
+    ]
+}
