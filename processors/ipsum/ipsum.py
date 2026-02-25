@@ -242,7 +242,10 @@ def main():
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
         )
 
-        print(f"BUNDLE_PATH={bundle_path}")
+        github_output = os.getenv("GITHUB_OUTPUT")
+        if github_output:
+            with open(github_output, "a") as f:
+                f.write(f"bundle_path={bundle_path}\n")
         return 0
 
     except Exception as e:

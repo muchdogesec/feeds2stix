@@ -52,7 +52,7 @@ def create_cinsscore_identity():
         created="2020-01-01T00:00:00.000Z",
         modified="2020-01-01T00:00:00.000Z",
         name="CINS",
-        description="Collective Intelligence Network Security (CINS, pronounced \"sins,\" get it?) is our effort to use this information to significantly improve the security of our customers' networks. We also provide this vital information to the InfoSec community free of charge.",
+        description='Collective Intelligence Network Security (CINS, pronounced "sins," get it?) is our effort to use this information to significantly improve the security of our customers\' networks. We also provide this vital information to the InfoSec community free of charge.',
         identity_class="system",
         contact_information="https://cinsarmy.com/",
         object_marking_refs=[
@@ -101,7 +101,9 @@ def fetch_cinsscore_feed():
     return ip_addresses
 
 
-def create_stix_objects(ip_addresses, cinsscore_identity, cinsscore_marking, script_run_time):
+def create_stix_objects(
+    ip_addresses, cinsscore_identity, cinsscore_marking, script_run_time
+):
     """Create STIX objects for IP addresses"""
     stix_objects = []
 
@@ -150,7 +152,11 @@ def create_stix_objects(ip_addresses, cinsscore_identity, cinsscore_marking, scr
 
 
 def create_bundle(
-    stix_objects, feeds2stix_identity, feeds2stix_marking, cinsscore_identity, cinsscore_marking
+    stix_objects,
+    feeds2stix_identity,
+    feeds2stix_marking,
+    cinsscore_identity,
+    cinsscore_marking,
 ):
     """Create a STIX bundle with all objects"""
     all_objects = [
@@ -222,7 +228,10 @@ def main():
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
         )
 
-        print(f"BUNDLE_PATH={bundle_path}")
+        github_output = os.getenv("GITHUB_OUTPUT")
+        if github_output:
+            with open(github_output, "a") as f:
+                f.write(f"bundle_path={bundle_path}\n")
 
         return 0
 

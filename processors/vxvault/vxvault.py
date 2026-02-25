@@ -150,7 +150,11 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
 
 
 def create_bundle(
-    stix_objects, feeds2stix_identity, feeds2stix_marking, vxvault_identity, vxvault_marking
+    stix_objects,
+    feeds2stix_identity,
+    feeds2stix_marking,
+    vxvault_identity,
+    vxvault_marking,
 ):
     """Create a STIX bundle with all objects"""
     all_objects = [
@@ -222,7 +226,10 @@ def main():
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
         )
 
-        print(f"BUNDLE_PATH={bundle_path}")
+        github_output = os.getenv("GITHUB_OUTPUT")
+        if github_output:
+            with open(github_output, "a") as f:
+                f.write(f"bundle_path={bundle_path}\n")
 
         return 0
 
