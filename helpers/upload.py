@@ -42,6 +42,7 @@ def upload_bundle(bundle, api_base_url, api_key, feed_id, max_retries=3):
 
     failed_objects = []
     current_bundle = bundle.copy()
+    error_msg = "Max retries exhausted without successful upload"
 
     req_responses = []  # Store responses for debugging
 
@@ -126,16 +127,18 @@ def upload_bundle(bundle, api_base_url, api_key, feed_id, max_retries=3):
                     "req_responses": req_responses,
                 }
 
-        except BundleUploadFailed:
+        except BundleUploadFailed as e:
             # Unrecoverable error, don't retry
             logger.error("Unrecoverable error during upload")
-            raise
+            error_msg = f"Unrecoverable error during upload: {e}"
+            break
 
         except Exception as e:
             logger.error(f"Error during upload attempt: {e}")
             if attempt == max_retries - 1:
                 # Last attempt failed
-                raise
+                error_msg = f"Upload failed after {max_retries} attempts: {e}"
+                break
             continue
 
     # All retries exhausted
@@ -145,7 +148,7 @@ def upload_bundle(bundle, api_base_url, api_key, feed_id, max_retries=3):
         "total_objects": total_objects,
         "submitted_objects": 0,
         "failed_objects": failed_objects,
-        "error": "Max retries exhausted",
+        "error": error_msg,
         "req_responses": req_responses,
     }
 
@@ -155,11 +158,11 @@ def write_github_summary(result, bundle_file):
     summary_file = os.getenv("GITHUB_STEP_SUMMARY")
     if not summary_file:
         return
-    
+
     try:
         with open(summary_file, "a", encoding="utf-8") as f:
             f.write("## CTX Bundle Upload Summary\n\n")
-            
+
             if result["success"]:
                 f.write("✅ **Status:** Upload successful\n\n")
                 if result["job_id"]:
@@ -172,17 +175,23 @@ def write_github_summary(result, bundle_file):
                 f.write(f"- **Error:** {result.get('error', 'Unknown error')}\n")
                 f.write(f"- **Total Objects:** {result['total_objects']}\n")
                 f.write(f"- **Failed Objects:** {len(result['failed_objects'])}\n")
-            
+
             f.write(f"- **Bundle:** `{bundle_file}`\n")
-            
+
             if result.get("req_responses"):
                 f.write(f"\n### Artifacts\n\n")
                 num_requests = len(result["req_responses"])
-                f.write(f"- `requests_and_responses_{{1..{num_requests}}}.json` - Full request/response data\n")
-                f.write(f"- `response_{{1..{num_requests}}}.json` - Individual responses\n")
+                f.write(
+                    f"- `requests_and_responses_{{1..{num_requests}}}.json` - Full request/response data\n"
+                )
+                f.write(
+                    f"- `response_{{1..{num_requests}}}.json` - Individual responses\n"
+                )
                 if result["failed_objects"]:
-                    f.write(f"- `failed_objects.json` - {len(result['failed_objects'])} failed object(s)\n")
-            
+                    f.write(
+                        f"- `failed_objects.json` - {len(result['failed_objects'])} failed object(s)\n"
+                    )
+
             f.write("\n")
         logger.info("GitHub Actions summary written")
     except Exception as e:
@@ -205,19 +214,25 @@ def main(bundle_file, api_base_url, api_key, feed_id):
         if result.get("req_responses"):
             for idx, req_resp in enumerate(result["req_responses"], 1):
                 # Save full request and response
-                full_file = os.path.join(artifacts_dir, f"requests_and_responses_{idx}.json")
+                full_file = os.path.join(
+                    artifacts_dir, f"requests_and_responses_{idx}.json"
+                )
                 try:
                     with open(full_file, "w", encoding="utf-8") as f:
                         json.dump(req_resp, f, indent=2)
                     logger.info(f"Saved full request/response to {full_file}")
                 except Exception as e:
                     logger.error(f"Failed to save full request/response: {e}")
-                
+
                 # Save individual response
-                response_data = req_resp.get("response_json") or req_resp.get("response_text")
+                response_data = req_resp.get("response_json") or req_resp.get(
+                    "response_text"
+                )
                 if response_data:
                     if isinstance(response_data, dict):
-                        response_file = os.path.join(artifacts_dir, f"response_{idx}.json")
+                        response_file = os.path.join(
+                            artifacts_dir, f"response_{idx}.json"
+                        )
                         try:
                             with open(response_file, "w", encoding="utf-8") as f:
                                 json.dump(response_data, f, indent=2)
@@ -225,7 +240,9 @@ def main(bundle_file, api_base_url, api_key, feed_id):
                         except Exception as e:
                             logger.error(f"Failed to save response: {e}")
                     else:
-                        response_file = os.path.join(artifacts_dir, f"response_{idx}.txt")
+                        response_file = os.path.join(
+                            artifacts_dir, f"response_{idx}.txt"
+                        )
                         try:
                             with open(response_file, "w", encoding="utf-8") as f:
                                 f.write(str(response_data))
@@ -240,7 +257,9 @@ def main(bundle_file, api_base_url, api_key, feed_id):
             try:
                 with open(failed_objects_file, "w", encoding="utf-8") as f:
                     json.dump(result["failed_objects"], f, indent=2)
-                logger.info(f"Saved {len(result['failed_objects'])} failed objects to {failed_objects_file}")
+                logger.info(
+                    f"Saved {len(result['failed_objects'])} failed objects to {failed_objects_file}"
+                )
             except Exception as e:
                 logger.error(f"Failed to save failed objects: {e}")
                 failed_objects_file = None
@@ -258,7 +277,7 @@ def main(bundle_file, api_base_url, api_key, feed_id):
                 f"   Submitted: {result['submitted_objects']}/{result['total_objects']} objects"
             )
             logger.info(f"   Failed: {len(result['failed_objects'])} objects")
-            
+
             if failed_objects_file:
                 logger.info(f"   Failed objects saved to: {failed_objects_file}")
         else:
