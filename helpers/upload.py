@@ -51,7 +51,7 @@ def upload_bundle(bundle, api_base_url, api_key, feed_id, max_retries=3):
             logger.info(f"Retry attempt {attempt}/{max_retries - 1}")
 
         try:
-            req_responses.append({"request_body": current_bundle})
+            req_responses.append({"request_url": url, "request_body": current_bundle})
             response = requests.post(url, headers=headers, json=current_bundle)
             req_responses[-1]["response_status"] = response.status_code
             req_responses[-1]["response_text"] = response.text
