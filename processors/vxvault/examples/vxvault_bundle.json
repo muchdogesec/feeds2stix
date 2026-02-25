@@ -1,0 +1,2799 @@
+{
+    "type": "bundle",
+    "id": "bundle--19387e43-48bc-4f6f-8482-1e7b4cb50ce1",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogesec/feeds2stix",
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/",
+            "confidence": 100,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "VXVault",
+            "description": "Recently identified malware samples and the URLs used to distribute them",
+            "identity_class": "system",
+            "contact_information": "http://vxvault.net/",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin: http://vxvault.net/URL_List.php"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--04f5f7e3-c558-5272-b422-e38dab431ce8",
+            "value": "https://cloudaxis.cc/gsmft/yueu/fkvqld/tvqqwh/ushu/22.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--2d554296-89e7-58e1-bd06-58cea2dc7408",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://cloudaxis.cc/gsmft/yueu/fkvqld/tvqqwh/ushu/22.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://cloudaxis.cc/gsmft/yueu/fkvqld/tvqqwh/ushu/22.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--277bb1d8-52f4-5749-a2ec-85af0c679c51",
+            "value": "http://45.133.74.103/x86"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a389aebc-edcd-51ac-8c5c-bba28b25ffe1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://45.133.74.103/x86",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://45.133.74.103/x86']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--7b4d3ec0-4803-5b9f-b358-5d65f8103afd",
+            "value": "https://marsalek.cy/static/abcfg.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bc520874-e588-5ae9-9fdb-976280e11126",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://marsalek.cy/static/abcfg.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://marsalek.cy/static/abcfg.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--beedab2b-974c-5e39-bd6c-785555e6b1f2",
+            "value": "https://marsalek.cy/static/Pjibf2.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1fb3a7d9-d4a2-5382-b380-27cb013bfdcf",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://marsalek.cy/static/Pjibf2.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://marsalek.cy/static/Pjibf2.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--c067488f-eca3-560d-99d2-649a54f774b0",
+            "value": "http://190.198.218.210:1171/i"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--2ade4ab0-d37f-56ce-8fc8-ebc138b58c37",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://190.198.218.210:1171/i",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://190.198.218.210:1171/i']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--db2ebc0e-8889-51e0-8342-da2480a2527d",
+            "value": "http://176.97.210.242/bins/skid.x86"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e44dc204-9f8e-52bb-a543-0f6e3bd35198",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://176.97.210.242/bins/skid.x86",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://176.97.210.242/bins/skid.x86']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ef5513ea-9966-594b-843b-e09e87d19400",
+            "value": "https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/pdf.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--23e0f3e7-d53f-5910-b6a3-20673be011bf",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/pdf.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/pdf.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--eb730a17-d91d-563f-a975-48795a103f5c",
+            "value": "https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/decryptor.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--f2407110-ef47-5e58-b08e-65879d06003a",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/decryptor.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://raw.githubusercontent.com/lenkonftw/Project-Admini/refs/heads/main/decryptor.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d1680a79-1768-5307-a8f5-70429e5f98a3",
+            "value": "http://86.54.24.29/Renewable.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5f78eec1-b319-58d4-8582-911a07e91806",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://86.54.24.29/Renewable.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://86.54.24.29/Renewable.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--bc172d0e-bdec-5436-a9c9-6c1725364180",
+            "value": "http://178.16.55.189/amka/random.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--57930b1f-cea3-505e-aa3f-7fc8b1b915f9",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/amka/random.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/amka/random.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d51f35e8-27e3-574b-b45c-215f99c614f4",
+            "value": "http://178.16.55.189/files/unique2/random.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--22658e54-2b27-5ba4-88f2-d2b4c7de55ae",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/unique2/random.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/unique2/random.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ddbdc0fc-94aa-5fdc-944c-0186730e2caf",
+            "value": "http://178.16.55.189/modka/duna.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--8a3c1514-38c9-5ed7-8dd4-5e4f95129de8",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/modka/duna.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/modka/duna.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--510d7a6e-d08a-59f7-bad5-4ec34037ea1f",
+            "value": "http://178.16.55.189/files/mr/random.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--f0143683-8689-59ad-8cb8-29d8058b6d6b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/mr/random.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/mr/random.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--923aeafb-75c0-58aa-a5ef-ed496239d626",
+            "value": "http://178.16.55.189/files/8233900432/o7Hjuu7.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5030a0b2-66b6-5432-9259-b78d378dd5dd",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/8233900432/o7Hjuu7.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/8233900432/o7Hjuu7.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--b0a8d605-3df2-5c7a-99ce-704852d94616",
+            "value": "http://216.126.239.11/alfa.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4856d2e2-d00b-56b0-8307-92f2f215f4c3",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://216.126.239.11/alfa.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://216.126.239.11/alfa.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d1086996-e970-5231-83e9-068d954184b8",
+            "value": "http://172.86.123.179/inihiddenngentod/zerobotv9.x86_64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c45f49d0-32e2-55a2-a9e2-6b2d3e56cbc1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://172.86.123.179/inihiddenngentod/zerobotv9.x86_64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://172.86.123.179/inihiddenngentod/zerobotv9.x86_64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ddeeafe4-9488-544a-9cac-28496178ff02",
+            "value": "https://bdddda.cfd/ddq1.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--3e394f48-65eb-59cf-a6c6-4619d76b388d",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://bdddda.cfd/ddq1.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://bdddda.cfd/ddq1.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--bcb2a548-7668-53b0-8210-ee683e1d3407",
+            "value": "https://hody-musique.com/modules/blog/oc.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--96397397-9f81-53dd-b2bb-58de18e5c43a",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://hody-musique.com/modules/blog/oc.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://hody-musique.com/modules/blog/oc.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--449a601b-b90f-5c34-85ad-bc68345e7d07",
+            "value": "http://62.60.226.16:5553/dva.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--86a7b18c-4da3-5f5d-bfe8-547877987d0a",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://62.60.226.16:5553/dva.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://62.60.226.16:5553/dva.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--fbc69d2f-ec6e-54c3-98ec-414d2090b89d",
+            "value": "https://i-slept-with-ur.mom/Stb/Retev.php?bl=TGPEbjtXDrfj2U5fJTPRE008.txt"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--dd804ade-1c50-52ea-b8bd-8ef6ff3f4812",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://i-slept-with-ur.mom/Stb/Retev.php?bl=TGPEbjtXDrfj2U5fJTPRE008.txt",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://i-slept-with-ur.mom/Stb/Retev.php?bl=TGPEbjtXDrfj2U5fJTPRE008.txt']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--cd24d0b7-1e2f-5795-8fca-da3a4d485f2b",
+            "value": "https://vcc-library.uk/Stb/Retev.php?bl=QTuVl0PCseGLafunsZPRE008.txt"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--60ac03a8-76f0-5c4a-8545-5b1ac2b1636b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://vcc-library.uk/Stb/Retev.php?bl=QTuVl0PCseGLafunsZPRE008.txt",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://vcc-library.uk/Stb/Retev.php?bl=QTuVl0PCseGLafunsZPRE008.txt']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--506f6449-39dd-51cc-b48a-cfe343d59ecf",
+            "value": "http://176.46.152.62:5858/7526e77af84e4d3da650295a11488a99_crypted_build.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--7eb226ac-9a25-5924-9d28-f5ff8802a93c",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://176.46.152.62:5858/7526e77af84e4d3da650295a11488a99_crypted_build.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://176.46.152.62:5858/7526e77af84e4d3da650295a11488a99_crypted_build.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--3989a461-f5e5-5d6e-b63d-403fcf14d672",
+            "value": "http://178.16.55.189/files/6331503294/nGFFa2Q.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4d0df533-c0d3-5e93-85e7-2d5b41099079",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/6331503294/nGFFa2Q.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/6331503294/nGFFa2Q.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--c5ac73ec-d3dd-59be-8ada-a5b50c3851de",
+            "value": "http://178.16.55.189/files/5917492177/Mwt6qk5.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a2d56bb0-de71-5500-9543-da9ee2059c15",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/5917492177/Mwt6qk5.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/5917492177/Mwt6qk5.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--e3d41ae5-4f12-5539-b9e7-ed5b9c4d87a6",
+            "value": "http://144.172.107.244/frost.x86_64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9e9f330f-fcf0-517c-ab31-d8caae2db1f4",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://144.172.107.244/frost.x86_64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://144.172.107.244/frost.x86_64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ddaee6eb-3b5c-5ee3-a89f-4e64a4868d34",
+            "value": "http://162.0.225.149/XjeelShZ/build.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--12af9509-e7f8-54d8-8a3b-36867f757a67",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://162.0.225.149/XjeelShZ/build.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://162.0.225.149/XjeelShZ/build.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--f2d81254-eb0e-5db8-8dbf-a6dcedeb98a3",
+            "value": "http://108.181.161.143:1911/build.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--be8a1aec-eb4b-5c28-8a8a-113341c41907",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://108.181.161.143:1911/build.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://108.181.161.143:1911/build.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--f707de9e-db27-5629-bf22-3bf1325c324a",
+            "value": "http://178.16.55.189/files/7968590541/T7V02QZ.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--dd0df198-9782-59a7-9b03-2190e796d271",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://178.16.55.189/files/7968590541/T7V02QZ.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://178.16.55.189/files/7968590541/T7V02QZ.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ab417205-1ed0-5898-a366-d2f6afb62c90",
+            "value": "http://185.238.191.89:5554/beba.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--3f6d8c48-e8ef-5ba3-a9b0-e86ac669c8c6",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.238.191.89:5554/beba.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.238.191.89:5554/beba.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--7bee87bf-466f-5587-ad8f-1105da746a88",
+            "value": "http://94.154.34.240:8000/Muzul.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--734e3081-9840-519e-9aee-0f3ed51c0d54",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://94.154.34.240:8000/Muzul.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://94.154.34.240:8000/Muzul.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--2026a707-9113-5927-88de-6075cf9df275",
+            "value": "http://94.154.34.240:8000/Manya.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4049a79b-58d1-5b8d-b836-01de0d686219",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://94.154.34.240:8000/Manya.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://94.154.34.240:8000/Manya.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d19bae16-e83b-52b6-bdb0-cd458e44a43d",
+            "value": "http://94.154.34.240:8000/atrix.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b98ffc3d-7775-5d1a-8a13-b99bc0fa10ee",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://94.154.34.240:8000/atrix.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://94.154.34.240:8000/atrix.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--153b2081-9c82-56fe-a69b-1fb2f39cf80c",
+            "value": "http://94.154.34.240:8000/linux.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--8ccbaf34-f08a-5500-82d3-350b0893221e",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://94.154.34.240:8000/linux.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://94.154.34.240:8000/linux.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--84ba3990-4378-52d8-a320-650c0ae55402",
+            "value": "http://213.209.150.48/arm7"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b48a535c-6a77-5af8-881a-8e58cfed7aa1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://213.209.150.48/arm7",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://213.209.150.48/arm7']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--4b43b901-4a51-5df5-9ce2-ff9ca8eb0bb9",
+            "value": "http://185.39.207.117/ppc"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c82e5f45-85b0-5a07-8545-7632ce34412f",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.39.207.117/ppc",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.39.207.117/ppc']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--42f39fd1-532d-524f-bef4-9f5f36b72935",
+            "value": "http://103.175.16.117/mips"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--16eca009-ec4c-573c-af09-5a443debad93",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://103.175.16.117/mips",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://103.175.16.117/mips']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--4c7d778d-092b-50a8-ac2b-e444b1538983",
+            "value": "http://31.170.22.205/bins/whisper.x64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a7e117d8-0b55-55e6-a4f3-2b6f6a39492b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://31.170.22.205/bins/whisper.x64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://31.170.22.205/bins/whisper.x64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--c1c61250-d1f4-5cb9-b370-f0f6b679d9d9",
+            "value": "http://196.251.115.212/x86_64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a1dee61f-4728-5e6b-9bc4-7006e293deff",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://196.251.115.212/x86_64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://196.251.115.212/x86_64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--33bda1ca-8e4e-51d9-a246-c3715b2cc543",
+            "value": "https://github.com/deripascod/coderoom/raw/refs/heads/main/kythkkaewdth.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b86a3302-375c-5ad9-8e12-f9b364637f00",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/deripascod/coderoom/raw/refs/heads/main/kythkkaewdth.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/deripascod/coderoom/raw/refs/heads/main/kythkkaewdth.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--45a551f8-1360-5190-b19f-3c721393ee55",
+            "value": "https://raw.githubusercontent.com/XeroxzB/weqeq/main/XClient.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--402dbe4c-002d-53ef-aea1-63be8bd06064",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://raw.githubusercontent.com/XeroxzB/weqeq/main/XClient.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://raw.githubusercontent.com/XeroxzB/weqeq/main/XClient.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--65e37f9a-0fde-584a-85a7-cfdd58d239cf",
+            "value": "http://62.60.226.112/file/590_9883.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4d59bf9b-ee35-5c85-996a-9694d1e82c65",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://62.60.226.112/file/590_9883.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://62.60.226.112/file/590_9883.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--dc785de7-e73d-59b9-abe8-e3094a78b979",
+            "value": "https://recursoscompartidos.xyz/pora/csc.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c2f1fabc-a343-513d-98c8-819182ec6a9b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://recursoscompartidos.xyz/pora/csc.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://recursoscompartidos.xyz/pora/csc.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--b2c8e97d-2ad1-5675-b7fd-17ef1826b06a",
+            "value": "http://176.65.134.5/arm"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--7ea5f02f-b6f7-5d7d-abf5-83be4495542e",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://176.65.134.5/arm",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://176.65.134.5/arm']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--75b2389d-03a6-5515-859e-290ac7d2cbab",
+            "value": "http://176.65.134.62/bins/morte.x86"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--19d66c4f-e068-5c3f-acd9-6fa0a6772cac",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://176.65.134.62/bins/morte.x86",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://176.65.134.62/bins/morte.x86']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--8eef12d7-8b19-5b4b-99cf-8e9de86bccf2",
+            "value": "http://hybridemails.ae/esign-app.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e077c186-399e-5a11-8c93-0b067a58ce34",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://hybridemails.ae/esign-app.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://hybridemails.ae/esign-app.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--7b97099c-3d60-5084-bb18-9bbab66deab0",
+            "value": "http://37.44.238.88/l7vmra"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--feb860e6-1e41-58f6-96dd-2c1c8b13e2d7",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://37.44.238.88/l7vmra",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://37.44.238.88/l7vmra']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ea7ba4ed-c2fa-5386-8bda-2299fc433970",
+            "value": "http://37.44.238.88/spim"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--eded8381-ce6d-5331-977a-19ccb071ff10",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://37.44.238.88/spim",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://37.44.238.88/spim']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--e29c2767-ee8f-5ec5-93b3-82d9b21dee39",
+            "value": "http://185.232.205.104/bins/g4za.arm7"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--00f30144-187e-56af-ad62-b5cd067eace0",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.232.205.104/bins/g4za.arm7",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.232.205.104/bins/g4za.arm7']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--fa79bcda-f87e-547a-9a38-298edef42cf5",
+            "value": "https://github.com/temperloin/piponis/raw/refs/heads/main/plrifjidicfid.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--ede1ddcf-c49f-52bc-9de6-7d6eaa4d3d3c",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/temperloin/piponis/raw/refs/heads/main/plrifjidicfid.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/temperloin/piponis/raw/refs/heads/main/plrifjidicfid.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--fb694756-aa88-5f78-a25e-c338369ffb30",
+            "value": "https://github.com/temperloin/piponis/raw/refs/heads/main/jtunuhhrr.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--3cefdd4b-36f2-5252-a307-ea381d50203f",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/temperloin/piponis/raw/refs/heads/main/jtunuhhrr.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/temperloin/piponis/raw/refs/heads/main/jtunuhhrr.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--dfbadaea-b3ce-5e06-a0fe-bbf71ab489ff",
+            "value": "https://github.com/temperloin/piponis/raw/refs/heads/main/jrirkfiweid.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6b5e5b48-5316-5794-83ef-026b9c4d0295",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/temperloin/piponis/raw/refs/heads/main/jrirkfiweid.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/temperloin/piponis/raw/refs/heads/main/jrirkfiweid.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--2fa2aa74-0325-504f-8e69-3fa81ea01840",
+            "value": "http://filter.trueddns.com:18066/x/encode/ntoskrnl.b64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d6cb0616-4f3c-5471-8156-096a1dc046cc",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://filter.trueddns.com:18066/x/encode/ntoskrnl.b64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://filter.trueddns.com:18066/x/encode/ntoskrnl.b64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--e0a06ceb-89ee-5498-89d3-e2d8121335e5",
+            "value": "https://github.com/BalletsPistol/d9fb74g8db7d8b7db48df7g8db77f4drb7er8db7fd84d7b1gdb47d8b7brt18bcy87gdfb8hfg74h87fh8bf18h7/raw/refs/heads/main/Encryptor.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--2df482bf-b361-5c1f-b475-19057230f1be",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/BalletsPistol/d9fb74g8db7d8b7db48df7g8db77f4drb7er8db7fd84d7b1gdb47d8b7brt18bcy87gdfb8hfg74h87fh8bf18h7/raw/refs/heads/main/Encryptor.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/BalletsPistol/d9fb74g8db7d8b7db48df7g8db77f4drb7er8db7fd84d7b1gdb47d8b7brt18bcy87gdfb8hfg74h87fh8bf18h7/raw/refs/heads/main/Encryptor.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--bf29c9a1-7b27-5dc3-a4ff-7e2ffbcdd6b2",
+            "value": "http://194.37.81.64/Aqua.x86_64"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b3a4f8c8-687e-5d40-a3b4-db048227e54a",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://194.37.81.64/Aqua.x86_64",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://194.37.81.64/Aqua.x86_64']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--e67f33fe-dee6-56f0-a1c4-f3a3652c58bc",
+            "value": "http://185.81.68.147/Build.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5840762b-54c0-5a8b-a0f6-5cd029ef8297",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/Build.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/Build.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--33af833a-acf7-5c22-b601-1035418ad38f",
+            "value": "http://185.81.68.147/zx.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--8e80d206-a0d4-507b-b2d3-19bc5aa7fb64",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/zx.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/zx.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--06684621-fb67-5038-a8ff-7387d5555a49",
+            "value": "http://185.81.68.147/ssg.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--98ead55d-3db1-5e97-8fbe-e037f027da5a",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/ssg.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/ssg.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--b262d4bd-033c-5b9d-910b-9c79a19dfa0d",
+            "value": "http://185.81.68.147/Update.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--38484076-4d8d-5bf5-a3f1-1fd6be5672f0",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/Update.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/Update.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--0fdbc196-4179-5138-9be4-bb12fe7b9f16",
+            "value": "https://kiltone.top/stelin/Gosjeufon.cpl"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--0312d8a5-3f45-53b1-87db-1566c068a002",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://kiltone.top/stelin/Gosjeufon.cpl",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://kiltone.top/stelin/Gosjeufon.cpl']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--bd2a8864-a23a-5b64-afeb-7b284a312c37",
+            "value": "https://dominikatracy.com/audidg.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c98b1e51-1b7a-54d3-8079-88c37228bc29",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://dominikatracy.com/audidg.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://dominikatracy.com/audidg.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--32bbf39e-dbf3-5c8e-8b3e-a23facfca300",
+            "value": "http://zakazbuketov.kz/audiodf.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--a0677bc9-621c-524d-8cde-3f222866a612",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://zakazbuketov.kz/audiodf.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://zakazbuketov.kz/audiodf.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--f84aa123-d718-586a-9947-3641e48d2237",
+            "value": "http://80.82.65.70/dl?name=mixthree.exe^"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--89e7c982-6e4c-50f1-9626-4aaca0035b76",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://80.82.65.70/dl?name=mixthree.exe^",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://80.82.65.70/dl?name=mixthree.exe^']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--4287d16c-342a-5be5-8a21-c18a9bf960a5",
+            "value": "http://176.113.115.37/ScreenUpdateSync.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--35561922-a180-5419-989d-0c3c09dfac97",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://176.113.115.37/ScreenUpdateSync.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://176.113.115.37/ScreenUpdateSync.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d00946dd-340b-5b16-99b4-adad5b7eeca7",
+            "value": "http://185.81.68.147/gfx.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bcb3f711-1ccc-5c7a-9749-8b4108d88690",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/gfx.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/gfx.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--0e52b705-d2f8-5639-b251-31ea3fdadf2f",
+            "value": "http://185.81.68.147/ctx.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--fcc89e14-a907-51e3-97ce-abeb026f0c0f",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/ctx.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/ctx.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--fc8dddac-2734-5898-a0dc-3d45709c3b7a",
+            "value": "http://185.81.68.147/AsyncClient.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--cb81302b-0c98-5c93-a93b-7363c078b629",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/AsyncClient.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/AsyncClient.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--0eb9cafe-1927-5657-99f8-1598928a80ef",
+            "value": "http://185.81.68.147/fcxcx.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4a0fe899-2bb0-5a0d-943c-24ac6ba058f1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/fcxcx.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/fcxcx.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--80b39396-b6ea-5902-9f29-64197fad9254",
+            "value": "http://185.81.68.147/vvv.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--63808764-cce6-5d86-8110-ed9feb3d6f61",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.81.68.147/vvv.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.81.68.147/vvv.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--338bf309-ae42-5b0d-80ee-1bff23b4b0c6",
+            "value": "http://185.215.113.16/inc/Dynpvoy.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--0f0c213f-2597-5b25-a759-65cb62f86ba4",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.215.113.16/inc/Dynpvoy.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.215.113.16/inc/Dynpvoy.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--a66b8856-2060-5028-9331-fbfffb0fbdb8",
+            "value": "http://74.50.95.117/files/Pkaffth.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--cac0f2f8-fc20-5580-95bb-bd7f13e3f58b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://74.50.95.117/files/Pkaffth.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://74.50.95.117/files/Pkaffth.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--f8ce7314-4a20-50c9-8a58-f5cdea1526aa",
+            "value": "http://74.50.95.117/files/Hkrrl.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--065ec0fc-aff9-57bf-b2b0-5efc7bc610ee",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://74.50.95.117/files/Hkrrl.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://74.50.95.117/files/Hkrrl.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--38f2e84e-5d28-5ace-82f9-44ecdeabac2a",
+            "value": "http://45.131.135.227/Captcha.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4be4acd2-41c7-5230-ab8e-bfd6974a79c0",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://45.131.135.227/Captcha.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://45.131.135.227/Captcha.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--1a0cb008-e919-5ab5-84a2-70f246c61e70",
+            "value": "http://185.7.78.88/bot.arm"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b256b6e1-1d34-5c95-88d7-8f78a06b52e1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.7.78.88/bot.arm",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.7.78.88/bot.arm']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--5ccd98f9-938d-519a-a133-357cde485359",
+            "value": "https://mapimwp.org/wp-content/images/pic8.jpg"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--58d15d53-94f0-52eb-bbe2-63d3e2a6c174",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://mapimwp.org/wp-content/images/pic8.jpg",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://mapimwp.org/wp-content/images/pic8.jpg']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ba6124b8-4aaf-5511-aac0-b814e05b7575",
+            "value": "https://nasa.r2cloudhikepoo2.shop/NHFMUBEFH4C9ARNQC6U9.bin"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--86a0ba83-879f-5e4e-95f0-48df4332fc35",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://nasa.r2cloudhikepoo2.shop/NHFMUBEFH4C9ARNQC6U9.bin",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://nasa.r2cloudhikepoo2.shop/NHFMUBEFH4C9ARNQC6U9.bin']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--5e19db9b-eb85-5b73-9a22-3b62287c9e4b",
+            "value": "http://83.217.208.37/app/upd.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--4799039f-5e92-5ab5-b347-519c1bc85899",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://83.217.208.37/app/upd.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://83.217.208.37/app/upd.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--12e56a45-8dfa-5c04-abe2-e07d1d2ed113",
+            "value": "https://durraactive.com.my/wp-content/images/pic11.jpg"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--3cbe2093-5d3d-5ef5-8e90-25b7605d6f3f",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://durraactive.com.my/wp-content/images/pic11.jpg",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://durraactive.com.my/wp-content/images/pic11.jpg']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--00651c0e-398a-5946-958e-aa8b8dae6830",
+            "value": "http://66.63.187.231/657/caspol.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6ee82d31-60db-51c8-8b04-a0b83adbda4b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://66.63.187.231/657/caspol.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://66.63.187.231/657/caspol.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d4592df6-c39b-52a4-967c-383c15a1d5eb",
+            "value": "http://66.63.187.150/file/build3.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1c6a7dc3-d694-5829-b8dd-afdeb3f532f0",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://66.63.187.150/file/build3.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://66.63.187.150/file/build3.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--a93af674-b6d7-5876-b003-5a9c4fb6181e",
+            "value": "http://66.63.187.150/file/build2.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--fb0e3a2b-f559-5c97-baa6-61e99fbd69a1",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://66.63.187.150/file/build2.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://66.63.187.150/file/build2.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--44b551a0-7e6c-557b-bd58-3e3b90274d43",
+            "value": "http://66.63.187.150/file/build.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--86d44958-8006-5858-8ae6-6ae74fb49cf4",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://66.63.187.150/file/build.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://66.63.187.150/file/build.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--7c17b9c2-e02e-5340-82ed-e9680dec0cb7",
+            "value": "https://aquafusion.com.co/ngbx/ngown.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9c2fef3e-29e4-5a75-833c-ffaeed6c082c",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://aquafusion.com.co/ngbx/ngown.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://aquafusion.com.co/ngbx/ngown.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--b21199bb-1fa1-5d7d-ad47-52ac29d28bf5",
+            "value": "http://59.99.215.146:49697/Mozi.m"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--406406bc-4930-53b8-b6d4-0f1ce17dc7e9",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://59.99.215.146:49697/Mozi.m",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://59.99.215.146:49697/Mozi.m']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--ad83c6b6-1e79-5fd9-b883-6c0f8c5b8962",
+            "value": "https://github.com/clipaCHEAT/chaaa/raw/refs/heads/main/Built.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--33b90297-aad6-5625-8644-aeb5c7c3d1a8",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/clipaCHEAT/chaaa/raw/refs/heads/main/Built.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/clipaCHEAT/chaaa/raw/refs/heads/main/Built.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--90a6aedd-8ce9-57d2-9ef2-f1cd36a89d00",
+            "value": "https://github.com/Abdulah345/pizdaporc/raw/refs/heads/main/XClient.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d6de062d-6460-57da-93ef-532c02aad98b",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://github.com/Abdulah345/pizdaporc/raw/refs/heads/main/XClient.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://github.com/Abdulah345/pizdaporc/raw/refs/heads/main/XClient.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--1d9eb267-cf64-53b6-b225-06b1363d024b",
+            "value": "https://newvideo.link/temp/xnsjjxja.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--13a374cc-cd53-5480-96e6-d13bdd56fe77",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://newvideo.link/temp/xnsjjxja.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://newvideo.link/temp/xnsjjxja.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--bff0be92-61bc-5861-b3f4-a84a9b3e50cd",
+            "value": "http://185.215.113.16/off/def.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bb1a6516-b444-5e77-9c09-4851a44b55a0",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.215.113.16/off/def.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.215.113.16/off/def.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--6775537c-9971-5e94-9a82-e679cc62ffc4",
+            "value": "https://dewatabalirental.com/4.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--59dd1038-ba0e-5762-8578-707aec3c6bec",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://dewatabalirental.com/4.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://dewatabalirental.com/4.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--2f2d61d9-f24c-5cf2-a87b-f24295ccf85f",
+            "value": "https://dewatabalirental.com/3.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d7bf91b4-e3f1-5607-9dfd-bcba5d1e07da",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://dewatabalirental.com/3.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://dewatabalirental.com/3.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--8a6d1c26-5540-5ff8-8aef-a3236708ef60",
+            "value": "https://dewatabalirental.com/2.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--893d8adb-334e-5488-9bdc-308288c1f924",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://dewatabalirental.com/2.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://dewatabalirental.com/2.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--1f288df4-d7f9-5611-bfc4-604233ee1bfd",
+            "value": "https://dewatabalirental.com/1.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9b3aeac4-2c02-5407-a65c-3137a9fb099e",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://dewatabalirental.com/1.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://dewatabalirental.com/1.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--31fa7a31-1b35-5ba9-9a84-25c1734d846d",
+            "value": "https://samzafood.com.my/wp-content/images/pic5.jpg"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6ddb037f-5ba2-59f0-add1-b2f4c69200cb",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://samzafood.com.my/wp-content/images/pic5.jpg",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://samzafood.com.my/wp-content/images/pic5.jpg']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--b2c56dc6-5d47-54db-bf1c-4c56c183c429",
+            "value": "https://samzafood.com.my/wp-content/images/pic6.jpg"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--63d42ab1-fe83-51f2-89e2-8011dc022c6e",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://samzafood.com.my/wp-content/images/pic6.jpg",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://samzafood.com.my/wp-content/images/pic6.jpg']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--38d004bf-dd78-5b25-8048-a41ada2ad043",
+            "value": "https://bitwelly.design/2.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--bda9f044-da1e-5019-8eef-a1e353aa015c",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://bitwelly.design/2.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://bitwelly.design/2.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--353c56ed-79fa-5edc-a14e-6a8ed526cb39",
+            "value": "https://bitwelly.design/1.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--650b6a47-a354-5d6b-9687-e18646440fcc",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://bitwelly.design/1.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://bitwelly.design/1.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--70d24e12-ccb3-5217-9b83-210b8c9d5f6d",
+            "value": "http://assets.padmamuseum.gov.bd/css/7d26acda3d7c.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--23202756-9434-51c3-bdba-9f6457057898",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://assets.padmamuseum.gov.bd/css/7d26acda3d7c.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://assets.padmamuseum.gov.bd/css/7d26acda3d7c.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--d708a5a7-da40-50ea-9a02-04ac0e815cd0",
+            "value": "http://72.5.42.222:8568/api/dll/zetta"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--890e1cc0-f925-59b8-a99b-4de71ffec6ab",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://72.5.42.222:8568/api/dll/zetta",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://72.5.42.222:8568/api/dll/zetta']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--c348f0e8-73b3-5818-9d13-c0ce5678afcb",
+            "value": "https://files.catbox.moe/rutcsx.dhj"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1b401c76-0fc5-54dc-b718-032d4bc5510c",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: https://files.catbox.moe/rutcsx.dhj",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='https://files.catbox.moe/rutcsx.dhj']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--23c0c3b6-0f50-5e27-8cfb-81b59f6ade05",
+            "value": "http://185.215.113.103/steam/random.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c42a592d-ba4a-52e2-a0d3-dd79de0c74ce",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.215.113.103/steam/random.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.215.113.103/steam/random.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--1e3290f0-5c7e-5e2d-8850-18893f388d4a",
+            "value": "http://185.215.113.103/test/num.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--e0d93634-ba5f-5c29-9e47-ee246222b155",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.215.113.103/test/num.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.215.113.103/test/num.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        },
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--f9a92158-c00f-5dd8-bd4f-0eea0f1ec89f",
+            "value": "http://185.215.113.103/luma/random.exe"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1e4db127-f44c-5996-ad27-2608477b6d28",
+            "created_by_ref": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
+            "created": "2026-02-24T15:32:58.000Z",
+            "modified": "2026-02-24T15:32:58.000Z",
+            "name": "URL: http://185.215.113.103/luma/random.exe",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value='http://185.215.113.103/luma/random.exe']",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-24T15:32:58Z",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"
+            ]
+        }
+    ]
+}
