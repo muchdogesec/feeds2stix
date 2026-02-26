@@ -79,7 +79,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"created": "2020-01-01T00:00:00.000Z",
 	"definition_type": "statement",
 	"definition": {
-		"statement": "Origin: https://raw.githubusercontent.com/stamparm/ipsum/master/levels/<LEVEL>.txt"
+		"statement": "Origin: https://raw.githubusercontent.com/stamparm/ipsum/master/levels/1.txt"
 	},
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

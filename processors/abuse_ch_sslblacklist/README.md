@@ -59,7 +59,7 @@ An identity is hardcoded for the feed
 {
     "type": "identity",
     "spec_version": "2.1",
-    "id": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+    "id": "identity--<UUIDV5>",
     "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
     "created": "2020-01-01T00:00:00.000Z",
     "modified": "2020-01-01T00:00:00.000Z",
@@ -84,7 +84,7 @@ This is hardcoded and never changes;
 {
     "type": "marking-definition",
     "spec_version": "2.1",
-    "id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
+    "id": "marking-definition--<UUIDV5>",
     "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
     "created": "2020-01-01T00:00:00.000Z",
     "definition_type": "statement",
