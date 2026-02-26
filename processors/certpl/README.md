@@ -102,7 +102,7 @@ With relationship to Indicator:
 }
 ```
 
-UUIDv5 uses namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `created_by_ref+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### Indicator
 
@@ -129,7 +129,7 @@ UUIDv5 uses namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `created_
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
+Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 ## Github action
 

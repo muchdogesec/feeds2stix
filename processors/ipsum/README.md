@@ -24,14 +24,18 @@ Updated everyday at around 0100 everyday UTC.
 
 One line is one entry.
 
-### Script arguments needed
+This feed analyses all 8 levels. 1 has all data, 8 only has the highest confidence.
 
-The command line should give an option to rule `category_score` (between `1` - `8`) which determines feed.
+The script assigns confidence based on highest level the data is found as follows:
 
-```shell
-python3 processors/ipsum/ipsum.py \
-  --category_score <VALUE>
-```
+* 8 = confidence `100`
+* 7 = `90`
+* 6 = `80`
+* 5 = `70`
+* 4 = `60`
+* 3 = `50`
+* 2 = `40`
+* 1 = `30`
 
 ### Mapping
 
@@ -120,7 +124,7 @@ With relationship to Indicator:
 }
 ```
 
-UUIDv5 uses namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `created_by_ref+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### Indicator
 
@@ -148,9 +152,9 @@ UUIDv5 uses namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `created_
 }
 ```
 
-Indicator `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
+Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
-`marking-definition--<UUIDV5>` changes depending on the level of the feed.
+`"confidence": "<VALUE>",` is determined by the level the IPv4 is found in.
 
 ## Github action
 
