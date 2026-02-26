@@ -1,4 +1,5 @@
 import os
+import uuid
 import requests
 import json
 import logging
@@ -15,6 +16,7 @@ from helpers.helpers import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -22,30 +24,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-CINSSCORE_FEED_URL = "https://cinsscore.com/list/ci-badguys.txt"
-BASE_OUTPUT_DIR = "bundles/cinsscore/"
+OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
+BLOCKLIST_DE_FEED_URL = "https://lists.blocklist.de/lists/all.txt"
+BASE_OUTPUT_DIR = "bundles/blocklist_de/"
 
 
-def create_cinsscore_identity():
-    """Create the CINS Score identity object"""
+def create_blocklist_de_identity():
+    """Create the blocklist.de identity object"""
     return create_identity_object(
-        name="CINS",
-        description='Collective Intelligence Network Security (CINS, pronounced "sins," get it?) is our effort to use this information to significantly improve the security of our customers\' networks. We also provide this vital information to the InfoSec community free of charge.',
+        name="blocklist.de",
+        description="www.blocklist.de is a free and voluntary service provided by a Fraud/Abuse-specialist, whose servers are often attacked via SSH-, Mail-Login-, FTP-, Webserver- and other services.",
         identity_class="system",
-        contact_info="https://cinsarmy.com/",
+        contact_info="https://www.blocklist.de/en/index.html",
     )
 
 
-def create_cinsscore_marking_definition():
-    """Create a marking definition for CINS Score feed"""
-    return create_marking_definition_object(f"Origin: {CINSSCORE_FEED_URL}")
+def create_blocklist_de_marking_definition():
+    """Create a marking definition for blocklist.de feed"""
+    return create_marking_definition_object(f"Origin: {BLOCKLIST_DE_FEED_URL}")
 
 
-def fetch_cinsscore_feed():
-    """Fetch IP addresses from CINS Score feed"""
-    logger.info(f"Fetching CINS Score feed from: {CINSSCORE_FEED_URL}")
+def fetch_blocklist_de_feed():
+    """Fetch IP addresses from blocklist.de feed"""
+    logger.info(f"Fetching blocklist.de feed from: {BLOCKLIST_DE_FEED_URL}")
 
-    response = requests.get(CINSSCORE_FEED_URL)
+    response = requests.get(BLOCKLIST_DE_FEED_URL)
     response.raise_for_status()
 
     ip_addresses = [
@@ -54,18 +57,16 @@ def fetch_cinsscore_feed():
         if line.strip() and not line.startswith("#")
     ]
 
-    logger.info(f"Found {len(ip_addresses)} IP addresses in CINS Score feed")
+    logger.info(f"Found {len(ip_addresses)} IP addresses in blocklist.de feed")
     return ip_addresses
 
 
-def create_stix_objects(
-    ip_addresses, cinsscore_identity, cinsscore_marking, script_run_time
-):
+def create_stix_objects(ip_addresses, blocklist_de_identity, blocklist_de_marking, script_run_time):
     """Create STIX objects for IP addresses"""
     stix_objects = []
 
-    cinsscore_marking_id = cinsscore_marking["id"]
-    cinsscore_identity_id = cinsscore_identity["id"]
+    blocklist_de_marking_id = blocklist_de_marking["id"]
+    blocklist_de_identity_id = blocklist_de_identity["id"]
 
     logger.info(f"Processing {len(ip_addresses)} IP addresses...")
 
@@ -76,12 +77,12 @@ def create_stix_objects(
         ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(indicator_name)
+        indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
             id=indicator_id_full,
-            created_by_ref=cinsscore_identity_id,
+            created_by_ref=blocklist_de_identity_id,
             created=script_run_time,
             modified=script_run_time,
             valid_from=script_run_time,
@@ -92,7 +93,7 @@ def create_stix_objects(
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                cinsscore_marking_id,
+                blocklist_de_marking_id,
             ],
         )
 
@@ -102,7 +103,7 @@ def create_stix_objects(
             source_ref=indicator["id"],
             target_ref=ipv4_obj["id"],
             relationship_type="indicates",
-            created_by_ref=cinsscore_identity["id"],
+            created_by_ref=blocklist_de_identity["id"],
             marking_refs=indicator["object_marking_refs"],
             created=script_run_time,
         )
@@ -112,12 +113,9 @@ def create_stix_objects(
     return stix_objects
 
 
-
-
-
 def main():
     parser = argparse.ArgumentParser(
-        description="Convert CINS Score threat intelligence feed to STIX 2.1 format"
+        description="Convert blocklist.de threat intelligence feed to STIX 2.1 format"
     )
 
     args = parser.parse_args()
@@ -129,31 +127,33 @@ def main():
 
         feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
 
-        cinsscore_identity = create_cinsscore_identity()
-        cinsscore_marking = create_cinsscore_marking_definition()
+        blocklist_de_identity = create_blocklist_de_identity()
+        blocklist_de_marking = create_blocklist_de_marking_definition()
 
-        ip_addresses = fetch_cinsscore_feed()
+        ip_addresses = fetch_blocklist_de_feed()
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(
-            ip_addresses, cinsscore_identity, cinsscore_marking, script_run_time
+            ip_addresses, blocklist_de_identity, blocklist_de_marking, script_run_time
         )
 
         logger.info("Creating STIX bundle...")
         bundle = create_bundle_with_metadata(
             stix_objects,
-            cinsscore_identity,
-            cinsscore_marking,
+            blocklist_de_identity,
+            blocklist_de_marking,
             feeds2stix_identity,
             feeds2stix_marking,
         )
 
-        bundle_path = save_bundle_to_file(bundle, output_dir, "cinsscore")
+        bundle_path = save_bundle_to_file(bundle, output_dir, "blocklist_de")
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
         )
 
+        print(f"BUNDLE_PATH={bundle_path}")
+        
         github_output = os.getenv("GITHUB_OUTPUT")
         if github_output:
             with open(github_output, "a") as f:
@@ -162,7 +162,7 @@ def main():
         return 0
 
     except Exception as e:
-        logger.error(f"Error processing CINS Score feed: {e}", exc_info=True)
+        logger.error(f"Error processing blocklist.de feed: {e}", exc_info=True)
         return 1
 
 

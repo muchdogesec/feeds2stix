@@ -1,88 +1,48 @@
 import os
 import shutil
 import requests
-import uuid
 import json
 import logging
 import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, Identity, MarkingDefinition, Bundle, IPv4Address
+from stix2 import Indicator, IPv4Address, Bundle
+
+from helpers.helpers import (
+    generate_uuid5,
+    fetch_external_objects,
+    create_identity_object,
+    create_marking_definition_object,
+    create_bundle_with_metadata,
+    make_relationship,
+    save_bundle_to_file,
+    setup_output_directory,
+    NAMESPACE_UUID,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-NAMESPACE_UUID = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")
 IPSUM_FEED_URL_TEMPLATE = (
     "https://raw.githubusercontent.com/stamparm/ipsum/master/levels/{level}.txt"
 )
 BASE_OUTPUT_DIR = "bundles/ipsum/"
 
-FEEDS2STIX_IDENTITY_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
-FEEDS2STIX_MARKING_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json"
-
-
-def generate_uuid5(namespace, name):
-    """Generate UUIDv5 from namespace and name"""
-    return str(uuid.uuid5(namespace, name))
-
-
-def fetch_external_objects():
-    """Fetch external STIX identity and marking definition objects"""
-    logger.info("Fetching external STIX objects...")
-
-    identity_response = requests.get(FEEDS2STIX_IDENTITY_URL)
-    identity_response.raise_for_status()
-    feeds2stix_identity = identity_response.json()
-
-    marking_response = requests.get(FEEDS2STIX_MARKING_URL)
-    marking_response.raise_for_status()
-    feeds2stix_marking = marking_response.json()
-
-    return feeds2stix_identity, feeds2stix_marking
-
 
 def create_ipsum_identity():
     """Create the IPSum identity object"""
-    identity_id = generate_uuid5(NAMESPACE_UUID, "IPSum")
-
-    identity = Identity(
-        id=f"identity--{identity_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        modified="2020-01-01T00:00:00.000Z",
+    return create_identity_object(
         name="IPSum",
         description="IPsum is a threat intelligence feed based on 30+ different publicly available lists of suspicious and/or malicious IP addresses.",
         identity_class="system",
-        contact_information="https://github.com/stamparm/ipsum",
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
+        contact_info="https://github.com/stamparm/ipsum",
     )
-
-    return identity
 
 
 def create_ipsum_marking_definition():
     """Create a marking definition for IPSum feed"""
-    statement = "Origin: https://github.com/stamparm/ipsum"
-    marking_id = generate_uuid5(NAMESPACE_UUID, statement)
-
-    marking = MarkingDefinition(
-        id=f"marking-definition--{marking_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        definition_type="statement",
-        definition={"statement": statement},
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
-    )
-
-    return marking
+    return create_marking_definition_object("Origin: https://github.com/stamparm/ipsum")
 
 
 def fetch_ipsum_feed(level):
@@ -132,7 +92,7 @@ def create_stix_objects(
                 logger.info(f"Processed {processed}/{total_ips} IP addresses...")
 
             indicator_name = f"IPv4: {ip}"
-            indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
+            indicator_id = generate_uuid5(indicator_name)
             indicator_id_full = f"indicator--{indicator_id}"
             
             ipv4_obj = IPv4Address(value=ip)
@@ -157,6 +117,15 @@ def create_stix_objects(
 
             stix_objects.append(ipv4_obj)
             stix_objects.append(indicator)
+            relationship = make_relationship(
+                source_ref=indicator["id"],
+                target_ref=ipv4_obj["id"],
+                relationship_type="indicates",
+                created_by_ref=ipsum_identity["id"],
+                marking_refs=indicator["object_marking_refs"],
+                created=script_run_time,
+            )
+            stix_objects.append(relationship)
 
     return stix_objects
 
