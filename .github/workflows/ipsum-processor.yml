@@ -6,8 +6,8 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
-      category_score:
-        description: 'IPSum category score (1-8)'
+      min_level:
+        description: 'Minimum level (1-8). Fetches all levels from 8 down to this level.'
         required: true
         type: choice
         options:
@@ -45,19 +45,21 @@ jobs:
           set -e
           
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            CATEGORY_SCORE="${{ inputs.category_score }}"
+            MIN_LEVEL="${{ inputs.min_level }}"
           else
-            CATEGORY_SCORE="4"
+            MIN_LEVEL="${IPSUM_MIN_LEVEL:-4}"
           fi
           
-          echo "Processing IPSum feed with category score: $CATEGORY_SCORE"
-          python processors/ipsum/ipsum.py --category_score "$CATEGORY_SCORE"
+          echo "Processing IPSum feed with minimum level: $MIN_LEVEL"
+          python processors/ipsum/ipsum.py --min-level "$MIN_LEVEL"
       
       - name: Upload bundle to CTX
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           IPSUM_FEED_ID: ${{ vars.IPSUM_FEED_ID }}
+          IPSUM_MIN_LEVEL: ${{ vars.IPSUM_MIN_LEVEL }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           

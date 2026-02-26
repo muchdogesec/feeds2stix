@@ -133,21 +133,18 @@ Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `
 
 ## Github action
 
-The processor should also be linked to a Github action that downloads data from the feed every 24 hours (after feed update schedule)
+The processor is linked to a Github action that downloads data from the feed every 24 hours at 05:00 UTC.
 
-The issue with this feed is `created` and `modified` times are not included in the feed.
+The workflow:
+1. Fetches domains from https://hole.cert.pl/domains/v2/domains.txt
+2. Converts domains to STIX 2.1 bundle
+3. Uploads bundle to CTX via `helpers/upload.py`
 
-To solve this we need a GitHub action that has a CTX API key to see if object exists.
+You need to set the following secrets and variables:
 
-If run in Github action mode, the script will do an additional check
+**Secrets:**
+* `CTX_BASE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
+* `CTX_API_KEY`: for team that owns the feed ID selected
 
-1. see if indicator exists in feed
-2. if:
-	* false: normal behaviour
-	* true: indicator / sco not submitted
-
-You need to set the following variables in the Github actions environment `cyberthreatexchange-updates`
-
-* `CYBERTHREATEXCHANGE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
-* `CYBERTHREATEXCHANGE_API_KEY`: for team that owns the feed ID selected
-* `CYBERTHREATEXCHANGE_FEED_ID`: the feed ID
+**Variables:**
+* `CERTPL_FEED_ID`: the CTX feed ID for CERT.PL

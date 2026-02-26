@@ -6,7 +6,7 @@ import json
 import logging
 import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, Identity, MarkingDefinition, Bundle
+from stix2 import Indicator, Identity, MarkingDefinition, Bundle, IPv4Address
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -116,12 +116,7 @@ def create_stix_objects(
         if (idx + 1) % 1000 == 0:
             logger.info(f"Processed {idx + 1}/{len(ip_addresses)} IP addresses...")
 
-        ipv4_obj = {
-            "type": "ipv4-addr",
-            "spec_version": "2.1",
-            "id": f"ipv4-addr--{generate_uuid5(OASIS_NAMESPACE_UUID, ip)}",
-            "value": ip,
-        }
+        ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
         indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
