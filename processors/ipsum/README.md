@@ -155,25 +155,27 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+`marking-definition--<UUIDV5>` is a single marking definition for all IPSum data pointing to https://github.com/stamparm/ipsum
 `"confidence": "<VALUE>",` is determined by the level the IPv4 is found in.
 
 ## Github action
 
-The processor should also be linked to a Github action that downloads data from the feed every 24 hours (after feed update schedule)
+The processor is linked to a Github action that downloads data from the feed every 24 hours at 02:00 UTC.
 
-The issue with this feed is `created` and `modified` times are not included in the feed.
+The workflow:
+1. Fetches IP addresses from https://raw.githubusercontent.com/stamparm/ipsum/master/levels/{1-8}.txt
+2. Fetches all levels from 8 down to the specified minimum level, skipping duplicates
+3. Each IP receives the highest confidence score from the highest level it appears in
+4. Converts IP addresses to STIX 2.1 bundle with appropriate confidence scores
+5. Uploads bundle to CTX via `helpers/upload.py`
 
-To solve this we need a GitHub action that has a CTX API key to see if object exists.
+You need to set the following secrets and variables:
 
-If run in Github action mode, the script will do an additional check
-
-1. see if indicator exists in feed
-2. if:
-	* false: normal behaviour
-	* true: indicator / sco not submitted
-
-You need to set the following variables in the Github actions environment `cyberthreatexchange-updates`
-
+**Secrets:**
 * `CTX_BASE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
 * `CTX_API_KEY`: for team that owns the feed ID selected
+
+**Variables:**
+* `IPSUM_FEED_ID`: the CTX feed ID for IPSum
+* `IPSUM_MIN_LEVEL`: the minimum level to fetch (1-8, where 1 has most false positives, 8 has least). All levels from 8 down to this level will be fetched.
 * `IPSUM_FEED_ID`: the feed ID

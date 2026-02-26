@@ -6,7 +6,7 @@ import json
 import logging
 import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, Identity, MarkingDefinition, Bundle
+from stix2 import Indicator, Identity, MarkingDefinition, Bundle, URL
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -114,12 +114,7 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
         if (idx + 1) % 1000 == 0:
             logger.info(f"Processed {idx + 1}/{len(urls)} URLs...")
 
-        url_obj = {
-            "type": "url",
-            "spec_version": "2.1",
-            "id": f"url--{generate_uuid5(OASIS_NAMESPACE_UUID, url)}",
-            "value": url,
-        }
+        url_obj = URL(value=url)
 
         indicator_name = f"URL: {url}"
         indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
