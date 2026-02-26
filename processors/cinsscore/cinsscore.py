@@ -1,87 +1,44 @@
 import os
-import shutil
 import requests
-import uuid
 import json
 import logging
 import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, Identity, MarkingDefinition, Bundle, IPv4Address
+from stix2 import Indicator, IPv4Address
+
+from helpers.helpers import (
+    generate_uuid5,
+    fetch_external_objects,
+    create_identity_object,
+    create_marking_definition_object,
+    create_bundle_with_metadata,
+    make_relationship,
+    save_bundle_to_file,
+    setup_output_directory,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-NAMESPACE_UUID = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")
-OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 CINSSCORE_FEED_URL = "https://cinsscore.com/list/ci-badguys.txt"
 BASE_OUTPUT_DIR = "bundles/cinsscore/"
-
-FEEDS2STIX_IDENTITY_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
-FEEDS2STIX_MARKING_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json"
-
-
-def generate_uuid5(namespace, name):
-    """Generate UUIDv5 from namespace and name"""
-    return str(uuid.uuid5(namespace, name))
-
-
-def fetch_external_objects():
-    """Fetch external STIX identity and marking definition objects"""
-    logger.info("Fetching external STIX objects...")
-
-    identity_response = requests.get(FEEDS2STIX_IDENTITY_URL)
-    identity_response.raise_for_status()
-    feeds2stix_identity = identity_response.json()
-
-    marking_response = requests.get(FEEDS2STIX_MARKING_URL)
-    marking_response.raise_for_status()
-    feeds2stix_marking = marking_response.json()
-
-    return feeds2stix_identity, feeds2stix_marking
 
 
 def create_cinsscore_identity():
     """Create the CINS Score identity object"""
-    identity_id = generate_uuid5(NAMESPACE_UUID, "CINS")
-
-    identity = Identity(
-        id=f"identity--{identity_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        modified="2020-01-01T00:00:00.000Z",
+    return create_identity_object(
         name="CINS",
         description='Collective Intelligence Network Security (CINS, pronounced "sins," get it?) is our effort to use this information to significantly improve the security of our customers\' networks. We also provide this vital information to the InfoSec community free of charge.',
         identity_class="system",
-        contact_information="https://cinsarmy.com/",
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
+        contact_info="https://cinsarmy.com/",
     )
-
-    return identity
 
 
 def create_cinsscore_marking_definition():
     """Create a marking definition for CINS Score feed"""
-    statement = f"Origin: {CINSSCORE_FEED_URL}"
-    marking_id = generate_uuid5(NAMESPACE_UUID, statement)
-
-    marking = MarkingDefinition(
-        id=f"marking-definition--{marking_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        definition_type="statement",
-        definition={"statement": statement},
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
-    )
-
-    return marking
+    return create_marking_definition_object(f"Origin: {CINSSCORE_FEED_URL}")
 
 
 def fetch_cinsscore_feed():
@@ -119,7 +76,7 @@ def create_stix_objects(
         ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
+        indicator_id = generate_uuid5(indicator_name)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
@@ -141,43 +98,21 @@ def create_stix_objects(
 
         stix_objects.append(ipv4_obj)
         stix_objects.append(indicator)
+        relationship = make_relationship(
+            source_ref=indicator["id"],
+            target_ref=ipv4_obj["id"],
+            relationship_type="indicates",
+            created_by_ref=cinsscore_identity["id"],
+            marking_refs=indicator["object_marking_refs"],
+            created=script_run_time,
+        )
+        stix_objects.append(relationship)
 
     logger.info(f"Created {len(stix_objects)} STIX objects")
     return stix_objects
 
 
-def create_bundle(
-    stix_objects,
-    feeds2stix_identity,
-    feeds2stix_marking,
-    cinsscore_identity,
-    cinsscore_marking,
-):
-    """Create a STIX bundle with all objects"""
-    all_objects = [
-        feeds2stix_identity,
-        feeds2stix_marking,
-        cinsscore_identity,
-        cinsscore_marking,
-    ] + stix_objects
 
-    bundle = Bundle(objects=all_objects)
-    return bundle
-
-
-def save_bundle(bundle, output_dir):
-    """Save bundle to file"""
-    os.makedirs(output_dir, exist_ok=True)
-
-    timestamp = datetime.now(UTC).strftime("%Y%m%d")
-    filename = f"cinsscore_{timestamp}.json"
-    filepath = os.path.join(output_dir, filename)
-
-    with open(filepath, "w") as f:
-        f.write(bundle.serialize(indent=4))
-
-    logger.info(f"Bundle saved to: {filepath}")
-    return filepath
 
 
 def main():
@@ -188,11 +123,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = os.path.join(BASE_OUTPUT_DIR, "bundles")
-
-        if os.path.exists(output_dir):
-            logger.info(f"Cleaning output directory: {output_dir}")
-            shutil.rmtree(output_dir)
+        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -209,15 +140,15 @@ def main():
         )
 
         logger.info("Creating STIX bundle...")
-        bundle = create_bundle(
+        bundle = create_bundle_with_metadata(
             stix_objects,
-            feeds2stix_identity,
-            feeds2stix_marking,
             cinsscore_identity,
             cinsscore_marking,
+            feeds2stix_identity,
+            feeds2stix_marking,
         )
 
-        bundle_path = save_bundle(bundle, output_dir)
+        bundle_path = save_bundle_to_file(bundle, output_dir, "cinsscore")
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"

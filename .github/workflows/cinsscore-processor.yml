@@ -37,6 +37,7 @@ jobs:
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           CINSSCORE_FEED_ID: ${{ vars.CINSSCORE_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           

@@ -1,87 +1,47 @@
 import os
 import shutil
 import requests
-import uuid
 import json
 import logging
 import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, Identity, MarkingDefinition, Bundle, URL
+from stix2 import Indicator, URL, Bundle
+
+from helpers.helpers import (
+    generate_uuid5,
+    fetch_external_objects,
+    create_identity_object,
+    create_marking_definition_object,
+    create_bundle_with_metadata,
+    make_relationship,
+    save_bundle_to_file,
+    setup_output_directory,
+    NAMESPACE_UUID,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-NAMESPACE_UUID = uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")
-OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
+OASIS_NAMESPACE_UUID = "00abedb4-aa42-466c-9c01-fed23315a9b7"
 VXVAULT_FEED_URL = "http://vxvault.net/URL_List.php"
 BASE_OUTPUT_DIR = "bundles/vxvault/"
-
-FEEDS2STIX_IDENTITY_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json"
-FEEDS2STIX_MARKING_URL = "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json"
-
-
-def generate_uuid5(namespace, name):
-    """Generate UUIDv5 from namespace and name"""
-    return str(uuid.uuid5(namespace, name))
-
-
-def fetch_external_objects():
-    """Fetch external STIX identity and marking definition objects"""
-    logger.info("Fetching external STIX objects...")
-
-    identity_response = requests.get(FEEDS2STIX_IDENTITY_URL)
-    identity_response.raise_for_status()
-    feeds2stix_identity = identity_response.json()
-
-    marking_response = requests.get(FEEDS2STIX_MARKING_URL)
-    marking_response.raise_for_status()
-    feeds2stix_marking = marking_response.json()
-
-    return feeds2stix_identity, feeds2stix_marking
 
 
 def create_vxvault_identity():
     """Create the VXVault identity object"""
-    identity_id = generate_uuid5(NAMESPACE_UUID, "VXVault")
-
-    identity = Identity(
-        id=f"identity--{identity_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        modified="2020-01-01T00:00:00.000Z",
+    return create_identity_object(
         name="VXVault",
         description="Recently identified malware samples and the URLs used to distribute them",
         identity_class="system",
-        contact_information="http://vxvault.net/",
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
+        contact_info="http://vxvault.net/",
     )
-
-    return identity
 
 
 def create_vxvault_marking_definition():
     """Create a marking definition for VXVault feed"""
-    statement = f"Origin: {VXVAULT_FEED_URL}"
-    marking_id = generate_uuid5(NAMESPACE_UUID, statement)
-
-    marking = MarkingDefinition(
-        id=f"marking-definition--{marking_id}",
-        created_by_ref="identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        created="2020-01-01T00:00:00.000Z",
-        definition_type="statement",
-        definition={"statement": statement},
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
-    )
-
-    return marking
+    return create_marking_definition_object(f"Origin: {VXVAULT_FEED_URL}")
 
 
 def fetch_vxvault_feed():
@@ -117,7 +77,7 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
         url_obj = URL(value=url)
 
         indicator_name = f"URL: {url}"
-        indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
+        indicator_id = generate_uuid5(indicator_name)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
@@ -139,6 +99,15 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
 
         stix_objects.append(url_obj)
         stix_objects.append(indicator)
+        relationship = make_relationship(
+            source_ref=indicator["id"],
+            target_ref=url_obj["id"],
+            relationship_type="indicates",
+            created_by_ref=vxvault_identity["id"],
+            marking_refs=indicator["object_marking_refs"],
+            created=script_run_time,
+        )
+        stix_objects.append(relationship)
 
     logger.info(f"Created {len(stix_objects)} STIX objects")
     return stix_objects
