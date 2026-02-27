@@ -127,7 +127,7 @@ def create_bundle_with_metadata(
     return bundle
 
 
-def save_bundle_to_file(bundle, output_dir, prefix):
+def save_bundle_to_file(bundle, output_dir, filename, add_timestamp=True):
     """
     Save a STIX bundle to a timestamped JSON file.
 
@@ -135,6 +135,7 @@ def save_bundle_to_file(bundle, output_dir, prefix):
         bundle: Bundle object to save
         output_dir: Directory to save the bundle in
         prefix: Filename prefix (e.g., 'cinsscore', 'ipsum', 'vxvault')
+        add_timestamp: Whether to add a timestamp to the filename
 
     Returns:
         Filepath of saved bundle
@@ -142,7 +143,9 @@ def save_bundle_to_file(bundle, output_dir, prefix):
     os.makedirs(output_dir, exist_ok=True)
 
     timestamp = datetime.now(UTC).strftime("%Y%m%d")
-    filename = f"{prefix}_{timestamp}.json"
+    if add_timestamp:
+        filename = f"{filename}_{timestamp}"
+    filename = filename + ".json"
     filepath = os.path.join(output_dir, filename)
 
     with open(filepath, "w") as f:
@@ -183,7 +186,9 @@ def make_relationship(
     modified=None,
 ):
     """Helper function to create a relationship object"""
-    relationship_id = generate_uuid5(f"{created_by_ref}+{source_ref}+{target_ref}", namespace=marking_refs[-1])
+    relationship_id = generate_uuid5(
+        f"{source_ref}+{target_ref}", namespace=marking_refs[-1]
+    )
 
     relationship = Relationship(
         type="relationship",

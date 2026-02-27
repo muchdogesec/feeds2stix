@@ -133,7 +133,7 @@ With relationship to Indicator:
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `created+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### Indicator
 
@@ -203,7 +203,7 @@ With relationship to IPv4:
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `created+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### IPv4
 
@@ -239,7 +239,7 @@ With relationship to URL:
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `created+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### ATT&CK Technique
 

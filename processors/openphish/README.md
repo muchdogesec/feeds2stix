@@ -96,7 +96,7 @@ With relationship to Indicator:
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `created+source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
 #### Indicator
 

@@ -222,7 +222,7 @@ Each indicator created is then linked to the malware objects like so;
 }
 ```
 
-UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `created+source_ref+target_ref`
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
 
 ## Github action
 
