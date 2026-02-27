@@ -1,6 +1,5 @@
 requests==2.32.4
 stix2==3.0.1
 https://github.com/muchdogesec/stix2extensions/archive/main.zip
-pandas
-openpyxl
-gdown
+psutil
+gitpython

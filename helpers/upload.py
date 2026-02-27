@@ -355,9 +355,25 @@ def save_artifacts(result, artifacts_base_dir, bundle_name, bundle_file):
 
 def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
     try:
+        # Expand directories to individual files
+        all_bundle_files = []
+        for bundle_file in bundle_files:
+            if os.path.isdir(bundle_file):
+                logger.info(f"Walking directory: {bundle_file}")
+                json_files = []
+                for root, dirs, files in os.walk(bundle_file):
+                    for file in files:
+                        if file.endswith('.json'):
+                            json_files.append(os.path.join(root, file))
+                json_files.sort()  # Sort alphabetically
+                logger.info(f"Found {len(json_files)} JSON files in directory")
+                all_bundle_files.extend(json_files)
+            else:
+                all_bundle_files.append(bundle_file)
+        
         # Process files and split if necessary
         processed_files = []
-        for bundle_file in bundle_files:
+        for bundle_file in all_bundle_files:
             bundle_size = os.path.getsize(bundle_file) / 1024
             if bundle_size > max_size_kb:
                 logger.info(

@@ -15,6 +15,9 @@ FEEDS2STIX_MARKING_URL = "https://raw.githubusercontent.com/muchdogesec/stix4dog
 
 def generate_uuid5(name, namespace=NAMESPACE_UUID):
     """Generate UUIDv5 from namespace and name"""
+    if isinstance(namespace, str):
+        _, _, namespace_uuid = namespace.rpartition("--")
+        namespace = uuid.UUID(namespace_uuid)
     return str(uuid.uuid5(namespace, name))
 
 
