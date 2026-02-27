@@ -183,7 +183,7 @@ def make_relationship(
     modified=None,
 ):
     """Helper function to create a relationship object"""
-    relationship_id = generate_uuid5(f"{created_by_ref}+{source_ref}+{target_ref}")
+    relationship_id = generate_uuid5(f"{created_by_ref}+{source_ref}+{target_ref}", namespace=marking_refs[-1])
 
     relationship = Relationship(
         type="relationship",
