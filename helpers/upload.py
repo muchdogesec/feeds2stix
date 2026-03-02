@@ -224,7 +224,11 @@ def write_github_summary(results, is_multi_bundle=False):
                 f.write("| Job ID | Bundle | Total | Submitted | Failed | State |\n")
                 f.write("|--------|--------|-------|-----------|--------|-------|\n")
 
-                for result in results:
+                # Limit to first 50 results to avoid step summary size limits
+                results_to_show = results[:50]
+                remaining_count = len(results) - len(results_to_show)
+
+                for result in results_to_show:
                     job_id = result.get("job_id", "N/A")
                     bundle_name = Path(result.get("bundle_file", "unknown")).name
                     total = result.get("total_objects", 0)
@@ -240,6 +244,9 @@ def write_github_summary(results, is_multi_bundle=False):
                     f.write(
                         f"| `{job_id}` | `{bundle_name}` | {total} | {submitted} | {failed} | {state_emoji} {state} |\n"
                     )
+
+                if remaining_count > 0:
+                    f.write(f"\n\n*...and {remaining_count} more bundles*\n\n")
 
                 f.write("\n### Overall Summary\n\n")
                 total_bundles = len(results)
