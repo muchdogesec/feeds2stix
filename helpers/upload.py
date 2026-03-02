@@ -113,6 +113,7 @@ def upload_bundle(
             req_responses[-1]["response_text"] = response.text
             job_result = response.json()
             req_responses[-1]["response_json"] = job_result
+            del req_responses[-1]["response_text"]  # Remove text to save space
             if not response.ok:
                 logger.warning(
                     f"Upload attempt failed with status {response.status_code}: {response.text}"
