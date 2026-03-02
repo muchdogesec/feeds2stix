@@ -155,7 +155,7 @@ For each entry an Indicator object is created as follows
     "indicator_types": [
         "malicious-activity"
     ],
-    "name": "File: <SHA-1>",
+    "name": "Certificate: <fingerprint>", // i.e "Certificate: eb:ee:b7:38:6a:ab:76:9f:4d:b8:8f:ec:70:32:2e:ac:46:a2:29:b0"
     "pattern": "[ file:hashes.'SHA-1' = '<sha1_hash>' ]",
     "pattern_type": "stix",
     "object_marking_refs": [
@@ -209,8 +209,8 @@ Each indicator created is then linked to the malware objects like so;
     "spec_version": "2.1",
     "id": "relationship--<Indicator UUID>",
     "created_by_ref": "identity--<UUID OF FEED ID>",
-    "created": "<MALWARE CREATED TIME>",
-    "modified": "<MALWARE MODIFIED TIME>",
+    "created": "<indicator CREATED TIME>",
+    "modified": "<indicator MODIFIED TIME>",
     "relationship_type": "indicates",
     "source_ref": "indicator--<ID>",
     "target_ref": "malware--<ID>",
