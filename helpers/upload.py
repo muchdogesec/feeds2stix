@@ -100,6 +100,7 @@ def upload_bundle(
     error_msg = "Max retries exhausted without successful upload"
 
     req_responses = []
+    job_id = None
 
     for attempt in range(max_retries):
         if attempt > 0:
@@ -118,6 +119,7 @@ def upload_bundle(
                 )
                 raise Exception(f"HTTP {response.status_code}: {response.text}")
 
+            job_id = job_result.get("id")
             if job_result["state"] == "failed":
                 logger.warning(f"Some objects failed validation")
                 error_data = job_result.get("errors", {})
@@ -151,7 +153,7 @@ def upload_bundle(
                     logger.warning("All objects failed validation")
                     return {
                         "success": True,
-                        "job_id": None,
+                        "job_id": job_id,
                         "total_objects": total_objects,
                         "submitted_objects": 0,
                         "failed_objects": failed_objects,
@@ -163,7 +165,6 @@ def upload_bundle(
                 continue
 
             else:
-                job_id = job_result.get("id")
                 logger.info(f"Successfully uploaded bundle, job_id: {job_id}")
                 logger.info(f"State: {job_result.get('state')}")
 
@@ -200,7 +201,7 @@ def upload_bundle(
 
     return {
         "success": False,
-        "job_id": None,
+        "job_id": job_id,
         "total_objects": total_objects,
         "submitted_objects": 0,
         "failed_objects": failed_objects,
