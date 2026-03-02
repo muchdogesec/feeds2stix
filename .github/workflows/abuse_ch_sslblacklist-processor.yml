@@ -64,7 +64,7 @@ jobs:
           last_run_date=$(echo "$last_run_date" | tr -d '"')
           start_date="${{ inputs.start_date }}"
           
-          CMD="python processors/abuse_ch_sslblacklist/sslblacklist.py"
+          CMD="python processors/abuse_ch_sslblacklist/sslblacklist.py --no-split-bundle"
           
           # Determine start_date: use last_run_date for auto/scheduled, or custom date
           if [ "$start_date" = "auto" ] || [ "${{ github.event_name }}" = "schedule" ]; then
