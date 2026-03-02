@@ -401,12 +401,8 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
         artifacts_dir = "upload_artifacts"
         os.makedirs(artifacts_dir, exist_ok=True)
 
-        if is_multi_bundle:
-            logger.info("=" * 120)
-            logger.info(
-                f"{'Job ID':<40} | {'Bundle Name':<30} | {'Total':>8} | {'Submitted':>10} | {'Failed':>8} | {'State':<12}"
-            )
-            logger.info("=" * 120)
+        logger.info("=" * 120)
+        logger.info("=" * 120)
 
         for bundle_file in processed_files:
             logger.info(f"Processing bundle: {bundle_file}")
@@ -444,16 +440,14 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
             save_artifacts(result, artifacts_dir, bundle_name, bundle_file)
 
             if is_multi_bundle:
-                job_id = result.get("job_id", "N/A")
+                job_id = result.get("job_id") or "N/A"
                 bundle_name_display = Path(bundle_file).name[:28]
                 total = result.get("total_objects", 0)
                 submitted = result.get("submitted_objects", 0)
                 failed = len(result.get("failed_objects", []))
-                state = result.get("job_state", "unknown")
+                state = result.get("job_state") or "unknown"
+                logger.info(str({"job_id": job_id, "bundle_name": bundle_name_display, "total": total, "submitted": submitted, "failed": failed, "state": state}))
 
-                logger.info(
-                    f"{job_id:<40} | {bundle_name_display:<30} | {total:>8} | {submitted:>10} | {failed:>8} | {state:<12}"
-                )
 
         write_github_summary(results, is_multi_bundle)
 
