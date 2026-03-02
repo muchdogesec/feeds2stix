@@ -8,6 +8,7 @@ import logging
 import time
 from pathlib import Path
 from split_jsons import split_stix_bundle, get_file_size_kb
+import copy
 
 # Setup logging
 logging.basicConfig(
@@ -105,7 +106,7 @@ def upload_bundle(
             logger.info(f"Retry attempt {attempt}/{max_retries - 1}")
 
         try:
-            req_responses.append({"request_url": url, "request_body": current_bundle})
+            req_responses.append({"request_url": url, "request_body": copy.deepcopy(current_bundle)})
             response = requests.post(url, headers=headers, json=current_bundle)
             req_responses[-1]["response_status"] = response.status_code
             req_responses[-1]["response_text"] = response.text
