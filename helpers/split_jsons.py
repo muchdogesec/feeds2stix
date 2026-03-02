@@ -115,7 +115,7 @@ def split_stix_bundle(input_file, max_size_kb, output_dir=None):
                 i += batch_size
                 batch_added = True
                 break
-            elif not current_chunk and batch_size == 1:
+            elif not current_chunk and batch_size == batch_sizes[-1]:
                 # Even a single object doesn't fit in empty chunk - add it anyway
                 logger.warning(f"Single object at index {i} exceeds max size ({test_size:.2f} KB > {max_size_kb} KB)")
                 current_chunk = test_chunk
