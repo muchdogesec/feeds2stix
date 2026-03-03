@@ -83,8 +83,8 @@ With relationship to Indicator:
 	"spec_version": "2.1",
 	"id": "relationship--<UUID V5>",
 	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUNTIME>",
-	"modified": "<SCRIPT RUNTIME>",
+	"created": "<LINE COMMIT DATE>",
+	"modified": "<LINE COMMIT DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
 	"target_ref": "url--<UUID>",
@@ -106,9 +106,9 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 	"spec_version": "2.1",
 	"id": "indicator--<UUID V5>",
 	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUNTIME>",
-	"modified": "<SCRIPT RUNTIME>",
-	"valid_from": "<SCRIPT RUNTIME>",
+	"created": "<LINE COMMIT DATE>",
+	"modified": "<LINE COMMIT DATE>",
+	"valid_from": "<LINE COMMIT DATE>",
 	"indicator_types": [
 		"malicious-activity"
 	],
@@ -125,13 +125,44 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+### Timestamp Determination
+
+The OpenPhish processor uses Git history analysis to determine accurate timestamps for each URL:
+
+1. **Repository Analysis**: The script clones the OpenPhish public_feed repository and analyzes its entire Git commit history
+2. **First Seen Detection**: For each URL, the processor identifies the earliest commit where that URL first appeared in the feed
+3. **Timestamp Assignment**: The commit timestamp from that first appearance is used for:
+   - Indicator `created` field
+   - Indicator `modified` field  
+   - Indicator `valid_from` field
+   - Relationship `created` field
+   - Relationship `modified` field
+
+This approach ensures that each indicator has an accurate "first seen" timestamp based on when the URL was actually added to the OpenPhish feed, rather than using the script execution time.
+
+**Note**: The `<LINE COMMIT DATE>` value in the STIX objects refers to the timestamp of the Git commit when that specific URL first appeared in the feed.
+
 ## Usage
 
+```bash
+python processors/openphish/openphish.py [OPTIONS]
+```
+
+### Options
+
+* `--since-date <date>`: Only process URLs added since this date (YYYY-MM-DD format). The script will analyze Git history and include only URLs whose first commit was on or after this date.
+
+### Examples
+
+Process all URLs from the entire feed history:
 ```bash
 python processors/openphish/openphish.py
 ```
 
-No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+Process only URLs added since a specific date:
+```bash
+python processors/openphish/openphish.py --since-date 2024-07-01
+```
 
 ### Output
 
@@ -140,9 +171,18 @@ The script creates a single STIX bundle file:
 
 Each bundle contains:
 * URL objects for each phishing URL in the feed
-* Indicator objects with patterns matching the URLs
+* Indicator objects with patterns matching the URLs (with accurate first-seen timestamps from Git history)
 * Relationships linking Indicators to URL objects
 * Identity and Marking Definition objects
+
+### Processing Details
+
+The script performs the following steps:
+1. Clones or updates the OpenPhish GitHub repository locally
+2. Analyzes the Git commit history of `feed.txt`
+3. Identifies when each URL first appeared in the feed
+4. Creates STIX objects with accurate timestamps based on Git commit dates
+5. Generates a single bundle with all processed URLs
 
 ## Github action
 
