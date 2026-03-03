@@ -3,12 +3,13 @@
 from collections import defaultdict
 import os
 import csv
+import re
 import requests
 import logging
 import argparse
 import sys
 from datetime import datetime, timezone
-from stix2 import File, Indicator, Malware, Relationship
+from stix2 import X509Certificate, Indicator, Malware, Relationship, Infrastructure
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
@@ -51,16 +52,19 @@ def create_sslbl_marking_definition():
 
 
 def clean_listing_reason(reason):
-    if reason is None:
-        return "Unknown"
-
-    reason = reason.replace(" malware distribution", "")
-    reason = reason.replace(" Malware distribution", "Malware")
-    reason = reason.replace(" C&C", "")
-    reason = reason.strip()
-    if not reason:
-        reason = "Unknown"
-    return reason
+    C2_PATTERN = re.compile(r"^(.+?)(?:\s*C&C)$", re.IGNORECASE)
+    DISTRIBUTION_PATTERN = re.compile(
+        r"^(.+?)(?:\s*malware distribution)$", re.IGNORECASE
+    )
+    MITM_PATTERN = re.compile(r"^(.+?)(?:\s*MITM)$", re.IGNORECASE)
+    if C2_PATTERN.match(reason):
+        return C2_PATTERN.sub(r"\1", reason), "command-and-control"
+    elif DISTRIBUTION_PATTERN.match(reason):
+        return DISTRIBUTION_PATTERN.sub(r"\1", reason), "hosting-malware"
+    # elif MITM_PATTERN.match(reason):
+    #     return MITM_PATTERN.sub(r"\1", reason), "man-in-the-middle"
+    else:
+        return "Unknown", None
 
 
 def fetch_sslbl_feed():
@@ -82,16 +86,16 @@ def fetch_sslbl_feed():
             continue
 
         timestamp, sha1_hash, listing_reason = parts
-        listing_reason = clean_listing_reason(listing_reason)
 
         listing_date_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         listing_date_dt = listing_date_dt.replace(tzinfo=timezone.utc)
+        malware_name, malware_type = clean_listing_reason(listing_reason)
 
-        retval[listing_reason].append(
+        retval[malware_name].append(
             {
                 "timestamp": listing_date_dt,
                 "sha1_hash": sha1_hash,
-                "listing_reason": listing_reason,
+                "infrastructure_type": malware_type,
             }
         )
 
@@ -104,8 +108,66 @@ def format_fingerprint(s):
     return ":".join(s[i : i + 2] for i in range(0, len(s), 2))
 
 
+def create_infrastructure_and_rels(malware_obj, infrastructure_type, cert_refs, marking_id):
+    MAPPING = {
+        "command-and-control": "C&C",
+        "hosting-malware": "Malware distribution",
+    }
+    RELATION_MAP = {
+        "command-and-control": "controls",
+        "hosting-malware": "hosts",
+    }
+    objects = []
+    infra_name = "{} {}".format(
+        malware_obj.name, MAPPING.get(infrastructure_type, infrastructure_type)
+    )
+    infrastructure_id = "infrastructure--" + generate_uuid5(infra_name, marking_id)
+    infrastructure_obj = Infrastructure(
+        id=infrastructure_id,
+        created_by_ref=malware_obj.created_by_ref,
+        created=malware_obj.created,
+        modified=malware_obj.modified,
+        name=infra_name,
+        infrastructure_types=[infrastructure_type],
+        object_marking_refs=malware_obj.object_marking_refs,
+    )
+    objects.append(infrastructure_obj)
+    infra_cert_rel = make_relationship(
+        source_ref=infrastructure_obj.id,
+        target_ref=malware_obj.id,
+        relationship_type=RELATION_MAP[infrastructure_type],
+        created_by_ref=malware_obj.created_by_ref,
+        created=malware_obj.created,
+        modified=malware_obj.modified,
+        marking_refs=malware_obj.object_marking_refs,
+    )
+    objects.append(infra_cert_rel)
+    for cert_ref, timestamp in cert_refs:
+        infra_cert_rel = make_relationship(
+            source_ref=infrastructure_obj.id,
+            target_ref=cert_ref,
+            relationship_type="related-to",
+            created_by_ref=malware_obj.created_by_ref,
+            created=timestamp,
+            modified=timestamp,
+            marking_refs=malware_obj.object_marking_refs,
+        )
+        objects.append(infra_cert_rel)
+        mal_cert_rel = make_relationship(
+            source_ref=malware_obj.id,
+            target_ref=cert_ref,
+            relationship_type="related-to",
+            created_by_ref=malware_obj.created_by_ref,
+            created=timestamp,
+            modified=timestamp,
+            marking_refs=malware_obj.object_marking_refs,
+        )
+        objects.append(mal_cert_rel)
+    return objects
+
+
 def create_stix_objects_for_malware(
-    listing_reason, files_data, abuse_ch_identity, sslbl_marking, start_date=None
+    malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None
 ):
     """Create STIX objects for a single malware family"""
     stix_objects = []
@@ -124,20 +186,22 @@ def create_stix_objects_for_malware(
     latest_date = max(dates)
     if latest_date < start_date:
         logger.warning(
-            f"Skipping '{listing_reason}' - all files listed before {start_date}"
+            f"Skipping '{malware_name}' - all files listed before {start_date}"
         )
         return None
 
-    logger.info(f"Processing '{listing_reason}' with {len(files_data)} files...")
+    logger.info(f"Processing '{malware_name}' with {len(files_data)} files...")
 
     # Create File objects
-    file_ids = []
     indicator_ids: list[tuple[str, datetime]] = []
+    infrastructure_cert_rels = defaultdict(list)
     for file_data in files_data:
-        file_obj = File(hashes={"SHA-1": file_data["sha1_hash"]})
-        file_ids.append(file_obj.id)
+        file_obj = X509Certificate(hashes={"SHA-1": file_data["sha1_hash"]})
         if file_data["timestamp"] <= start_date:
             continue
+        infrastructure_cert_rels[file_data["infrastructure_type"]].append(
+            (file_obj.id, file_data["timestamp"])
+        )
         stix_objects.append(file_obj)
         indicator_name = "Certificate: " + format_fingerprint(file_data["sha1_hash"])
         indicator_id = "indicator--" + generate_uuid5(indicator_name, sslbl_marking_id)
@@ -149,7 +213,7 @@ def create_stix_objects_for_malware(
             valid_from=file_data["timestamp"],
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[ file:hashes.'SHA-1' = '{file_data['sha1_hash']}' ]",
+            pattern=f"[ x509-certificate:hashes.'SHA-1' = '{file_data['sha1_hash']}' ]",
             pattern_type="stix",
             object_marking_refs=marking_refs,
             external_references=[
@@ -175,33 +239,26 @@ def create_stix_objects_for_malware(
         stix_objects.append(file_relationship)
 
     # Create Malware object
-    if listing_reason != "Unknown":
-        malware_id = generate_uuid5(listing_reason, sslbl_marking_id)
+    if malware_name != "Unknown":
+        malware_id = generate_uuid5(malware_name, sslbl_marking_id)
         malware_obj = Malware(
             id=f"malware--{malware_id}",
             created_by_ref=abuse_ch_identity_id,
             created=earliest_date,
             modified=latest_date,
-            name=listing_reason,
+            name=malware_name,
             malware_types=["remote-access-trojan"],
             is_family=True,
-            sample_refs=file_ids,
             object_marking_refs=marking_refs,
         )
         stix_objects.append(malware_obj)
-        for indicator_id, timestamp in indicator_ids:
-            relationship = make_relationship(
-                source_ref=indicator_id,
-                target_ref=malware_obj.id,
-                relationship_type="indicates",
-                created_by_ref=abuse_ch_identity_id,
-                created=timestamp,
-                modified=timestamp,
-                marking_refs=marking_refs,
+        for infrastructure_type, cert_refs in infrastructure_cert_rels.items():
+            infrastructure_objects = create_infrastructure_and_rels(
+                malware_obj, infrastructure_type, cert_refs, sslbl_marking_id
             )
-            stix_objects.append(relationship)
+            stix_objects.extend(infrastructure_objects)
 
-    logger.info(f"Created {len(stix_objects)} STIX objects for '{listing_reason}'")
+    logger.info(f"Created {len(stix_objects)} STIX objects for '{malware_name}'")
     return stix_objects
 
 
@@ -216,12 +273,12 @@ def create_all_stix_objects(
     objects_by_malwares = defaultdict(list)
     objects_created = 0
     # Process each malware family
-    for listing_reason, files_data in malware_mapping.items():
+    for malware_name, files_data in malware_mapping.items():
         stix_objects = create_stix_objects_for_malware(
-            listing_reason, files_data, abuse_ch_identity, sslbl_marking, start_date
+            malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date
         )
         if stix_objects:
-            objects_by_malwares[listing_reason].extend(stix_objects)
+            objects_by_malwares[malware_name].extend(stix_objects)
             objects_created += len(stix_objects)
 
     logger.info(f"Created {objects_created} total STIX objects")
@@ -231,11 +288,6 @@ def create_all_stix_objects(
 def main():
     parser = argparse.ArgumentParser(
         description="Process abuse.ch SSLBL feed and generate STIX bundles"
-    )
-    parser.add_argument(
-        "--clean",
-        action="store_true",
-        help="Clean output directory before processing",
     )
     parser.add_argument(
         "--start-date",
@@ -254,7 +306,7 @@ def main():
     start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundle_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=args.clean)
+    bundle_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     abuse_ch_identity = create_abuse_ch_identity()
@@ -283,13 +335,16 @@ def main():
             source_marking=sslbl_marking,
             feeds2stix_marking=feeds2stix_marking,
         )
-        bundle_filename = f"sslblacklist_{listing_reason}".replace(" ", "_").replace("/", "_").replace('&', '_')
+        bundle_filename = (
+            f"sslblacklist_{listing_reason}".replace(" ", "_")
+            .replace("/", "_")
+            .replace("&", "_")
+        )
         bundle_path = save_bundle_to_file(bundle, bundle_dir, bundle_filename)
         logger.info(f"Bundle saved to: {bundle_path}")
         logger.info(
             f"Processing complete. Created 1 bundle with {len(stix_objects)} STIX objects."
         )
-
 
     # Set GitHub Actions output
     github_output = os.getenv("GITHUB_OUTPUT")
