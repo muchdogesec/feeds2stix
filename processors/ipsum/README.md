@@ -158,6 +158,50 @@ Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value 
 `marking-definition--<UUIDV5>` is a single marking definition for all IPSum data pointing to https://github.com/stamparm/ipsum
 `"confidence": "<VALUE>",` is determined by the level the IPv4 is found in.
 
+## Usage
+
+```bash
+python processors/ipsum/ipsum.py [--min-level LEVEL]
+```
+
+### Options
+
+* `--min-level <1-8>`: Minimum confidence level to fetch (default: 1). Fetches all levels from 8 (highest confidence) down to this level. IPs appearing in multiple levels receive the highest confidence score.
+
+### Confidence Mapping
+
+* Level 8 = confidence 100 (no false positives)
+* Level 7 = confidence 90
+* Level 6 = confidence 80
+* Level 5 = confidence 70
+* Level 4 = confidence 60
+* Level 3 = confidence 50
+* Level 2 = confidence 40
+* Level 1 = confidence 30 (lots of false positives)
+
+### Examples
+
+Fetch all levels (1-8):
+```bash
+python processors/ipsum/ipsum.py
+```
+
+Fetch only high-confidence IPs (levels 4-8):
+```bash
+python processors/ipsum/ipsum.py --min-level 4
+```
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/ipsum/bundles/ipsum_level_<min_level>.json`
+
+Each bundle contains:
+* IPv4 address objects for each IP in the feed
+* Indicator objects with patterns matching the IPs and confidence scores
+* Relationships linking Indicators to IPv4 addresses
+* Identity and Marking Definition objects
+
 ## Github action
 
 The processor is linked to a Github action that downloads data from the feed every 24 hours at 02:00 UTC.

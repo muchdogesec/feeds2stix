@@ -125,6 +125,25 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+## Usage
+
+```bash
+python processors/cinsscore/cinsscore.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/cinsscore/bundles/cinsscore.json`
+
+Each bundle contains:
+* IPv4 address objects for each IP in the feed
+* Indicator objects with patterns matching the IPs
+* Relationships linking Indicators to IPv4 addresses
+* Identity and Marking Definition objects
+
 ## Github action
 
 The processor is linked to a GitHub action that downloads data from the feed daily at 04:00 UTC.

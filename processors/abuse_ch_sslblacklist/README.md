@@ -224,5 +224,70 @@ Each indicator created is then linked to the malware objects like so;
 
 UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
 
-## Github action
+## Usage
+
+```bash
+python processors/abuse_ch_sslblacklist/sslblacklist.py [OPTIONS]
+```
+
+### Options
+
+* `--clean`: Clean output directory before processing
+* `--start-date <date>`: Only process records with listing date after this date (YYYY-MM-DDTHH:MM:SS format)
+* `--no-split-bundle`: Create a single bundle instead of splitting by listing_reason (malware family)
+
+### Examples
+
+Process all records and split by malware family (default):
+```bash
+python processors/abuse_ch_sslblacklist/sslblacklist.py
+```
+
+Process all records in a single bundle:
+```bash
+python processors/abuse_ch_sslblacklist/sslblacklist.py --no-split-bundle
+```
+
+Process only records after a specific date:
+```bash
+python processors/abuse_ch_sslblacklist/sslblacklist.py --start-date 2024-07-01T00:00:00
+```
+
+### Output
+
+By default (without `--no-split-bundle`), the script creates separate bundles for each malware family:
+* `bundles/abuse_ch_sslblacklist/bundles/<malware_name>/sslblacklist_<malware_name>.json`
+
+With `--no-split-bundle`, creates a single bundle:
+* `bundles/abuse_ch_sslblacklist/bundles/sslblacklist.json`
+
+Each bundle contains:
+* File objects for SSL certificates (SHA1 hashes)
+* Indicator objects with patterns matching the certificates
+* Malware objects for each identified family
+* Relationships linking Indicators to Files and Malware
+
+## Github Action
+
+A GitHub Actions workflow runs every 2 hours to:
+1. Download the latest SSLBL CSV feed
+2. Process only new records since the last successful run
+3. Create STIX bundles (single bundle with --no-split-bundle flag)
+4. Upload bundles to CyberThreatExchange
+
+The workflow file: `.github/workflows/abuse_ch_sslblacklist-processor.yml`
+
+### Environment Variables
+
+* `SSLBLACKLIST_FEED_ID`: The CyberThreatExchange feed ID for SSL Blacklist data
+* `CTX_BASE_URL`: Base URL for CyberThreatExchange API
+* `CTX_API_KEY`: API key for authentication
+
+### Manual Trigger
+
+The workflow can be manually triggered with a custom start date:
+1. Go to Actions tab in GitHub
+2. Select "Abuse.ch SSL Blacklist Feed to STIX Processor"
+3. Click "Run workflow"
+4. Enter start date (or use "auto" for last run date)
 

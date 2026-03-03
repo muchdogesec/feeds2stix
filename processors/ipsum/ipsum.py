@@ -69,7 +69,7 @@ def create_stix_objects(
     """Create STIX objects for IP addresses"""
     stix_objects = []
 
-    confidence_map = {1: 12, 2: 25, 3: 37, 4: 50, 5: 62, 6: 75, 7: 87, 8: 100}
+    confidence_map = {1: 30, 2: 40, 3: 50, 4: 60, 5: 70, 6: 80, 7: 90, 8: 100}
 
     ipsum_marking_id = ipsum_marking["id"]
     ipsum_identity_id = ipsum_identity["id"]

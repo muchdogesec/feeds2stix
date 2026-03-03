@@ -125,6 +125,25 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
-## Github Action
+## Usage
+
+```bash
+python processors/openphish/openphish.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/openphish/bundles/openphish.json`
+
+Each bundle contains:
+* URL objects for each phishing URL in the feed
+* Indicator objects with patterns matching the URLs
+* Relationships linking Indicators to URL objects
+* Identity and Marking Definition objects
+
+## Github action
 
 

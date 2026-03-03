@@ -131,6 +131,25 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+## Usage
+
+```bash
+python processors/certpl/certpl.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/certpl/bundles/certpl.json`
+
+Each bundle contains:
+* Domain-name objects for each domain in the feed
+* Indicator objects with patterns matching the domains
+* Relationships linking Indicators to domain-name objects
+* Identity and Marking Definition objects
+
 ## Github action
 
 The processor is linked to a Github action that downloads data from the feed every 24 hours at 05:00 UTC.
