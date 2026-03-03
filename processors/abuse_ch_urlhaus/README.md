@@ -164,6 +164,61 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+## Usage
+
+```bash
+python processors/abuse_ch_urlhaus/urlhaus.py [OPTIONS]
+```
+
+### Options
+
+* `--start-date <date>`: Only include records with dateadded after this date (YYYY-MM-DD[T[HH:MM[:SS]]])
+
+### Examples
+
+Process all records from the live feed:
+```bash
+python processors/abuse_ch_urlhaus/urlhaus.py
+```
+
+Process only records after a specific date:
+```bash
+python processors/abuse_ch_urlhaus/urlhaus.py --start-date 2026-03-01
+```
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/abuse_ch_urlhaus/bundles/urlhaus.json`
+
+Each bundle contains:
+* URL objects for each malicious URL
+* Indicator objects with patterns matching the URLs
+* Relationships linking Indicators to URLs
+* Identity and Marking Definition objects
+
 ## Github Action
+
+A GitHub Actions workflow runs every 15 minutes to:
+1. Download the latest URLhaus CSV feed
+2. Process only new records since the last successful run
+3. Create STIX bundles
+4. Upload bundles to CyberThreatExchange
+
+The workflow file: `.github/workflows/abuse_ch_urlhaus-processor.yml`
+
+### Environment Variables
+
+* `URLHAUS_FEED_ID`: The CyberThreatExchange feed ID for URLhaus data
+* `CTX_BASE_URL`: Base URL for CyberThreatExchange API
+* `CTX_API_KEY`: API key for authentication
+
+### Manual Trigger
+
+The workflow can be manually triggered with a custom start date:
+1. Go to Actions tab in GitHub
+2. Select "Abuse.ch URLhaus Feed to STIX Processor"
+3. Click "Run workflow"
+4. Enter start date (or use "auto" for last run date)
 
 
