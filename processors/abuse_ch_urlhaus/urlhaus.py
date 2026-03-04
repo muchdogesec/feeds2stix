@@ -22,7 +22,7 @@ from stix2 import (
 # Add parent directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from helpers.helpers import (
+from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
@@ -61,7 +61,7 @@ def create_urlhaus_marking_definition():
     )
 
 
-def download_urlhaus_data() -> str:
+def download_urlhaus_data() -> Path:
     """Download the URLhaus CSV data."""
     logger.info(f"Downloading URLhaus data from {URLHAUS_URL}")
     response = requests.get(URLHAUS_URL, timeout=300)

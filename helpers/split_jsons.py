@@ -1,3 +1,4 @@
+import math
 import os
 import json
 import argparse
@@ -19,11 +20,14 @@ def get_file_size_kb(data):
 def get_batch_sizes(max_size_kb):
     """Calculate dynamic batch sizes based on max_size_kb"""
     size_based = []
+    max_size_kb = max(max_size_kb, 10)  # Ensure we have a positive size
     size = max_size_kb
-    while size > 10:
+    while size > 1:
         for i in [2, 5, 10]:
-            size = int(max_size_kb / i)
+            size = max(int(max_size_kb / i), 1)
             size_based.append(size)
+            if size == 1:
+                break
         max_size_kb = size
     return size_based
 

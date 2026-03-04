@@ -7,7 +7,7 @@ import argparse
 from datetime import UTC, datetime
 from stix2 import Indicator, DomainName
 
-from helpers.helpers import (
+from helpers.utils import (
     generate_uuid5,
     fetch_external_objects,
     create_identity_object,
@@ -77,7 +77,7 @@ def create_stix_objects(domains, certpl_identity, certpl_marking, script_run_tim
         domain_obj = DomainName(value=domain)
 
         indicator_name = f"Domain Name: {domain}"
-        indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
+        indicator_id = generate_uuid5(indicator_name, namespace=certpl_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(

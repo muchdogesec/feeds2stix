@@ -15,7 +15,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from helpers.helpers import (
+from helpers.utils import (
     generate_uuid5,
     fetch_external_objects,
     create_identity_object,

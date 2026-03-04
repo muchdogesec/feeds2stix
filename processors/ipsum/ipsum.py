@@ -7,7 +7,7 @@ import argparse
 from datetime import UTC, datetime
 from stix2 import Indicator, IPv4Address, Bundle
 
-from helpers.helpers import (
+from helpers.utils import (
     generate_uuid5,
     fetch_external_objects,
     create_identity_object,

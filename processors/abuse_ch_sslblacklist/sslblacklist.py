@@ -13,7 +13,7 @@ from stix2 import X509Certificate, Indicator, Malware, Relationship, Infrastruct
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from helpers.helpers import (
+from helpers.utils import (
     generate_uuid5,
     fetch_external_objects,
     create_identity_object,
@@ -188,7 +188,7 @@ def create_stix_objects_for_malware(
         logger.warning(
             f"Skipping '{malware_name}' - all files listed before {start_date}"
         )
-        return None
+        return []
 
     logger.info(f"Processing '{malware_name}' with {len(files_data)} files...")
 

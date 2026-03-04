@@ -7,7 +7,7 @@ import argparse
 from datetime import UTC, datetime
 from stix2 import Indicator, IPv4Address
 
-from helpers.helpers import (
+from helpers.utils import (
     generate_uuid5,
     fetch_external_objects,
     create_identity_object,
@@ -77,7 +77,7 @@ def create_stix_objects(ip_addresses, blocklist_de_identity, blocklist_de_markin
         ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(NAMESPACE_UUID, indicator_name)
+        indicator_id = generate_uuid5(indicator_name, namespace=blocklist_de_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
