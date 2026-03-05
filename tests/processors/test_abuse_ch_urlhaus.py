@@ -1,3 +1,4 @@
+import json
 from datetime import UTC, datetime, timezone
 from pathlib import Path
 import processors
@@ -236,3 +237,26 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
     assert "latest_timestamp=" in text
     bundle_path = text.split("bundle_path=")[1].splitlines()[0].strip()
     assert Path(bundle_path).exists()
+
+    bundle = json.loads(Path(bundle_path).read_text())
+    assert {obj["id"] for obj in bundle["objects"]} == {
+        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
+        "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",  # abuse.ch identity
+        "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0",  # urlhaus marking
+        "url--c348ae7c-d6bb-508d-a65f-9f2aa3802910",  # URL observable
+        "indicator--40287512-f797-534e-ab85-91f3aa521ca3",  # indicator
+        "relationship--508eaa6a-ed52-5cd9-a50f-cbedec0c34c6",  # relationship
+    }
+
+    assert {
+        (obj["source_ref"], obj["relationship_type"], obj["target_ref"])
+        for obj in bundle["objects"]
+        if obj["type"] == "relationship"
+    } == {
+        (
+            "indicator--40287512-f797-534e-ab85-91f3aa521ca3",
+            "indicates",
+            "url--c348ae7c-d6bb-508d-a65f-9f2aa3802910",
+        ),
+    }

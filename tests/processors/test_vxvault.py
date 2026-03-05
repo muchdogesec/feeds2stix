@@ -5,26 +5,25 @@ from unittest.mock import patch
 import sys
 
 import processors
-from processors.certpl import certpl
-from helpers import utils as helper_utils
+from processors.vxvault import vxvault
 
 from tests.utils import stix_as_dict
 from tests import utils as test_utils
 
 
-def test_create_certpl_identity():
-    identity = certpl.create_certpl_identity()
+def test_create_vxvault_identity():
+    identity = vxvault.create_vxvault_identity()
     assert stix_as_dict(identity) == {
         "type": "identity",
         "spec_version": "2.1",
-        "id": "identity--5f500688-dc80-5611-8435-dc1561d3817e",
+        "id": "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "modified": "2020-01-01T00:00:00.000Z",
-        "name": "CERT.PL",
-        "description": "Poland's national computer security incident response team.",
-        "identity_class": "organization",
-        "contact_information": "https://cert.pl/",
+        "name": "VXVault",
+        "description": "Recently identified malware samples and the URLs used to distribute them",
+        "identity_class": "system",
+        "contact_information": "http://vxvault.net/",
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -32,18 +31,16 @@ def test_create_certpl_identity():
     }
 
 
-def test_create_certpl_marking_definition():
-    marking = certpl.create_certpl_marking_definition()
+def test_create_vxvault_marking_definition():
+    marking = vxvault.create_vxvault_marking_definition()
     assert stix_as_dict(marking) == {
         "type": "marking-definition",
         "spec_version": "2.1",
-        "id": "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",
+        "id": "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "definition_type": "statement",
-        "definition": {
-            "statement": "Origin: https://hole.cert.pl/domains/v2/domains.txt"
-        },
+        "definition": {"statement": "Origin: http://vxvault.net/URL_List.php"},
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -51,21 +48,22 @@ def test_create_certpl_marking_definition():
     }
 
 
-def test_fetch_certpl_feed():
-    content = b"#comment\nexample.com\n\nbad.example\n"
+def test_fetch_vxvault_feed():
+    content = (
+        b"#comment\nhttp://example.com/malware.exe\n\nhttps://evil.com/bad\nnotaurl\n"
+    )
     with patch(
-        "processors.certpl.certpl.requests.get",
+        "processors.vxvault.vxvault.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        domains = certpl.fetch_certpl_feed()
+        urls = vxvault.fetch_vxvault_feed()
 
-    assert domains == ["example.com", "bad.example"]
+    assert urls == ["http://example.com/malware.exe", "https://evil.com/bad"]
 
 
 def test_create_stix_objects():
-
-    objects = certpl.create_stix_objects(
-        ["evil.example"],
+    objects = vxvault.create_stix_objects(
+        ["http://example.com/malware.exe"],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
         {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
         "2026-01-01T00:00:00.000Z",
@@ -73,21 +71,21 @@ def test_create_stix_objects():
 
     assert stix_as_dict(objects) == [
         {
-            "type": "domain-name",
+            "type": "url",
             "spec_version": "2.1",
-            "id": "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
-            "value": "evil.example",
+            "id": "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",
+            "value": "http://example.com/malware.exe",
         },
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
+            "id": "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
-            "name": "Domain Name: evil.example",
+            "name": "URL: http://example.com/malware.exe",
             "indicator_types": ["malicious-activity"],
-            "pattern": "[domain-name:value='evil.example']",
+            "pattern": "[url:value='http://example.com/malware.exe']",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",
@@ -100,13 +98,13 @@ def test_create_stix_objects():
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--056dcd32-2124-5ace-adb9-bfbf4fc7b252",
+            "id": "relationship--501f2fb6-cbd5-5eff-b3ad-916110bcf983",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
-            "target_ref": "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
+            "source_ref": "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
+            "target_ref": "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -120,13 +118,14 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["certpl.py"])
-    monkeypatch.setattr(certpl, "BASE_OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setattr(sys, "argv", ["vxvault.py"])
+    monkeypatch.setattr(vxvault, "BASE_OUTPUT_DIR", str(tmp_path))
 
     with patch(
-        "processors.certpl.certpl.fetch_certpl_feed", return_value=["evil.example"]
+        "processors.vxvault.vxvault.fetch_vxvault_feed",
+        return_value=["http://example.com/malware.exe"],
     ):
-        result = certpl.main()
+        result = vxvault.main()
 
     assert result == 0
     assert "bundle_path=" in out_file.read_text()
@@ -137,11 +136,11 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert {obj["id"] for obj in bundle["objects"]} == {
         "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
-        "identity--5f500688-dc80-5611-8435-dc1561d3817e",  # certpl identity
-        "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",  # certpl marking
-        "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",  # domain observable
-        "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",  # indicator
-        "relationship--104d4a8e-8d4a-58d7-a171-25e85ca08184",  # relationship
+        "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",  # vxvault identity
+        "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",  # vxvault marking
+        "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",  # URL observable
+        "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",  # indicator
+        "relationship--099974e3-5d22-5c3d-981c-14a935878327",  # relationship
     }
 
     assert {
@@ -150,19 +149,19 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",
+            "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
             "indicates",
-            "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
+            "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",
         ),
     }
 
 
 def test_main_failure_returns_one(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["certpl.py"])
+    monkeypatch.setattr(sys, "argv", ["vxvault.py"])
     with patch(
-        "processors.certpl.certpl.setup_output_directory",
+        "processors.vxvault.vxvault.fetch_vxvault_feed",
         side_effect=RuntimeError("boom"),
     ):
-        result = certpl.main()
+        result = vxvault.main()
 
     assert result == 1

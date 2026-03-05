@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import requests
 import json
 import logging
@@ -16,7 +17,6 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -113,40 +113,6 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
     return stix_objects
 
 
-def create_bundle(
-    stix_objects,
-    feeds2stix_identity,
-    feeds2stix_marking,
-    vxvault_identity,
-    vxvault_marking,
-):
-    """Create a STIX bundle with all objects"""
-    all_objects = [
-        feeds2stix_identity,
-        feeds2stix_marking,
-        vxvault_identity,
-        vxvault_marking,
-    ] + stix_objects
-
-    bundle = Bundle(objects=all_objects)
-    return bundle
-
-
-def save_bundle(bundle, output_dir):
-    """Save bundle to file"""
-    os.makedirs(output_dir, exist_ok=True)
-
-    timestamp = datetime.now(UTC).strftime("%Y%m%d")
-    filename = f"vxvault_{timestamp}.json"
-    filepath = os.path.join(output_dir, filename)
-
-    with open(filepath, "w") as f:
-        f.write(bundle.serialize(indent=4))
-
-    logger.info(f"Bundle saved to: {filepath}")
-    return filepath
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert VXVault threat intelligence feed to STIX 2.1 format"
@@ -155,11 +121,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = os.path.join(BASE_OUTPUT_DIR, "bundles")
-
-        if os.path.exists(output_dir):
-            logger.info(f"Cleaning output directory: {output_dir}")
-            shutil.rmtree(output_dir)
+        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -176,15 +138,15 @@ def main():
         )
 
         logger.info("Creating STIX bundle...")
-        bundle = create_bundle(
+        bundle = create_bundle_with_metadata(
             stix_objects,
-            feeds2stix_identity,
-            feeds2stix_marking,
             vxvault_identity,
             vxvault_marking,
+            feeds2stix_identity,
+            feeds2stix_marking,
         )
 
-        bundle_path = save_bundle(bundle, output_dir)
+        bundle_path = save_bundle_to_file(bundle, output_dir, "vxvault")
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
@@ -203,4 +165,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

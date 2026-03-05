@@ -1,3 +1,4 @@
+import json
 from datetime import UTC
 from unittest.mock import patch
 from pathlib import Path
@@ -128,6 +129,29 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert "bundle_path=" in out_file.read_text()
     bundle_path = out_file.read_text().split("bundle_path=")[1].strip()
     assert Path(bundle_path).exists()
+
+    bundle = json.loads(Path(bundle_path).read_text())
+    assert {obj["id"] for obj in bundle["objects"]} == {
+        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
+        "identity--036b89f1-524e-5757-8651-a698c3c2bbd7",  # blocklist_de identity
+        "marking-definition--aad171fe-8e6f-5bc2-aa9a-7cfd7ef38edf",  # blocklist_de marking
+        "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",  # IP observable
+        "indicator--5dc27fa7-3667-5db8-b242-aff63e973b8b",  # indicator
+        "relationship--35c25c4e-02ff-534a-8f73-907fb7dae7f9",  # relationship
+    }
+
+    assert {
+        (obj["source_ref"], obj["relationship_type"], obj["target_ref"])
+        for obj in bundle["objects"]
+        if obj["type"] == "relationship"
+    } == {
+        (
+            "indicator--5dc27fa7-3667-5db8-b242-aff63e973b8b",
+            "indicates",
+            "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
+        ),
+    }
 
 
 def test_main_failure_returns_one(monkeypatch):

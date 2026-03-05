@@ -6,10 +6,12 @@ import json
 import logging
 import argparse
 import shutil
+import tempfile
 from datetime import datetime, timezone, UTC
 from stix2 import Indicator, URL, Bundle
 from stix2.patterns import StringConstant
 from git import Repo
+from collections import defaultdict
 
 import sys
 
@@ -24,7 +26,6 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -34,7 +35,6 @@ logger = logging.getLogger(__name__)
 
 GITHUB_REPO_URL = "https://github.com/openphish/public_feed"
 FEED_FILE_PATH = "feed.txt"
-REPO_CLONE_PATH = "openphish_repo_clone"
 BASE_OUTPUT_DIR = "bundles/openphish/"
 
 
@@ -218,6 +218,7 @@ def main():
 
     # Setup output directory
     bundles_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+    bundle_paths = []
 
     # Create identity and marking definition objects
     openphish_identity = create_openphish_identity()
@@ -225,20 +226,76 @@ def main():
 
     # Fetch external objects
     feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    # Use temporary directory for repo clone
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_clone_path = os.path.join(temp_dir, "openphish_repo")
 
-    # Clone or update repository
-    repo = clone_or_update_repo(REPO_CLONE_PATH, GITHUB_REPO_URL)
+        # Clone or update repository
+        repo = clone_or_update_repo(repo_clone_path, GITHUB_REPO_URL)
 
-    # Get URLs with their commit times
-    url_data = get_lines_since_date(repo, FEED_FILE_PATH, since_date)
+        # Get URLs with their commit times
+        url_data = get_lines_since_date(repo, FEED_FILE_PATH, since_date)
 
-    if not url_data:
-        logger.warning("No URLs found to process")
-        return
+        # Group URLs by date first (memory efficient - just references)
 
-    # Group URLs by date first (memory efficient - just references)
-    from collections import defaultdict
+        urls_by_date = group_urls_by_date(url_data)
 
+        # Process each date bucket separately to avoid holding too many objects in memory
+        for date_key in sorted(urls_by_date.keys()):
+            url_data_for_date = urls_by_date[date_key]
+            logger.info(
+                f"Processing date bucket {date_key} with {len(url_data_for_date)} URLs..."
+            )
+            bundle = process_urls_for_date(
+                url_data_for_date,
+                openphish_identity,
+                openphish_marking,
+                feeds2stix_identity,
+                feeds2stix_marking,
+            )
+            # Save bundle with date in filename
+            bundle_filename = f"openphish_{date_key}"
+            bundle_path = save_bundle_to_file(
+                bundle, bundles_dir, bundle_filename, add_timestamp=False
+            )
+            bundle_paths.append(bundle_path)
+
+        logger.info(f"Processing complete. Created {len(bundle_paths)} bundles.")
+
+    # Set GitHub Actions output
+    github_output = os.getenv("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a") as f:
+            f.write(f"bundle_path={bundles_dir}\n")
+            f.write(f"bundle_count={len(bundle_paths)}\n")
+
+
+def process_urls_for_date(
+    url_data_for_date,
+    openphish_identity,
+    openphish_marking,
+    feeds2stix_identity,
+    feeds2stix_marking,
+):
+
+    # Create STIX objects for this date
+    stix_objects = create_stix_objects(
+        url_data_for_date, openphish_identity, openphish_marking
+    )
+
+    # Create bundle
+    bundle = create_bundle_with_metadata(
+        stix_objects=stix_objects,
+        source_identity=openphish_identity,
+        feeds2stix_identity=feeds2stix_identity,
+        source_marking=openphish_marking,
+        feeds2stix_marking=feeds2stix_marking,
+    )
+
+    return bundle
+
+
+def group_urls_by_date(url_data):
     urls_by_date = defaultdict(dict)
 
     logger.info("Grouping URLs by date...")
@@ -247,44 +304,7 @@ def main():
         urls_by_date[date_key][url_value] = (commit_hash, commit_time)
 
     logger.info(f"Grouped {len(url_data)} URLs into {len(urls_by_date)} date buckets")
-
-    # Process each date bucket separately to avoid holding too many objects in memory
-    bundle_paths = []
-    for date_key in sorted(urls_by_date.keys()):
-        url_data_for_date = urls_by_date[date_key]
-        logger.info(
-            f"Processing date bucket {date_key} with {len(url_data_for_date)} URLs..."
-        )
-
-        # Create STIX objects for this date
-        stix_objects = create_stix_objects(
-            url_data_for_date, openphish_identity, openphish_marking
-        )
-
-        # Create bundle
-        bundle = create_bundle_with_metadata(
-            stix_objects=stix_objects,
-            source_identity=openphish_identity,
-            feeds2stix_identity=feeds2stix_identity,
-            source_marking=openphish_marking,
-            feeds2stix_marking=feeds2stix_marking,
-        )
-
-        # Save bundle with date in filename
-        bundle_filename = f"openphish_{date_key}"
-        bundle_path = save_bundle_to_file(
-            bundle, bundles_dir, bundle_filename, add_timestamp=False
-        )
-        bundle_paths.append(bundle_path)
-
-    logger.info(f"Processing complete. Created {len(bundle_paths)} bundles.")
-
-    # Set GitHub Actions output
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"bundle_path={bundles_dir}\n")
-            f.write(f"bundle_count={len(bundle_paths)}\n")
+    return urls_by_date
 
 
 if __name__ == "__main__":

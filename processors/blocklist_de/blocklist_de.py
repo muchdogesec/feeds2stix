@@ -1,4 +1,5 @@
 import os
+import sys
 import uuid
 import requests
 import json
@@ -167,4 +168,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

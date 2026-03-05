@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import requests
 import json
 import logging
@@ -16,7 +17,6 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -130,21 +130,6 @@ def create_stix_objects(
     return stix_objects
 
 
-def create_bundle(
-    stix_objects, feeds2stix_identity, feeds2stix_marking, ipsum_identity, ipsum_marking
-):
-    """Create a STIX bundle with all objects"""
-    all_objects = [
-        feeds2stix_identity,
-        feeds2stix_marking,
-        ipsum_identity,
-        ipsum_marking,
-    ] + stix_objects
-
-    bundle = Bundle(objects=all_objects)
-    return bundle
-
-
 def fetch_all_levels(min_level):
     """Fetch IP addresses from all levels, starting from level 8 down to min_level"""
     logger.info(f"Fetching IPSum feeds from level 8 down to level {min_level}...")
@@ -171,20 +156,6 @@ def fetch_all_levels(min_level):
     return ip_addresses_by_level
 
 
-def save_bundle(bundle, min_level, output_dir):
-    """Save bundle to file"""
-    os.makedirs(output_dir, exist_ok=True)
-
-    filename = f"ipsum_level_{min_level}.json"
-    filepath = os.path.join(output_dir, filename)
-
-    with open(filepath, "w") as f:
-        f.write(bundle.serialize(indent=4))
-
-    logger.info(f"Bundle saved to: {filepath}")
-    return filepath
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert IPSum threat intelligence feed to STIX 2.1 format"
@@ -202,11 +173,7 @@ def main():
     min_level = args.min_level
 
     try:
-        output_dir = os.path.join(BASE_OUTPUT_DIR, "bundles")
-
-        if os.path.exists(output_dir):
-            logger.info(f"Cleaning output directory: {output_dir}")
-            shutil.rmtree(output_dir)
+        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -223,15 +190,15 @@ def main():
         )
 
         logger.info("Creating STIX bundle...")
-        bundle = create_bundle(
+        bundle = create_bundle_with_metadata(
             stix_objects,
-            feeds2stix_identity,
-            feeds2stix_marking,
             ipsum_identity,
             ipsum_marking,
+            feeds2stix_identity,
+            feeds2stix_marking,
         )
 
-        bundle_path = save_bundle(bundle, min_level, output_dir)
+        bundle_path = save_bundle_to_file(bundle, output_dir, f"ipsum_level_{min_level}")
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
@@ -249,4 +216,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

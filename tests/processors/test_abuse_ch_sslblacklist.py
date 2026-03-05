@@ -1,4 +1,6 @@
+import json
 from datetime import UTC, datetime
+from pathlib import Path
 from unittest.mock import patch
 import sys
 
@@ -282,3 +284,50 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
 
     text = out_file.read_text()
     assert "bundle_path=" in text
+
+    bundle_path = text.split("bundle_path=")[1].strip()
+    # Find the actual bundle file in the directory
+    bundle_files = list(Path(bundle_path).glob("*.json"))
+    assert len(bundle_files) == 1
+    bundle = json.loads(bundle_files[0].read_text())
+    assert {obj["id"] for obj in bundle["objects"]} == {
+        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
+        "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",  # abuse.ch identity
+        "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",  # sslblacklist marking
+        "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",  # certificate observable
+        "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",  # malware
+        "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",  # infrastructure
+        "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",  # indicator
+        "relationship--46848ad3-fcaf-537b-8bbe-3dc22b880d55",  # relationship 1
+        "relationship--469b2848-2153-5034-a50b-8863d1d993e0",  # relationship 2
+        "relationship--a6382ce1-cdcf-5825-98aa-6c270428b348",  # relationship 3
+        "relationship--c0807faf-58d3-5d1b-a779-433093a959d9",  # relationship 4
+    }
+
+    assert {
+        (obj["source_ref"], obj["relationship_type"], obj["target_ref"])
+        for obj in bundle["objects"]
+        if obj["type"] == "relationship"
+    } == {
+        (
+            "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
+            "indicates",
+            "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
+            "controls",
+            "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
+        ),
+        (
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
+            "related-to",
+            "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
+            "related-to",
+            "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+    }

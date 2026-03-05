@@ -5,26 +5,25 @@ from unittest.mock import patch
 import sys
 
 import processors
-from processors.certpl import certpl
-from helpers import utils as helper_utils
+from processors.cinsscore import cinsscore
 
 from tests.utils import stix_as_dict
 from tests import utils as test_utils
 
 
-def test_create_certpl_identity():
-    identity = certpl.create_certpl_identity()
+def test_create_cinsscore_identity():
+    identity = cinsscore.create_cinsscore_identity()
     assert stix_as_dict(identity) == {
         "type": "identity",
         "spec_version": "2.1",
-        "id": "identity--5f500688-dc80-5611-8435-dc1561d3817e",
+        "id": "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "modified": "2020-01-01T00:00:00.000Z",
-        "name": "CERT.PL",
-        "description": "Poland's national computer security incident response team.",
-        "identity_class": "organization",
-        "contact_information": "https://cert.pl/",
+        "name": "CINS",
+        "description": 'Collective Intelligence Network Security (CINS, pronounced "sins," get it?) is our effort to use this information to significantly improve the security of our customers\' networks. We also provide this vital information to the InfoSec community free of charge.',
+        "identity_class": "system",
+        "contact_information": "https://cinsarmy.com/",
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -32,17 +31,17 @@ def test_create_certpl_identity():
     }
 
 
-def test_create_certpl_marking_definition():
-    marking = certpl.create_certpl_marking_definition()
+def test_create_cinsscore_marking_definition():
+    marking = cinsscore.create_cinsscore_marking_definition()
     assert stix_as_dict(marking) == {
         "type": "marking-definition",
         "spec_version": "2.1",
-        "id": "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",
+        "id": "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "definition_type": "statement",
         "definition": {
-            "statement": "Origin: https://hole.cert.pl/domains/v2/domains.txt"
+            "statement": "Origin: https://cinsscore.com/list/ci-badguys.txt"
         },
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -51,21 +50,20 @@ def test_create_certpl_marking_definition():
     }
 
 
-def test_fetch_certpl_feed():
-    content = b"#comment\nexample.com\n\nbad.example\n"
+def test_fetch_cinsscore_feed():
+    content = b"#comment\n1.2.3.4\n\n5.6.7.8\n"
     with patch(
-        "processors.certpl.certpl.requests.get",
+        "processors.cinsscore.cinsscore.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        domains = certpl.fetch_certpl_feed()
+        ips = cinsscore.fetch_cinsscore_feed()
 
-    assert domains == ["example.com", "bad.example"]
+    assert ips == ["1.2.3.4", "5.6.7.8"]
 
 
 def test_create_stix_objects():
-
-    objects = certpl.create_stix_objects(
-        ["evil.example"],
+    objects = cinsscore.create_stix_objects(
+        ["1.2.3.4"],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
         {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
         "2026-01-01T00:00:00.000Z",
@@ -73,21 +71,21 @@ def test_create_stix_objects():
 
     assert stix_as_dict(objects) == [
         {
-            "type": "domain-name",
+            "type": "ipv4-addr",
             "spec_version": "2.1",
-            "id": "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
-            "value": "evil.example",
+            "id": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
+            "value": "1.2.3.4",
         },
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
+            "id": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
-            "name": "Domain Name: evil.example",
+            "name": "IPv4: 1.2.3.4",
             "indicator_types": ["malicious-activity"],
-            "pattern": "[domain-name:value='evil.example']",
+            "pattern": "[ipv4-addr:value='1.2.3.4']",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",
@@ -100,13 +98,13 @@ def test_create_stix_objects():
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--056dcd32-2124-5ace-adb9-bfbf4fc7b252",
+            "id": "relationship--e3993871-8875-5820-89e7-19c00b49bdbb",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
-            "target_ref": "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
+            "source_ref": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "target_ref": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -120,13 +118,13 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["certpl.py"])
-    monkeypatch.setattr(certpl, "BASE_OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setattr(sys, "argv", ["cinsscore.py"])
+    monkeypatch.setattr(cinsscore, "BASE_OUTPUT_DIR", str(tmp_path))
 
     with patch(
-        "processors.certpl.certpl.fetch_certpl_feed", return_value=["evil.example"]
+        "processors.cinsscore.cinsscore.fetch_cinsscore_feed", return_value=["1.2.3.4"]
     ):
-        result = certpl.main()
+        result = cinsscore.main()
 
     assert result == 0
     assert "bundle_path=" in out_file.read_text()
@@ -137,11 +135,11 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert {obj["id"] for obj in bundle["objects"]} == {
         "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
-        "identity--5f500688-dc80-5611-8435-dc1561d3817e",  # certpl identity
-        "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",  # certpl marking
-        "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",  # domain observable
-        "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",  # indicator
-        "relationship--104d4a8e-8d4a-58d7-a171-25e85ca08184",  # relationship
+        "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",  # cinsscore identity
+        "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",  # cinsscore marking
+        "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",  # IP observable
+        "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",  # indicator
+        "relationship--ed262bb0-524c-5a04-b3bc-7931051880a9",  # relationship
     }
 
     assert {
@@ -150,19 +148,19 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",
+            "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
             "indicates",
-            "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
+            "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
         ),
     }
 
 
 def test_main_failure_returns_one(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["certpl.py"])
+    monkeypatch.setattr(sys, "argv", ["cinsscore.py"])
     with patch(
-        "processors.certpl.certpl.setup_output_directory",
+        "processors.cinsscore.cinsscore.setup_output_directory",
         side_effect=RuntimeError("boom"),
     ):
-        result = certpl.main()
+        result = cinsscore.main()
 
     assert result == 1

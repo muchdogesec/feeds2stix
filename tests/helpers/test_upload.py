@@ -19,8 +19,14 @@ def test_poll_job_status_completed(monkeypatch):
 
 
 def test_poll_job_status_timeout(monkeypatch):
-    times = iter([0, 10])
-    monkeypatch.setattr(upload.time, "time", lambda: next(times))
+    call_count = 0
+    def mock_time():
+        nonlocal call_count
+        call_count += 1
+        # First call returns 0 (start_time), subsequent calls return 10 (elapsed > max_wait)
+        return 0 if call_count == 1 else 10
+    
+    monkeypatch.setattr(upload.time, "time", mock_time)
     result = upload.poll_job_status("j1", "https://ctx", "k", poll_interval=0, max_wait=5)
     assert result["state"] == "timeout"
 
