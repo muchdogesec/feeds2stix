@@ -32,7 +32,6 @@ https://urlhaus.abuse.ch/downloads/csv_recent/
 #### Imported objects
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
-https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/identity/dogesec.json
 
 #### Identity
 
