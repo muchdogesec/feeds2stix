@@ -1,10 +1,10 @@
 # ThreatView MD5
 
-https://threatview.io/Downloads/URL-High-Confidence-Feed.txt
+https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt
 
 Not sure of update schedule.
 
-Contains a list of URLs
+Contains a list of domains
 
 ## Mapping
 
@@ -48,7 +48,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"created": "2020-01-01T00:00:00.000Z",
 	"definition_type": "statement",
 	"definition": {
-		"statement": "Origin: https://threatview.io/Downloads/URL-High-Confidence-Feed.txt"
+		"statement": "Origin: https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt"
 	},
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -59,13 +59,13 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 
 Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
-#### URL
+#### Domain
 
 ```json
 {
-	"type": "url",
+	"type": "domain",
 	"spec_version": "2.1",
-	"id": "url--<UUID>",
+	"id": "domain--<UUID>",
 	"hashes": "<VALUE>"
 }
 ```
@@ -84,7 +84,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN FIRST SEEN DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "url--<UUID>",
+	"target_ref": "domain--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -109,8 +109,8 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 	"indicator_types": [
 		"malicious-activity"
 	],
-	"name": "URL: <VALUE>",
-	"pattern": "[url:value='<VALUE>']",
+	"name": "domain: <VALUE>",
+	"pattern": "[domain:value='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
