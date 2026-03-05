@@ -1,18 +1,16 @@
-# ThreatView bitcoin
+# ThreatView MD5
 
-https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt
+https://threatview.io/Downloads/MD5-HASH-ALL.txt
 
 Not sure of update schedule.
 
-Contains a list of Bitcoin wallets known to be related to criminal activity.
+Contains a list of MD5
 
 ## Mapping
 
 #### Imported objects
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
-https://raw.githubusercontent.com/muchdogesec/stix2extensions/refs/heads/main/automodel_generated/extension-definitions/scos/cryptocurrency-wallet.json
-https://raw.githubusercontent.com/muchdogesec/stix2extensions/refs/heads/main/automodel_generated/extension-definitions/scos/cryptocurrency-transaction.json
 
 #### Identity
 
@@ -50,7 +48,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"created": "2020-01-01T00:00:00.000Z",
 	"definition_type": "statement",
 	"definition": {
-		"statement": "Origin: https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt"
+		"statement": "Origin: https://threatview.io/Downloads/MD5-HASH-ALL.txt"
 	},
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -61,19 +59,16 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 
 Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
-#### Crypto Wallet
+#### File
 
 ```json
 {
-    "type": "cryptocurrency-wallet",
-    "spec_version": "2.1",
-    "id": "cryptocurrency-wallet--UUID",
-    "value": "<FEED VALUE>",
-    "extensions": {
-        "extension-definition--be78509e-6958-51b1-8b26-d17ee0eba2d7": {
-            "extension_type": "new-sco"
-        }
-    }
+	"type": "file",
+	"spec_version": "2.1",
+	"id": "file--<UUID>",
+	"hashes": {
+		"MD5": "<md5_hash>"
+	}
 }
 ```
 
@@ -91,7 +86,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN FIRST SEEN DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "cryptocurrency-wallet--<UUID>",
+	"target_ref": "file--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -101,10 +96,6 @@ With relationship to Indicator:
 ```
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-
-#### Crypto TX
-
-For each wallet, we should use crypto2stix to get all transactions the wallet is linked to and create `crypto-transaction` objects for them
 
 #### Indicator
 
@@ -121,7 +112,7 @@ For each wallet, we should use crypto2stix to get all transactions the wallet is
 		"malicious-activity"
 	],
 	"name": "URL: <VALUE>",
-	"pattern": "[cryptocurrency-wallet:value='<VALUE>']",
+	"pattern": "[file:hashes.MD5='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -132,4 +123,3 @@ For each wallet, we should use crypto2stix to get all transactions the wallet is
 ```
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
-
