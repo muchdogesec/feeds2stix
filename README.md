@@ -1,5 +1,7 @@
 # feeds2stix
 
+[![codecov](https://codecov.io/gh/muchdogesec/feeds2stix/graph/badge.svg?token=AZO5KGVV51)](https://codecov.io/gh/muchdogesec/feeds2stix)
+
 ## Overview
 
 ![](processors/abuse_ch/sslipblacklist_aggressive/sslipblacklist_aggressive.png)
