@@ -1,10 +1,10 @@
-# ThreatView SHA256
+# ThreatView IP
 
-https://threatview.io/Downloads/SHA-HASH-FEED.txt
+https://threatview.io/Downloads/IP-High-Confidence-Feed.txt
 
 Not sure of update schedule.
 
-Contains a list of SHA256
+Contains a list of ipv4-addr
 
 ## Mapping
 
@@ -48,7 +48,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"created": "2020-01-01T00:00:00.000Z",
 	"definition_type": "statement",
 	"definition": {
-		"statement": "Origin: https://threatview.io/Downloads/SHA-HASH-FEED.txt"
+		"statement": "Origin: https://threatview.io/Downloads/IP-High-Confidence-Feed.txt"
 	},
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -59,16 +59,13 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 
 Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
-#### File
-
+#### ipv4-addr
 ```json
 {
-	"type": "file",
+	"type": "ipv4-addr",
 	"spec_version": "2.1",
-	"id": "file--<UUID>",
-	"hashes": {
-		"SHA-256": "<SHA-256>"
-	}
+	"id": "ipv4-addr-<UUID>",
+	"hashes": "<VALUE>"
 }
 ```
 
@@ -86,7 +83,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN FIRST SEEN DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "file--<UUID>",
+	"target_ref": "ipv4-addr-<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -111,8 +108,8 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 	"indicator_types": [
 		"malicious-activity"
 	],
-	"name": "File: <VALUE>",
-	"pattern": "[file:hashes.SHA-256='<VALUE>']",
+	"name": "IPv4: <VALUE>",
+	"pattern": "[ipv4-addrvalue='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

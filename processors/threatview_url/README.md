@@ -1,5 +1,4 @@
-# ThreatView MD5
-
+# ThreatView URL
 https://threatview.io/Downloads/URL-High-Confidence-Feed.txt
 
 Not sure of update schedule.

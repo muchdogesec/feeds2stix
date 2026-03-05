@@ -111,7 +111,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 	"indicator_types": [
 		"malicious-activity"
 	],
-	"name": "URL: <VALUE>",
+	"name": "File: <VALUE>",
 	"pattern": "[file:hashes.MD5='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [

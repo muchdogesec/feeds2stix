@@ -1,4 +1,4 @@
-# ThreatView MD5
+# ThreatView Domain
 
 https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt
 
@@ -109,7 +109,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 	"indicator_types": [
 		"malicious-activity"
 	],
-	"name": "domain: <VALUE>",
+	"name": "Domain: <VALUE>",
 	"pattern": "[domain:value='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [

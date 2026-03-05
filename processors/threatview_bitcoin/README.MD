@@ -1,4 +1,4 @@
-# ThreatView bitcoin
+# ThreatView Bitcoin
 
 https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt
 
@@ -120,7 +120,7 @@ For each wallet, we should use crypto2stix to get all transactions the wallet is
 	"indicator_types": [
 		"malicious-activity"
 	],
-	"name": "URL: <VALUE>",
+	"name": "Cryptocurrency Wallet: <VALUE>",
 	"pattern": "[cryptocurrency-wallet:value='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
