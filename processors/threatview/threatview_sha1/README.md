@@ -1,10 +1,10 @@
-# ThreatView SHA256
+# ThreatView SHA1
 
 https://threatview.io/Downloads/SHA-HASH-FEED.txt
 
 Not sure of update schedule.
 
-Contains a list of SHA256
+Contains a list of SHA1 Hashes
 
 ## Mapping
 
@@ -67,7 +67,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"spec_version": "2.1",
 	"id": "file--<UUID>",
 	"hashes": {
-		"SHA-256": "<SHA-256>"
+		"SHA-1": "<SHA-1>"
 	}
 }
 ```
@@ -112,7 +112,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 		"malicious-activity"
 	],
 	"name": "File: <VALUE>",
-	"pattern": "[file:hashes.SHA-256='<VALUE>']",
+	"pattern": "[file:hashes.SHA-1='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

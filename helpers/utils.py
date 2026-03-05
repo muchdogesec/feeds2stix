@@ -5,6 +5,7 @@ import os
 import shutil
 from datetime import UTC, datetime
 from stix2 import Identity, MarkingDefinition, Bundle, Relationship
+import stix2extensions
 
 logger = logging.getLogger(__name__)
 
