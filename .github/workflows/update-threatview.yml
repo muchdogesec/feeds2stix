@@ -16,7 +16,6 @@ on:
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
-    environment: cyberthreatexchange-updates
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -45,6 +44,7 @@ jobs:
 
   process-feeds:
     needs: generate-matrix
+    environment: cyberthreatexchange-updates
     runs-on: ubuntu-latest
     name: "Process ThreatView Feed: ${{ matrix.feed.name }} "
     strategy:
