@@ -67,6 +67,7 @@ jobs:
         id: process
         run: |
           set -e
+          export PYTHONPATH=.
           echo "Processing ThreatView ${{ matrix.feed.name }} feed..."
           # Note: Script should echo "bundle_path=..." >> $GITHUB_OUTPUT
           python processors/threatview/${{ matrix.feed.script }}
