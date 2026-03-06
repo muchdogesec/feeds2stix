@@ -52,66 +52,62 @@ jobs:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
 
     steps:
-
-      - run: |
-          echo feed var is ${{ matrix.feed.feed_id_var }}
-          echo cont = vars.${{ matrix.feed.feed_id_var }}
-          echo "FEED_ID=${{ vars[matrix.feed.feed_id_var] }}"
-          echo "env FEED_ID=$FEED_ID"
-          exit 198
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Process ThreatView ${{ matrix.feed.name }} feed
+        id: process
+        run: |
+          set -e
+          export PYTHONPATH=.
+          echo "Processing ThreatView ${{ matrix.feed.name }} feed..."
+          # Note: Script should echo "bundle_path=..." >> $GITHUB_OUTPUT
+          python processors/threatview/${{ matrix.feed.script }}
+      
+      - name: Upload bundle to CTX
         env:
-          FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
-
-
-      # - name: Checkout repository
-      #   uses: actions/checkout@v5
-      
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.11'
-      
-      # - name: Install dependencies
-      #   run: pip install -r requirements.txt
-      
-      # - name: Process ThreatView ${{ matrix.feed.name }} feed
-      #   id: process
-      #   run: |
-      #     set -e
-      #     export PYTHONPATH=.
-      #     echo "Processing ThreatView ${{ matrix.feed.name }} feed..."
-      #     # Note: Script should echo "bundle_path=..." >> $GITHUB_OUTPUT
-      #     python processors/threatview/${{ matrix.feed.script }}
-      
-      # - name: Upload bundle to CTX
-      #   env:
-      #     CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
-      #     CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-      #     FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
-      #     MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
-      #     PYTHONPATH: .
-      #   run: |
-      #     BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
+          THREATVIEW_URL_FEED_ID: ${{ vars.THREATVIEW_URL_FEED_ID }}
+          THREATVIEW_MD5_FEED_ID: ${{ vars.THREATVIEW_MD5_FEED_ID }}
+          THREATVIEW_SHA1_FEED_ID: ${{ vars.THREATVIEW_SHA1_FEED_ID }}
+          THREATVIEW_BITCOIN_FEED_ID: ${{ vars.THREATVIEW_BITCOIN_FEED_ID }}
+          THREATVIEW_IP_FEED_ID: ${{ vars.THREATVIEW_IP_FEED_ID }}
+          THREATVIEW_DOMAIN_FEED_ID: ${{ vars.THREATVIEW_DOMAIN_FEED_ID }}
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
-      #     if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
-      #       echo "Error: Bundle was not created at $BUNDLE_PATH"
-      #       exit 1
-      #     fi
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          export FEED_ID="${ ${{matrix.feed.feed_id_var}} }"
+          echo "Using feed ID: $FEED_ID from variable ${{ matrix.feed.feed_id_var }}"
           
-      #     if [ -z "$FEED_ID" ]; then
-      #       echo "Error: ${{ matrix.feed.feed_id_var }} variable is not set"
-      #       exit 1
-      #     fi
+          if [ -z "$FEED_ID" ]; then
+            echo "Error: ${{ matrix.feed.feed_id_var }} variable is not set"
+            exit 1
+          fi
           
-      #     echo "Uploading $BUNDLE_PATH to feed $FEED_ID..."
-      #     python helpers/upload.py "$BUNDLE_PATH" --feed_id "$FEED_ID"
+          echo "Uploading $BUNDLE_PATH to feed $FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$FEED_ID"
       
-      # - name: Upload artifacts
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: upload-artifacts-${{ matrix.feed.name }}
-      #     path: |
-      #       ${{ steps.process.outputs.bundle_path }}
-      #       upload_artifacts/
-      #     retention-days: 7
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-artifacts-${{ matrix.feed.name }}
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7
