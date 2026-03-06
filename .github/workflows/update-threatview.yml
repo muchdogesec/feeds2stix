@@ -16,6 +16,7 @@ on:
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
+    environment: cyberthreatexchange-updates
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -76,14 +77,9 @@ jobs:
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
           PYTHONPATH: .
-          THREATVIEW_URL_FEED_ID: ${{ vars.THREATVIEW_URL_FEED_ID }}
-          THREATVIEW_MD5_FEED_ID: ${{ vars.THREATVIEW_MD5_FEED_ID }}
-          THREATVIEW_SHA1_FEED_ID: ${{ vars.THREATVIEW_SHA1_FEED_ID }}
-          THREATVIEW_BITCOIN_FEED_ID: ${{ vars.THREATVIEW_BITCOIN_FEED_ID }}
-          THREATVIEW_IP_FEED_ID: ${{ vars.THREATVIEW_IP_FEED_ID }}
-          THREATVIEW_DOMAIN_FEED_ID: ${{ vars.THREATVIEW_DOMAIN_FEED_ID }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
@@ -91,8 +87,6 @@ jobs:
             echo "Error: Bundle was not created at $BUNDLE_PATH"
             exit 1
           fi
-          export FEED_ID="${ ${{matrix.feed.feed_id_var}} }"
-          echo "Using feed ID: $FEED_ID from variable ${{ matrix.feed.feed_id_var }}"
           
           if [ -z "$FEED_ID" ]; then
             echo "Error: ${{ matrix.feed.feed_id_var }} variable is not set"
