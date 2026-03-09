@@ -21,21 +21,17 @@ The key parts of this repository are structured as follows;
 ├── processors/
 │   ├── feed1/
 │   │	├── README.md # describes the mapping of the feed.py files
-│   │   └── feed1.py
+│   │   └── feed.py
 │   └── feed2/
 │    	├── README.md
-│    	└── feed2.py 
+│    	└── feed.py 
 └── bundles/ # will only exist after one script has been run
-    ├── producer1/
-    │	├── feed1
-    │	│	├── bundle1.json # multiple bundles can be produced for a single feed (e.g. seperated by threat actor)
-    │	│	└── bundle2.json
-    │	└── feed2
-    │		├── bundle1.json
-    │		└── bundle2.json
-    └── producer2/
-     	└── feed1
-    		└── bundle1.json
+    ├── feed1/
+    │	└── feed1
+    │		└── bundle.json # multiple bundles can be produced for a single feed
+    └── feed2
+    		└── bundle.json
+
 ```
 
 The `processors` directory contains the scripts that generate the data. These scripts output the data they create into the `bundles` directory (this directory will only exist once you run one of the processor scripts).
@@ -53,6 +49,7 @@ python3 -m venv feeds2stix-venv
 source feeds2stix-venv/bin/activate
 # install requirements
 pip3 install -r requirements.txt
+export PYTHONPATH=.
 ```
 
 ## Useful supporting tools
