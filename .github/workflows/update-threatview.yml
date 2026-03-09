@@ -10,7 +10,7 @@ on:
         description: 'Feed type to process'
         required: true
         type: choice
-        options: [ip, domain, url, md5, sha1, bitcoin, all]
+        options: [ip, domain, url, md5, sha256, bitcoin, all]
         default: all
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
           ALL_FEEDS='[
             {"name": "url", "script": "threatview_url/threatview_url.py", "feed_id_var": "THREATVIEW_URL_FEED_ID"},
             {"name": "md5", "script": "threatview_md5/threatview_md5.py", "feed_id_var": "THREATVIEW_MD5_FEED_ID"},
-            {"name": "sha1", "script": "threatview_sha1/threatview_sha1.py", "feed_id_var": "THREATVIEW_SHA1_FEED_ID"},
+            {"name": "sha256", "script": "threatview_sha256/threatview_sha256.py", "feed_id_var": "THREATVIEW_sha256_FEED_ID"},
             {"name": "bitcoin", "script": "threatview_bitcoin/threatview_bitcoin.py", "feed_id_var": "THREATVIEW_BITCOIN_FEED_ID"},
             {"name": "ip", "script": "threatview_ip/threatview_ip.py", "feed_id_var": "THREATVIEW_IP_FEED_ID"},
             {"name": "domain", "script": "threatview_domain/threatview_domain.py", "feed_id_var": "THREATVIEW_DOMAIN_FEED_ID"}
