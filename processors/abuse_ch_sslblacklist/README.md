@@ -160,7 +160,8 @@ For each entry an Indicator object is created as follows
     "modified": "Latest <Listingdate> for all records with this malware name",
     "name": "<malware_name>",
     "malware_types": [
-        "remote-access-trojan"
+        "remote-access-trojan <IF NAME ENDS IN RAT>",
+        "unknown <IF NOT RAT>"
     ],
     "is_family": true,
     "object_marking_refs": [
