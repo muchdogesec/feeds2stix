@@ -120,3 +120,13 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 ```
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+
+## Usage
+
+```bash
+python processors/threatview/threatview_ip/threatview_ip.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+TODO Fadl
