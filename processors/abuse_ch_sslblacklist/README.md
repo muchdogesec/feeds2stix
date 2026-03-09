@@ -234,6 +234,8 @@ Multiple relationships are created to link the objects:
 }
 ```
 
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
+
 - `controls` when infrastructure_type is `command-and-control`
 - `hosts` when infrastructure_type is `hosting-malware`
 
@@ -258,6 +260,8 @@ Multiple relationships are created to link the objects:
 }
 ```
 
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
+
 **3. Malware → Certificate** (related-to):
 
 ```json
@@ -278,29 +282,11 @@ Multiple relationships are created to link the objects:
     ]
 }
 ```
----
 
-Each bundle contains:
-* X509 Certificate objects for SSL certificates (SHA1 hashes)
-* Indicator objects with patterns matching the certificates
-* Malware objects for each identified family
-* Infrastructure objects (for C&C or malware distribution servers)
-* Relationships:
-  - Indicator → Certificate (indicates)
-  - Infrastructure → Malware (controls/hosts)
-  - Infrastructure → Certificate (related-to)
-  - Malware → Certificate (related-to)"
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
 
+**4. Malware → Indicator** (indicates):
 
-All relationship UUIDv5s are generated using namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `name` value
-
-There are some entries we've decided to normalise. We replace the following values in the input (in the following order):
-
-1. ` malware distribution`-> blank (e.g. `QuasarRAT malware distribution` becomes `QuasarRAT`)
-2. `Malware distribution`-> No malware created
-
-Each indicator created is then linked to the malware objects like so;
 
 ```json
 {
@@ -322,6 +308,19 @@ Each indicator created is then linked to the malware objects like so;
 ```
 
 UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
+
+---
+
+Each bundle contains:
+* X509 Certificate objects for SSL certificates (SHA1 hashes)
+* Indicator objects with patterns matching the certificates
+* Malware objects for each identified family
+* Infrastructure objects (for C&C or malware distribution servers)
+* Relationships:
+  - Indicator → Certificate (indicates)
+  - Infrastructure → Malware (controls/hosts)
+  - Infrastructure → Certificate (related-to)
+  - Malware → Certificate (related-to)"
 
 ## Usage
 
