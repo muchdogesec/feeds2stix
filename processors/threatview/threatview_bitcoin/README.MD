@@ -133,3 +133,12 @@ For each wallet, we should use crypto2stix to get all transactions the wallet is
 
 Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+## Usage
+
+```bash
+python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+TODO Fadl
