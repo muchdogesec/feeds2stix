@@ -36,7 +36,7 @@ The key parts of this repository are structured as follows;
 
 The `processors` directory contains the scripts that generate the data. These scripts output the data they create into the `bundles` directory (this directory will only exist once you run one of the processor scripts).
 
-## Adding new processors
+## Setup
 
 Installing the script;
 
@@ -51,6 +51,14 @@ source feeds2stix-venv/bin/activate
 pip3 install -r requirements.txt
 export PYTHONPATH=.
 ```
+
+You can then run each script as shown in that feeds README.md file.
+
+## Github actions note
+
+Cyber Threat Exchange has a maximum upload file size.
+
+To avoid issues with large files, the Github actions split the bundles in 10mb chunks.
 
 ## Useful supporting tools
 
