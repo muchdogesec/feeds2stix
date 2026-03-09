@@ -127,6 +127,13 @@ Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `
 python processors/threatview/threatview_url/threatview_url.py
 ```
 
-No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+### Output
 
-TODO Fadl
+The script creates a single STIX bundle file:
+* `bundles/threatview_url/bundles/threatview_url_<date>.json`
+
+Each bundle contains:
+* URL objects for each URL in the feed
+* Indicator objects with patterns matching the URLs
+* Relationships linking Indicators to URL objects
+* Identity and Marking Definition objects

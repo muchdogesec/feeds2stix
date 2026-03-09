@@ -139,6 +139,38 @@ Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `
 python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
 ```
 
-No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+### Examples
 
-TODO Fadl
+Process the ThreatView Bitcoin feed:
+```bash
+python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
+```
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/threatview_bitcoin/bundles/threatview_bitcoin_<date>.json`
+
+Each bundle contains:
+* Cryptocurrency wallet objects for each Bitcoin address in the feed
+* Indicator objects with patterns matching the Bitcoin addresses
+* Relationships linking Indicators to cryptocurrency wallet objects
+* Identity and Marking Definition objects
+
+## Usage
+
+```bash
+python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
+```
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/threatview_bitcoin/bundles/threatview_bitcoin_<date>.json`
+
+Each bundle contains:
+* Cryptocurrency wallet objects for each Bitcoin address in the feed
+* Indicator objects with patterns matching the Bitcoin addresses
+* Relationships linking Indicators to cryptocurrency wallet objects
+* Identity and Marking Definition objects
+
