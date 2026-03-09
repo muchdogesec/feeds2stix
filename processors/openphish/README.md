@@ -165,8 +165,8 @@ python processors/openphish/openphish.py --since-date 2024-07-01
 
 ### Output
 
-The script creates a single STIX bundle file:
-* `bundles/openphish/bundles/openphish.json`
+The script creates a single STIX bundle file for each date:
+* `bundles/openphish/bundles/openphish_DATE.json`
 
 Each bundle contains:
 * URL objects for each phishing URL in the feed
@@ -182,7 +182,3 @@ The script performs the following steps:
 3. Identifies when each URL first appeared in the feed
 4. Creates STIX objects with accurate timestamps based on Git commit dates
 5. Generates a single bundle with all processed URLs
-
-## Github action
-
-
