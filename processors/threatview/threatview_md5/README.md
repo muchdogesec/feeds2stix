@@ -130,6 +130,13 @@ Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `
 python processors/threatview/threatview_md5/threatview_md5.py
 ```
 
-No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+### Output
 
-TODO Fadl
+The script creates a single STIX bundle file:
+* `bundles/threatview_md5/bundles/threatview_md5_<date>.json`
+
+Each bundle contains:
+* File objects with MD5 hashes
+* Indicator objects with patterns matching the MD5 hashes
+* Relationships linking Indicators to file objects
+* Identity and Marking Definition objects
