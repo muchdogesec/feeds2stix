@@ -62,7 +62,7 @@ def fetch_threatview_feed():
 
 
 def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, script_run_time):
-    """Create STIX objects for SHA hashes (SHA-1)"""
+    """Create STIX objects for SHA hashes (SHA-256)"""
     stix_objects = []
 
     threatview_marking_id = threatview_marking["id"]
@@ -71,10 +71,10 @@ def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, scr
     logger.info(f"Processing {len(sha_hashes)} SHA hashes...")
 
     for sha_hash in sha_hashes:
-        # Feed contains SHA-1 hashes despite the name
-        file_obj = File(hashes={"SHA-1": sha_hash})
+        # Feed contains SHA-256 hashes despite the name
+        file_obj = File(hashes={"SHA-256": sha_hash})
 
-        indicator_name = f"File SHA-1: {sha_hash}"
+        indicator_name = f"File SHA-256: {sha_hash}"
         indicator_id = generate_uuid5(indicator_name, namespace=threatview_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
@@ -86,7 +86,7 @@ def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, scr
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[file:hashes.'SHA-1'='{sha_hash}']",
+            pattern=f"[file:hashes.'SHA-256'='{sha_hash}']",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

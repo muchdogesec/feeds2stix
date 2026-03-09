@@ -1,10 +1,10 @@
-# ThreatView SHA1
+# ThreatView SHA256
 
 https://threatview.io/Downloads/SHA-HASH-FEED.txt
 
 Not sure of update schedule.
 
-Contains a list of SHA1 Hashes
+Contains a list of SHA256 Hashes
 
 ## Mapping
 
@@ -67,7 +67,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"spec_version": "2.1",
 	"id": "file--<UUID>",
 	"hashes": {
-		"SHA-1": "<SHA-1>"
+		"SHA-256": "<SHA-256>"
 	}
 }
 ```
@@ -112,7 +112,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 		"malicious-activity"
 	],
 	"name": "File: <VALUE>",
-	"pattern": "[file:hashes.SHA-1='<VALUE>']",
+	"pattern": "[file:hashes.SHA-256='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -127,7 +127,7 @@ Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `
 ## Usage
 
 ```bash
-python processors/threatview/threatview_sha1/threatview_sha1.py
+python processors/threatview/threatview_sha256/threatview_sha256.py
 ```
 
 No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
