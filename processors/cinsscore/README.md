@@ -157,11 +157,3 @@ Configure the following in your GitHub repository:
 
 **Variables**:
 * `CINSSCORE_FEED_ID`: The CTX feed ID where CINS Score data should be uploaded
-
-### Manual Processing
-
-You can manually trigger the workflow from the GitHub Actions tab, or run locally:
-
-```bash
-python processors/cinsscore/cinsscore.py
-```

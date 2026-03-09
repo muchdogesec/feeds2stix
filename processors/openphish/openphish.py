@@ -51,7 +51,7 @@ def create_openphish_identity():
 def create_openphish_marking_definition():
     """Create a marking definition for OpenPhish feed"""
     return create_marking_definition_object(
-        f"Origin: https://raw.githubusercontent.com/openphish/public_feed/"
+        f"Origin: https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
     )
 
 

@@ -157,11 +157,3 @@ Configure the following in your GitHub repository:
 
 **Variables**:
 * `VXVAULT_FEED_ID`: The CTX feed ID where VXVault data should be uploaded
-
-### Manual Processing
-
-You can manually trigger the workflow from the GitHub Actions tab, or run locally:
-
-```bash
-python processors/vxvault/vxvault.py
-```
