@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 THREATVIEW_SHA_FEED_URL = "https://threatview.io/Downloads/SHA-HASH-FEED.txt"
-BASE_OUTPUT_DIR = "bundles/threatview_sha256/"
+BASE_OUTPUT_DIR = "bundles/threatview_sha1/"
 
 
 def create_threatview_identity():
@@ -62,7 +62,7 @@ def fetch_threatview_feed():
 
 
 def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, script_run_time):
-    """Create STIX objects for SHA hashes (SHA-256)"""
+    """Create STIX objects for SHA hashes (SHA-1)"""
     stix_objects = []
 
     threatview_marking_id = threatview_marking["id"]
@@ -71,10 +71,10 @@ def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, scr
     logger.info(f"Processing {len(sha_hashes)} SHA hashes...")
 
     for sha_hash in sha_hashes:
-        # Feed contains SHA-256 hashes despite the name
-        file_obj = File(hashes={"SHA-256": sha_hash})
+        # Feed contains SHA-1 hashes despite the name
+        file_obj = File(hashes={"SHA-1": sha_hash})
 
-        indicator_name = f"File SHA-256: {sha_hash}"
+        indicator_name = f"File SHA-1: {sha_hash}"
         indicator_id = generate_uuid5(indicator_name, namespace=threatview_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
@@ -86,7 +86,7 @@ def create_stix_objects(sha_hashes, threatview_identity, threatview_marking, scr
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[file:hashes.'SHA-256'='{sha_hash}']",
+            pattern=f"[file:hashes.'SHA-1'='{sha_hash}']",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -144,7 +144,7 @@ def main():
             feeds2stix_marking,
         )
 
-        bundle_path = save_bundle_to_file(bundle, output_dir, "threatview_sha256")
+        bundle_path = save_bundle_to_file(bundle, output_dir, "threatview_sha1")
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"
