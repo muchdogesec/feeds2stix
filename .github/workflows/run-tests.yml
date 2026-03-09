@@ -1,0 +1,54 @@
+name: Run Tests
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+jobs:
+  test-pipeline:
+    runs-on: ubuntu-latest
+    environment: test_pipeline
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup environment
+        id: setup_environment
+        run: |
+          pip install -r tests/requirements.txt
+          
+      - name: Unit tests
+        id: unit_tests
+        run: |
+          pytest -vv
+      
+      - name: Upload coverage reports to Codecov
+        id: upload_unit_test_coverage
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        id: upload_unit_test_results
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: unittest.junit.xml
+          flags: unittest

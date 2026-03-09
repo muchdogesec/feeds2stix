@@ -1,0 +1,107 @@
+name: ThreatView Feeds to STIX Processor
+
+on:
+  schedule:
+    # All feeds run daily at 6am
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      feed_type:
+        description: 'Feed type to process'
+        required: true
+        type: choice
+        options: [ip, domain, url, md5, sha1, bitcoin, all]
+        default: all
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate matrix
+        id: set-matrix
+        run: |
+          ALL_FEEDS='[
+            {"name": "url", "script": "threatview_url/threatview_url.py", "feed_id_var": "THREATVIEW_URL_FEED_ID"},
+            {"name": "md5", "script": "threatview_md5/threatview_md5.py", "feed_id_var": "THREATVIEW_MD5_FEED_ID"},
+            {"name": "sha1", "script": "threatview_sha1/threatview_sha1.py", "feed_id_var": "THREATVIEW_SHA1_FEED_ID"},
+            {"name": "bitcoin", "script": "threatview_bitcoin/threatview_bitcoin.py", "feed_id_var": "THREATVIEW_BITCOIN_FEED_ID"},
+            {"name": "ip", "script": "threatview_ip/threatview_ip.py", "feed_id_var": "THREATVIEW_IP_FEED_ID"},
+            {"name": "domain", "script": "threatview_domain/threatview_domain.py", "feed_id_var": "THREATVIEW_DOMAIN_FEED_ID"}
+          ]'
+          
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.feed_type }}" = "all" ]; then
+            # Run all feeds on schedule
+            MATRIX=$(echo "$ALL_FEEDS" | jq -c .)
+            echo "matrix={\"feed\":$MATRIX}" >> $GITHUB_OUTPUT
+          else
+            # Filter based on input for workflow_dispatch
+            FEED_TYPE="${{ github.event.inputs.feed_type }}"
+            FILTERED=$(echo "$ALL_FEEDS" | jq -c "[.[] | select(.name == \"$FEED_TYPE\")]")
+            echo "matrix={\"feed\":$FILTERED}" >> $GITHUB_OUTPUT
+          fi
+
+  process-feeds:
+    needs: generate-matrix
+    environment: cyberthreatexchange-updates
+    runs-on: ubuntu-latest
+    name: "Process ThreatView Feed: ${{ matrix.feed.name }} "
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Process ThreatView ${{ matrix.feed.name }} feed
+        id: process
+        run: |
+          set -e
+          export PYTHONPATH=.
+          echo "Processing ThreatView ${{ matrix.feed.name }} feed..."
+          # Note: Script should echo "bundle_path=..." >> $GITHUB_OUTPUT
+          python processors/threatview/${{ matrix.feed.script }}
+      
+      - name: Upload bundle to CTX
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          
+          if [ -z "$FEED_ID" ]; then
+            echo "Error: ${{ matrix.feed.feed_id_var }} variable is not set"
+            exit 1
+          fi
+          
+          echo "Uploading $BUNDLE_PATH to feed $FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$FEED_ID"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-artifacts-${{ matrix.feed.name }}
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7

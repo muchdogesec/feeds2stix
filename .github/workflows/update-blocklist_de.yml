@@ -1,0 +1,63 @@
+name: blocklist.de Feed to STIX Processor
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Process blocklist.de feed and create STIX bundle
+        id: process
+        run: |
+          set -e
+          echo "Processing blocklist.de feed..."
+          python processors/blocklist_de/blocklist_de.py
+      
+      - name: Upload bundle to CTX
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          BLOCKLIST_DE_FEED_ID: ${{ vars.BLOCKLIST_DE_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          
+          if [ -z "$BLOCKLIST_DE_FEED_ID" ]; then
+            echo "Error: BLOCKLIST_DE_FEED_ID variable is not set"
+            exit 1
+          fi
+          
+          echo "Uploading $BUNDLE_PATH to feed $BLOCKLIST_DE_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$BLOCKLIST_DE_FEED_ID"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blocklist-de-upload-artifacts
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7

@@ -1,0 +1,206 @@
+{
+    "type": "bundle",
+    "id": "bundle--6fc7f35a-6aee-46a7-bbb5-708e5e53cec6",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogesec/feeds2stix",
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/",
+            "confidence": 100,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "abuse.ch",
+            "description": "abuse.ch has been effecting change on cybercrime for almost twenty years, owing to global recognition of our identified and tracked cyber threat signals. Supported by a community of 15,000 specialist researchers, abuse.ch's independent intelligence is relied on by security researchers, network operators and law enforcement agencies.",
+            "identity_class": "organization",
+            "contact_information": "https://abuse.ch/",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--35341d65-805d-58ae-92dd-4c3d87913a43",
+            "hashes": {
+                "SHA-1": "5336e04495132330a766b2332013eff8bd9481e6"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5299c7b6-3fca-5bb9-95b0-656f66c76839",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "name": "Certificate: 53:36:e0:44:95:13:23:30:a7:66:b2:33:20:13:ef:f8:bd:94:81:e6",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = '5336e04495132330a766b2332013eff8bd9481e6' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-02-01T16:09:11Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/5336e04495132330a766b2332013eff8bd9481e6/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--02b6dafe-db00-5d8e-a181-956c816032b4",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--5299c7b6-3fca-5bb9-95b0-656f66c76839",
+            "target_ref": "x509-certificate--35341d65-805d-58ae-92dd-4c3d87913a43",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--d2f2729f-bab0-5819-92e7-89e674d2fc95",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "name": "BRAT",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "infrastructure",
+            "spec_version": "2.1",
+            "id": "infrastructure--c436cacd-8773-5f78-b99c-bff4ff48e63c",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "name": "BRAT C&C",
+            "infrastructure_types": [
+                "command-and-control"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--c38c8a93-11ee-5b92-846f-6f944ed5ecff",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "relationship_type": "controls",
+            "source_ref": "infrastructure--c436cacd-8773-5f78-b99c-bff4ff48e63c",
+            "target_ref": "malware--d2f2729f-bab0-5819-92e7-89e674d2fc95",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b213e380-631b-5933-a08c-f710195f2fa6",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--c436cacd-8773-5f78-b99c-bff4ff48e63c",
+            "target_ref": "x509-certificate--35341d65-805d-58ae-92dd-4c3d87913a43",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--b39ee598-f684-506d-8497-c0ad7c8ade6b",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2026-02-01T16:09:11.000Z",
+            "modified": "2026-02-01T16:09:11.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--d2f2729f-bab0-5819-92e7-89e674d2fc95",
+            "target_ref": "x509-certificate--35341d65-805d-58ae-92dd-4c3d87913a43",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,85 @@
+name: OpenPhish Feed to STIX Processor
+
+on:
+  schedule:
+    # Run at 1am and 1pm UTC every day (feed updates every 12 hours)
+    - cron: '0 1,13 * * *'
+  workflow_dispatch:
+    inputs:
+      since_date:
+        description: 'Process URLs added since this date (YYYY-MM-DD). Leave empty to use 12 hours ago.'
+        required: false
+        type: string
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    environment: cyberthreatexchange-updates
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Process OpenPhish feed and create STIX bundle
+        id: process
+        run: |
+          set -e
+          
+          CMD="python processors/openphish/openphish.py"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.since_date }}" ]; then
+            # Use user-provided date
+            SINCE_DATE="${{ inputs.since_date }}"
+            echo "Processing URLs added since: $SINCE_DATE"
+            CMD="$CMD --since-date '$SINCE_DATE'"
+          else
+            # Use 12 hours ago as default
+            SINCE_DATE=$(date -u -d '12 hours ago' '+%Y-%m-%d')
+            echo "Processing URLs added since (12 hours ago): $SINCE_DATE"
+            CMD="$CMD --since-date '$SINCE_DATE'"
+          fi
+          
+          echo "Running: $CMD"
+          eval $CMD
+      
+      - name: Upload bundle to CTX
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          OPENPHISH_FEED_ID: ${{ vars.OPENPHISH_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          
+          if [ -z "$OPENPHISH_FEED_ID" ]; then
+            echo "Error: OPENPHISH_FEED_ID variable is not set"
+            exit 1
+          fi
+          
+          echo "Uploading $BUNDLE_PATH to feed $OPENPHISH_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$OPENPHISH_FEED_ID"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openphish-upload-artifacts
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7

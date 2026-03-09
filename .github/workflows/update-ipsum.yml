@@ -1,0 +1,88 @@
+name: IPSum Feed to STIX Processor
+
+on:
+  schedule:
+    # Run daily at 02:00 UTC (1 hour after feed updates at 01:00 UTC)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      min_level:
+        description: 'Minimum level (1-8). Fetches all levels from 8 down to this level.'
+        required: true
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+        default: '4'
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    environment: cyberthreatexchange-updates
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Process IPSum feed and create STIX bundle
+        id: process
+        run: |
+          set -e
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MIN_LEVEL="${{ inputs.min_level }}"
+          else
+            MIN_LEVEL="${IPSUM_MIN_LEVEL:-4}"
+          fi
+          
+          echo "Processing IPSum feed with minimum level: $MIN_LEVEL"
+          python processors/ipsum/ipsum.py --min-level "$MIN_LEVEL"
+      
+      - name: Upload bundle to CTX
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          IPSUM_FEED_ID: ${{ vars.IPSUM_FEED_ID }}
+          IPSUM_MIN_LEVEL: ${{ vars.IPSUM_MIN_LEVEL }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          PYTHONPATH: .
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          
+          if [ -z "$IPSUM_FEED_ID" ]; then
+            echo "Error: IPSUM_FEED_ID variable is not set"
+            exit 1
+          fi
+          
+          echo "Uploading $BUNDLE_PATH to feed $IPSUM_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$IPSUM_FEED_ID"
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipsum-upload-artifacts
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7

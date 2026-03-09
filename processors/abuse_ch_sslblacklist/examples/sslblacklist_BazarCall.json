@@ -1,0 +1,571 @@
+{
+    "type": "bundle",
+    "id": "bundle--5f47caef-0c7b-4eb4-b08d-f99f1a88fd5c",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "feeds2stix",
+            "description": "https://github.com/muchdogesec/feeds2stix",
+            "identity_class": "system",
+            "sectors": [
+                "technology"
+            ],
+            "contact_information": "https://www.dogesec.com/contact/",
+            "confidence": 100,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "This object was created using: https://github.com/muchdogesec/feeds2stix"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--97ba4e8b-04f6-57e8-8f6e-3a0f0a7dc0fb"
+            ]
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "abuse.ch",
+            "description": "abuse.ch has been effecting change on cybercrime for almost twenty years, owing to global recognition of our identified and tracked cyber threat signals. Supported by a community of 15,000 specialist researchers, abuse.ch's independent intelligence is relied on by security researchers, network operators and law enforcement agencies.",
+            "identity_class": "organization",
+            "contact_information": "https://abuse.ch/",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "marking-definition",
+            "spec_version": "2.1",
+            "id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2020-01-01T00:00:00.000Z",
+            "definition_type": "statement",
+            "definition": {
+                "statement": "Origin data source: https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
+            },
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "hashes": {
+                "SHA-1": "99d9534224017db5bd28709ae3d06f1f89fc0e48"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--d78a1f48-8e11-5155-8330-11c72c8701bf",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:44.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "Certificate: 99:d9:53:42:24:01:7d:b5:bd:28:70:9a:e3:d0:6f:1f:89:fc:0e:48",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = '99d9534224017db5bd28709ae3d06f1f89fc0e48' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-19T15:14:44Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/99d9534224017db5bd28709ae3d06f1f89fc0e48/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--fd538c74-494d-5de8-a298-ca46080c780b",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:44.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--d78a1f48-8e11-5155-8330-11c72c8701bf",
+            "target_ref": "x509-certificate--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "hashes": {
+                "SHA-1": "dbb4e3f0b3932768ccfbbb7384d1c095c7a4f7b1"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b6853211-b0ef-5667-8a16-3ca0504e297e",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:43.000Z",
+            "modified": "2021-03-19T15:14:43.000Z",
+            "name": "Certificate: db:b4:e3:f0:b3:93:27:68:cc:fb:bb:73:84:d1:c0:95:c7:a4:f7:b1",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = 'dbb4e3f0b3932768ccfbbb7384d1c095c7a4f7b1' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-19T15:14:43Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/dbb4e3f0b3932768ccfbbb7384d1c095c7a4f7b1/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--81cc2ef7-d4b5-52cc-ad45-fccfd59e29ff",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:43.000Z",
+            "modified": "2021-03-19T15:14:43.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--b6853211-b0ef-5667-8a16-3ca0504e297e",
+            "target_ref": "x509-certificate--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "hashes": {
+                "SHA-1": "4e82fde55c2c527c1d2c3a3a5b569ee61c4cc3a1"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--df543686-dbad-59b8-bbf1-8986e766da2f",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-12T07:34:29.000Z",
+            "modified": "2021-03-12T07:34:29.000Z",
+            "name": "Certificate: 4e:82:fd:e5:5c:2c:52:7c:1d:2c:3a:3a:5b:56:9e:e6:1c:4c:c3:a1",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = '4e82fde55c2c527c1d2c3a3a5b569ee61c4cc3a1' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-12T07:34:29Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/4e82fde55c2c527c1d2c3a3a5b569ee61c4cc3a1/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--62810e78-2163-5248-ab4b-4ed4c31a8ee8",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-12T07:34:29.000Z",
+            "modified": "2021-03-12T07:34:29.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--df543686-dbad-59b8-bbf1-8986e766da2f",
+            "target_ref": "x509-certificate--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "hashes": {
+                "SHA-1": "1920e1292a4170b9e7e3d4def9c003038d6b8ef4"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--1357e93a-1037-5688-b2e3-8ed635fafd07",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:48.000Z",
+            "modified": "2021-03-11T07:41:48.000Z",
+            "name": "Certificate: 19:20:e1:29:2a:41:70:b9:e7:e3:d4:de:f9:c0:03:03:8d:6b:8e:f4",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = '1920e1292a4170b9e7e3d4def9c003038d6b8ef4' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-11T07:41:48Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/1920e1292a4170b9e7e3d4def9c003038d6b8ef4/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--39d52aaa-8528-5e45-933e-39e67e6c8741",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:48.000Z",
+            "modified": "2021-03-11T07:41:48.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--1357e93a-1037-5688-b2e3-8ed635fafd07",
+            "target_ref": "x509-certificate--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "id": "x509-certificate--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "hashes": {
+                "SHA-1": "3ae3c30d9a0a79c56dffadbc447afdece45eebc4"
+            }
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--f1686b3c-92bf-57ed-8829-dc1eaf703c13",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-11T07:41:17.000Z",
+            "name": "Certificate: 3a:e3:c3:0d:9a:0a:79:c5:6d:ff:ad:bc:44:7a:fd:ec:e4:5e:eb:c4",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[ x509-certificate:hashes.'SHA-1' = '3ae3c30d9a0a79c56dffadbc447afdece45eebc4' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2021-03-11T07:41:17Z",
+            "external_references": [
+                {
+                    "source_name": "abuse.ch SSLBL",
+                    "url": "https://sslbl.abuse.ch/ssl-certificates/sha1/3ae3c30d9a0a79c56dffadbc447afdece45eebc4/"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--5c31367f-b645-5e4d-aa69-12f8b7a88ac4",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-11T07:41:17.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--f1686b3c-92bf-57ed-8829-dc1eaf703c13",
+            "target_ref": "x509-certificate--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "BazarCall",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "infrastructure",
+            "spec_version": "2.1",
+            "id": "infrastructure--77504735-317d-5617-8c84-3462364a5165",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "BazarCall C&C",
+            "infrastructure_types": [
+                "command-and-control"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1e3de46e-bc62-5a6e-966b-895696137976",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "controls",
+            "source_ref": "infrastructure--77504735-317d-5617-8c84-3462364a5165",
+            "target_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--baf4cfef-eae6-54ea-a772-c21b3294bd8f",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:44.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--77504735-317d-5617-8c84-3462364a5165",
+            "target_ref": "x509-certificate--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--0406b48d-9ce4-5176-ab5f-45e787ff0261",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:44.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "target_ref": "x509-certificate--85efe49c-efe8-5c51-87d5-16dcd95eb9c2",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--66aa3331-c3a3-581c-b080-bea07c8d17ca",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:43.000Z",
+            "modified": "2021-03-19T15:14:43.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--77504735-317d-5617-8c84-3462364a5165",
+            "target_ref": "x509-certificate--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--7792fbe8-7e74-5e78-92f4-db889f3f8f69",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-19T15:14:43.000Z",
+            "modified": "2021-03-19T15:14:43.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "target_ref": "x509-certificate--259ed2c6-bbe8-5430-8d4c-6f000a7da485",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1d91ffef-0fce-5320-b409-78d642899585",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-12T07:34:29.000Z",
+            "modified": "2021-03-12T07:34:29.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--77504735-317d-5617-8c84-3462364a5165",
+            "target_ref": "x509-certificate--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--ca86e2c8-95b2-5912-ba90-926b57d21e8a",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-12T07:34:29.000Z",
+            "modified": "2021-03-12T07:34:29.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "target_ref": "x509-certificate--57d9c870-dcc8-5413-a23f-183924a9cd8b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "infrastructure",
+            "spec_version": "2.1",
+            "id": "infrastructure--18ca0d85-f6ca-5faa-802e-c2dce8a32e3c",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "name": "BazarCall Malware distribution",
+            "infrastructure_types": [
+                "hosting-malware"
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--14e1c3a8-16bf-58ed-b4b2-d9b96bd28618",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-19T15:14:44.000Z",
+            "relationship_type": "hosts",
+            "source_ref": "infrastructure--18ca0d85-f6ca-5faa-802e-c2dce8a32e3c",
+            "target_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--09575611-90ba-589d-8c35-5306a01ee4a6",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:48.000Z",
+            "modified": "2021-03-11T07:41:48.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--18ca0d85-f6ca-5faa-802e-c2dce8a32e3c",
+            "target_ref": "x509-certificate--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--594cb8b8-81f5-550e-b4a9-449ad7b74cec",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:48.000Z",
+            "modified": "2021-03-11T07:41:48.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "target_ref": "x509-certificate--0b1f0d08-8a98-53d9-96a4-a02d20e654ad",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--04a26b9a-e515-528e-ac1b-bbfbb04508cf",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-11T07:41:17.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "infrastructure--18ca0d85-f6ca-5faa-802e-c2dce8a32e3c",
+            "target_ref": "x509-certificate--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--46b2c8bd-3880-5904-a8c7-0fe7033921eb",
+            "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
+            "created": "2021-03-11T07:41:17.000Z",
+            "modified": "2021-03-11T07:41:17.000Z",
+            "relationship_type": "related-to",
+            "source_ref": "malware--df040da1-eab9-5e94-bff4-e1206243a808",
+            "target_ref": "x509-certificate--6537be9e-03e9-5515-979e-0d9beff0f35a",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"
+            ]
+        }
+    ]
+}
