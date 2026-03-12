@@ -115,6 +115,7 @@ def test_create_infrastructure_and_rels():
         [
             (
                 "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+                "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
                 datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
             )
         ],
@@ -152,6 +153,11 @@ def test_create_infrastructure_and_rels():
             "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
+            "indicates",
+            "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
         ),
     ]
 
@@ -256,7 +262,7 @@ def test_create_all_stix_objects():
         {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
     )
     assert "FamilyA" in grouped
-    assert len(grouped["FamilyA"]) == 8
+    assert len(grouped["FamilyA"]) == 9
 
 
 def test_main_writes_outputs(monkeypatch, tmp_path):
@@ -301,6 +307,7 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
         "relationship--469b2848-2153-5034-a50b-8863d1d993e0",  # relationship 2
         "relationship--a6382ce1-cdcf-5825-98aa-6c270428b348",  # relationship 3
         "relationship--c0807faf-58d3-5d1b-a779-433093a959d9",  # relationship 4
+        "relationship--a6d2b059-83c1-5f12-baed-d9c5aa5500f7",  # relationship 5
     }
 
     assert {
@@ -327,5 +334,10 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
             "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
+            "indicates",
+            "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
         ),
     }

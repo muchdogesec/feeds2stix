@@ -145,7 +145,7 @@ def create_infrastructure_and_rels(
         marking_refs=malware_obj.object_marking_refs,
     )
     objects.append(infra_cert_rel)
-    for cert_ref, timestamp in cert_refs:
+    for cert_ref, indicator_ref, timestamp in cert_refs:
         infra_cert_rel = make_relationship(
             source_ref=infrastructure_obj.id,
             target_ref=cert_ref,
@@ -166,6 +166,16 @@ def create_infrastructure_and_rels(
             marking_refs=malware_obj.object_marking_refs,
         )
         objects.append(mal_cert_rel)
+        mal_indicator_rel = make_relationship(
+            source_ref=indicator_ref,
+            target_ref=malware_obj.id,
+            relationship_type="indicates",
+            created_by_ref=malware_obj.created_by_ref,
+            created=timestamp,
+            modified=timestamp,
+            marking_refs=malware_obj.object_marking_refs,
+        )
+        objects.append(mal_indicator_rel)
     return objects
 
 
@@ -196,15 +206,11 @@ def create_stix_objects_for_malware(
     logger.info(f"Processing '{malware_name}' with {len(files_data)} files...")
 
     # Create File objects
-    indicator_ids: list[tuple[str, datetime]] = []
     infrastructure_cert_rels = defaultdict(list)
     for file_data in files_data:
         file_obj = X509Certificate(hashes={"SHA-1": file_data["sha1_hash"]})
         if file_data["timestamp"] <= start_date:
             continue
-        infrastructure_cert_rels[file_data["infrastructure_type"]].append(
-            (file_obj.id, file_data["timestamp"])
-        )
         stix_objects.append(file_obj)
         indicator_name = "Certificate: " + format_fingerprint(file_data["sha1_hash"])
         indicator_id = "indicator--" + generate_uuid5(indicator_name, sslbl_marking_id)
@@ -227,7 +233,10 @@ def create_stix_objects_for_malware(
             ],
         )
         stix_objects.append(indicator_obj)
-        indicator_ids.append((indicator_obj.id, file_data["timestamp"]))
+
+        infrastructure_cert_rels[file_data["infrastructure_type"]].append(
+            (file_obj.id, indicator_obj.id, file_data["timestamp"])
+        )
 
         # Create Relationship between Indicator and File
         file_relationship = make_relationship(
