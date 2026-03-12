@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 from unittest.mock import patch
+import uuid
 
 from stix2 import Bundle
 
@@ -27,7 +28,10 @@ def test_generate_uuid5_with_stix_namespace_string():
     result = h.generate_uuid5(
         "name", namespace="marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     )
-    assert len(result) == 36
+    assert result == "ca113c79-d6f8-57a2-85a8-d23af2d1204b"
+    assert result == h.generate_uuid5(
+        "name", namespace=uuid.UUID("a1cb37d2-3bd3-5b23-8526-47a22694b7e0")
+    )
 
 
 def test_fetch_external_objects(monkeypatch):

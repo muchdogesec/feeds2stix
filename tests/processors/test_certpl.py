@@ -66,7 +66,7 @@ def test_create_stix_objects():
     objects = certpl.create_stix_objects(
         ["evil.example"],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2"},
         "2026-01-01T00:00:00.000Z",
     )
 
@@ -80,7 +80,7 @@ def test_create_stix_objects():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
+            "id": "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
@@ -93,23 +93,23 @@ def test_create_stix_objects():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--056dcd32-2124-5ace-adb9-bfbf4fc7b252",
+            "id": "relationship--104d4a8e-8d4a-58d7-a171-25e85ca08184",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--c9846bc1-74b3-5195-9699-b404ef5c09f1",
+            "source_ref": "indicator--1020302d-dce8-5c21-acc4-a1d97a837db3",
             "target_ref": "domain-name--69228563-c8d2-54ae-aeca-5f4134cb59aa",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",
             ],
         },
     ]

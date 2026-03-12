@@ -78,7 +78,7 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
         url_obj = URL(value=url)
 
         indicator_name = f"URL: {url}"
-        indicator_id = generate_uuid5(indicator_name)
+        indicator_id = generate_uuid5(indicator_name, namespace=vxvault_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(

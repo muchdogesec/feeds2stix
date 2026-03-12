@@ -191,7 +191,6 @@ def process_records(
     records: List[Dict[str, str]],
     source_identity: object,
     source_marking: object,
-    feeds2stix_marking: dict,
 ) -> str:
     """Process records and create a single bundle."""
     logger.info(f"Processing {len(records)} records")
@@ -200,7 +199,7 @@ def process_records(
 
     object_marking_refs = [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        feeds2stix_marking["id"],
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         source_marking["id"],
     ]
 
@@ -263,7 +262,6 @@ def main():
         records,
         source_identity,
         source_marking,
-        feeds2stix_marking,
     )
 
     logger.info("Processing complete")

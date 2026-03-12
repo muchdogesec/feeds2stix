@@ -105,7 +105,7 @@ def test_create_infrastructure_and_rels():
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
         ],
     )
 
@@ -118,13 +118,13 @@ def test_create_infrastructure_and_rels():
                 datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
             )
         ],
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
     )
 
     assert stix_as_dict(objs[0]) == {
         "type": "infrastructure",
         "spec_version": "2.1",
-        "id": "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+        "id": "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2026-01-01T10:00:00.000Z",
         "modified": "2026-01-01T10:00:00.000Z",
@@ -133,18 +133,18 @@ def test_create_infrastructure_and_rels():
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
         ],
     }
     rels = [(obj.source_ref, obj.relationship_type, obj.target_ref) for obj in objs[1:]]
     assert rels == [
         (
-            "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
             "controls",
             "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
         ),
         (
-            "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
         ),
@@ -168,7 +168,7 @@ def test_create_stix_objects_for_malware():
         "FamilyA",
         files_data,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
     )
     # test certificate, indicator and relationship from indicator to certificate - rest are tested in create_infrastructure_and_rels
     assert stix_as_dict(objects[:3]) == [
@@ -181,7 +181,7 @@ def test_create_stix_objects_for_malware():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--e7bb9c81-6f74-5375-9db2-a4daed6aa9ba",
+            "id": "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T10:00:00.000Z",
             "modified": "2026-01-01T10:00:00.000Z",
@@ -200,23 +200,23 @@ def test_create_stix_objects_for_malware():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--559ba789-4910-5a34-9d2e-477519f48eb0",
+            "id": "relationship--469b2848-2153-5034-a50b-8863d1d993e0",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T10:00:00.000Z",
             "modified": "2026-01-01T10:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--e7bb9c81-6f74-5375-9db2-a4daed6aa9ba",
+            "source_ref": "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
             "target_ref": "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
             ],
         },
     ]
@@ -234,7 +234,7 @@ def test_create_stix_objects_for_malware_all_before_start_date():
         "FamilyA",
         files_data,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
         start_date=datetime(2025, 1, 1, tzinfo=UTC),
     )
     assert objects == []
@@ -253,7 +253,7 @@ def test_create_all_stix_objects():
     grouped = sslblacklist.create_all_stix_objects(
         mapping,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
     )
     assert "FamilyA" in grouped
     assert len(grouped["FamilyA"]) == 8

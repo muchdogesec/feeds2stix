@@ -71,17 +71,6 @@ def test_download_urlhaus_data(monkeypatch, tmp_path):
     assert path.exists()
     assert path.read_bytes() == content
 
-
-def test_create_url_object():
-    obj = urlhaus.create_url_object("http://x.test")
-    assert stix_as_dict(obj) == {
-        "type": "url",
-        "spec_version": "2.1",
-        "id": "url--16cf3603-dec8-5d7a-9d6a-19bca9810bff",
-        "value": "http://x.test",
-    }
-
-
 def test_parse_csv_data(tmp_path, subtests):
     csv_file = tmp_path / "u.csv"
     csv_file.write_text(
@@ -125,49 +114,6 @@ def test_parse_csv_data(tmp_path, subtests):
         assert records[0]["dateadded"] == datetime(2026, 1, 2, 1, 8, tzinfo=UTC)
 
 
-def test_create_indicator_object():
-    record = {
-        "id": "1",
-        "dateadded": datetime(2026, 1, 1, tzinfo=UTC),
-        "url": "http://bad.test",
-        "url_status": "offline",
-        "last_online": datetime(2026, 1, 2, tzinfo=UTC),
-        "threat": "malware",
-        "tags": "loader,bot",
-        "urlhaus_link": "https://urlhaus.example/item",
-        "reporter": "r",
-    }
-    valid_marking_id = "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ind = urlhaus.create_indicator_object(
-        record,
-        "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        valid_marking_id,
-        [valid_marking_id],
-    )
-    assert stix_as_dict(ind) == {
-        "type": "indicator",
-        "spec_version": "2.1",
-        "id": "indicator--5887e7cc-e5ea-5955-853d-9f60d5d93c03",
-        "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        "created": "2026-01-01T00:00:00.000Z",
-        "modified": "2026-01-02T00:00:00.000Z",
-        "name": "URL: http://bad.test",
-        "indicator_types": ["malicious-activity"],
-        "pattern": "[ url:value = 'http://bad.test' ]",
-        "pattern_type": "stix",
-        "pattern_version": "2.1",
-        "valid_from": "2026-01-01T00:00:00Z",
-        "revoked": True,
-        "labels": ["malware", "loader", "bot"],
-        "external_references": [
-            {"source_name": "urlhaus_link", "url": "https://urlhaus.example/item"}
-        ],
-        "object_marking_refs": [
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-        ],
-    }
-
-
 def test_process_records():
     record = {
         "id": "1",
@@ -180,14 +126,61 @@ def test_process_records():
         "urlhaus_link": "https://urlhaus.example/item",
         "reporter": "r",
     }
-    valid_marking_id = "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
     objs = urlhaus.process_records(
         [record],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": valid_marking_id},
-        {"id": "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487"},
+        {"id": "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0"},
     )
+
     assert len(objs) == 3
+    assert stix_as_dict(objs) == [
+        {
+            "type": "url",
+            "spec_version": "2.1",
+            "id": "url--c30f2a6a-b33e-583d-be69-4760922d1509",
+            "value": "http://bad.test",
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c1febf02-69c4-5d8f-b85a-6195acb25dca",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2026-01-01T00:00:00.000Z",
+            "modified": "2026-01-02T00:00:00.000Z",
+            "name": "URL: http://bad.test",
+            "indicator_types": ["malicious-activity"],
+            "pattern": "[ url:value = 'http://bad.test' ]",
+            "pattern_type": "stix",
+            "pattern_version": "2.1",
+            "valid_from": "2026-01-01T00:00:00Z",
+            "revoked": True,
+            "labels": ["malware", "loader", "bot"],
+            "external_references": [
+                {"source_name": "urlhaus_link", "url": "https://urlhaus.example/item"}
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0",
+            ],
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9f5e6621-50b3-5550-a60c-c90a66265773",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2026-01-01T00:00:00.000Z",
+            "modified": "2026-01-02T00:00:00.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--c1febf02-69c4-5d8f-b85a-6195acb25dca",
+            "target_ref": "url--c30f2a6a-b33e-583d-be69-4760922d1509",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0",
+            ],
+        },
+    ]
 
 
 def test_create_indicator_with_none_tags_not_revoked():

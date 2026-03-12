@@ -93,7 +93,7 @@ def create_stix_objects(
                 logger.info(f"Processed {processed}/{total_ips} IP addresses...")
 
             indicator_name = f"IPv4: {ip}"
-            indicator_id = generate_uuid5(indicator_name)
+            indicator_id = generate_uuid5(indicator_name, namespace=ipsum_marking_id)
             indicator_id_full = f"indicator--{indicator_id}"
 
             ipv4_obj = IPv4Address(value=ip)
