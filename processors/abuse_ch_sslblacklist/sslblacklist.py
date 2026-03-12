@@ -178,6 +178,11 @@ def create_infrastructure_and_rels(
         objects.append(mal_indicator_rel)
     return objects
 
+def guess_malware_type(malware_name):
+    if malware_name.endswith("RAT"):
+        return "remote-access-trojan"
+    else:
+        return "unknown"
 
 def create_stix_objects_for_malware(
     malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None
@@ -259,7 +264,7 @@ def create_stix_objects_for_malware(
             created=earliest_date,
             modified=latest_date,
             name=malware_name,
-            malware_types=["remote-access-trojan"],
+            malware_types=[guess_malware_type(malware_name)],
             is_family=True,
             object_marking_refs=marking_refs,
         )

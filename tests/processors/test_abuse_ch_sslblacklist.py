@@ -227,6 +227,9 @@ def test_create_stix_objects_for_malware():
         },
     ]
 
+def test_guess_malware_type():
+    assert sslblacklist.guess_malware_type("BadRAT") == "remote-access-trojan"
+    assert sslblacklist.guess_malware_type("UnknownFamily") == "unknown"
 
 def test_create_stix_objects_for_malware_all_before_start_date():
     files_data = [
