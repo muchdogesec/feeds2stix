@@ -10,14 +10,14 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
-from stix2.patterns import StringConstant
 
 import requests
 from stix2 import (
-    Bundle,
     URL,
+    Bundle,
     Indicator,
 )
+from stix2.patterns import StringConstant
 
 # Add parent directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
@@ -35,7 +35,7 @@ from helpers.utils import (
 
 # Constants
 URLHAUS_URL = "https://urlhaus.abuse.ch/downloads/csv_recent/"
-OUTPUT_DIR = "bundles/abuse_ch_urlhaus"
+OUTPUT_DIR = "outputs/abuse_ch_urlhaus"
 
 # Set up logging
 logging.basicConfig(
@@ -61,14 +61,14 @@ def create_urlhaus_marking_definition():
     )
 
 
-def download_urlhaus_data() -> Path:
+def download_urlhaus_data(data_dir: Path) -> Path:
     """Download the URLhaus CSV data."""
     logger.info(f"Downloading URLhaus data from {URLHAUS_URL}")
     response = requests.get(URLHAUS_URL, timeout=300)
     response.raise_for_status()
 
     # Save CSV data
-    csv_path = Path("urlhaus_data.csv")
+    csv_path = data_dir / "urlhaus_data.csv"
     with open(csv_path, "wb") as f:
         f.write(response.content)
     logger.info(f"CSV data saved to {csv_path}")
@@ -191,7 +191,6 @@ def process_records(
     records: List[Dict[str, str]],
     source_identity: object,
     source_marking: object,
-    feeds2stix_marking: dict,
 ) -> str:
     """Process records and create a single bundle."""
     logger.info(f"Processing {len(records)} records")
@@ -200,7 +199,7 @@ def process_records(
 
     object_marking_refs = [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        feeds2stix_marking["id"],
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         source_marking["id"],
     ]
 
@@ -224,6 +223,7 @@ def process_records(
             marking_refs=object_marking_refs,
             created=indicator.created,
             modified=indicator.modified,
+            external_references=indicator.external_references[:1],  # Include only the URLhaus link reference
         )
         all_stix_objects.append(relationship)
     return all_stix_objects
@@ -244,17 +244,17 @@ def main():
     args.start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundles_dir = setup_output_directory(OUTPUT_DIR, clean=True)
+    bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     source_identity = create_urlhaus_identity()
     source_marking = create_urlhaus_marking_definition()
 
     # Fetch external objects
-    feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    feeds2stix_marking = fetch_external_objects()
 
     # Download data
-    csv_path = download_urlhaus_data()
+    csv_path = download_urlhaus_data(data_dir)
     # Parse CSV
     latest_timestamp, records = parse_csv_data(csv_path, start_date=args.start_date)
 
@@ -263,7 +263,6 @@ def main():
         records,
         source_identity,
         source_marking,
-        feeds2stix_marking,
     )
 
     logger.info("Processing complete")
@@ -272,13 +271,12 @@ def main():
         all_stix_objects,
         source_identity,
         source_marking,
-        feeds2stix_identity,
         feeds2stix_marking,
     )
 
     bundle_path = save_bundle_to_file(
         bundle,
-        Path(OUTPUT_DIR) / "bundles",
+        bundles_dir,
         "urlhaus",
     )
 

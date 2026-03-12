@@ -1,19 +1,20 @@
+import argparse
+import json
+import logging
 import os
 import shutil
 import sys
-import requests
-import json
-import logging
-import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, URL, Bundle
+
+import requests
+from stix2 import URL, Bundle, Indicator
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -26,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 OASIS_NAMESPACE_UUID = "00abedb4-aa42-466c-9c01-fed23315a9b7"
 VXVAULT_FEED_URL = "http://vxvault.net/URL_List.php"
-BASE_OUTPUT_DIR = "bundles/vxvault/"
+BASE_OUTPUT_DIR = "outputs/vxvault"
 
 
 def create_vxvault_identity():
@@ -77,7 +78,7 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
         url_obj = URL(value=url)
 
         indicator_name = f"URL: {url}"
-        indicator_id = generate_uuid5(indicator_name)
+        indicator_id = generate_uuid5(indicator_name, namespace=vxvault_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
@@ -121,11 +122,11 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         vxvault_identity = create_vxvault_identity()
         vxvault_marking = create_vxvault_marking_definition()
@@ -142,7 +143,6 @@ def main():
             stix_objects,
             vxvault_identity,
             vxvault_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

@@ -1,14 +1,13 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.ipsum import ipsum
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_ipsum_identity():
@@ -64,7 +63,7 @@ def test_create_stix_objects():
     objects = ipsum.create_stix_objects(
         ip_addresses_by_level,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9"},
         "2026-01-01T00:00:00.000Z",
     )
 
@@ -78,7 +77,7 @@ def test_create_stix_objects():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "id": "indicator--7812c57d-b540-5bad-9952-00412705c8d4",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
@@ -92,23 +91,23 @@ def test_create_stix_objects():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--e3993871-8875-5820-89e7-19c00b49bdbb",
+            "id": "relationship--b5b29cf9-8e4d-58ad-82b9-bc2cf125235b",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "source_ref": "indicator--7812c57d-b540-5bad-9952-00412705c8d4",
             "target_ref": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9",
             ],
         },
         {
@@ -120,7 +119,7 @@ def test_create_stix_objects():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--bb9161d9-bf34-5743-ba73-a4d0805884df",
+            "id": "indicator--4944b7ee-5de8-5b36-9579-3d28c3fb3286",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
@@ -134,23 +133,23 @@ def test_create_stix_objects():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--ed80967b-c8b3-5dc3-ad85-80b998e545b1",
+            "id": "relationship--7a833778-3287-5bd9-be92-27a42fb66c15",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--bb9161d9-bf34-5743-ba73-a4d0805884df",
+            "source_ref": "indicator--4944b7ee-5de8-5b36-9579-3d28c3fb3286",
             "target_ref": "ipv4-addr--2a20be58-fd0f-5a24-ac7a-f65ce409d7e4",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9",
             ],
         },
     ]
@@ -201,13 +200,12 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--9d7266e0-e0e7-529a-a840-7df15fb8fcf2",  # ipsum identity
         "marking-definition--86f47b9b-d446-511a-af0b-6bace17a72b9",  # ipsum marking
         "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",  # IP observable
-        "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",  # indicator
-        "relationship--c2de204a-2aa5-55fc-ae3f-c85d0db7e46f",  # relationship
+        "indicator--7812c57d-b540-5bad-9952-00412705c8d4",  # indicator
+        "relationship--b5b29cf9-8e4d-58ad-82b9-bc2cf125235b",  # relationship
     }
 
     assert {
@@ -216,7 +214,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "indicator--7812c57d-b540-5bad-9952-00412705c8d4",
             "indicates",
             "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
         ),

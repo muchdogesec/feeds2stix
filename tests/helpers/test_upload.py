@@ -1,5 +1,5 @@
-import json
 import builtins
+import json
 from pathlib import Path
 
 import pytest
@@ -14,20 +14,25 @@ def test_poll_job_status_completed(monkeypatch):
         "get",
         lambda *a, **k: test_utils.FakeJSONResponse({"id": "j1", "state": "completed"}),
     )
-    result = upload.poll_job_status("j1", "https://ctx", "k", poll_interval=0, max_wait=5)
+    result = upload.poll_job_status(
+        "j1", "https://ctx", "k", poll_interval=0, max_wait=5
+    )
     assert result["state"] == "completed"
 
 
 def test_poll_job_status_timeout(monkeypatch):
     call_count = 0
+
     def mock_time():
         nonlocal call_count
         call_count += 1
         # First call returns 0 (start_time), subsequent calls return 10 (elapsed > max_wait)
         return 0 if call_count == 1 else 10
-    
+
     monkeypatch.setattr(upload.time, "time", mock_time)
-    result = upload.poll_job_status("j1", "https://ctx", "k", poll_interval=0, max_wait=5)
+    result = upload.poll_job_status(
+        "j1", "https://ctx", "k", poll_interval=0, max_wait=5
+    )
     assert result["state"] == "timeout"
 
 
@@ -42,7 +47,9 @@ def test_poll_job_status_handles_pending_unknown_and_not_ok(monkeypatch):
     )
     monkeypatch.setattr(upload.requests, "get", lambda *a, **k: next(responses))
     monkeypatch.setattr(upload.time, "sleep", lambda *_: None)
-    result = upload.poll_job_status("j1", "https://ctx", "k", poll_interval=0, max_wait=5)
+    result = upload.poll_job_status(
+        "j1", "https://ctx", "k", poll_interval=0, max_wait=5
+    )
     assert result["state"] == "completed"
 
 
@@ -50,9 +57,13 @@ def test_upload_bundle_success(monkeypatch):
     monkeypatch.setattr(
         upload.requests,
         "post",
-        lambda *a, **k: test_utils.FakeJSONResponse({"id": "job-1", "state": "completed"}),
+        lambda *a, **k: test_utils.FakeJSONResponse(
+            {"id": "job-1", "state": "completed"}
+        ),
     )
-    result = upload.upload_bundle({"objects": [{"id": "a"}]}, "https://ctx", "k", "feed")
+    result = upload.upload_bundle(
+        {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed"
+    )
     assert result["success"] is True
     assert result["job_id"] == "job-1"
 
@@ -84,7 +95,9 @@ def test_upload_bundle_unrecoverable_error(monkeypatch):
             {"id": "job", "state": "failed", "errors": {"oops": 1}}
         ),
     )
-    result = upload.upload_bundle({"objects": [{"id": "a"}]}, "https://ctx", "k", "feed")
+    result = upload.upload_bundle(
+        {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed"
+    )
     assert result["success"] is False
     assert result["job_state"] == "error"
 
@@ -101,7 +114,9 @@ def test_upload_bundle_all_objects_fail_returns_success_true(monkeypatch):
             }
         ),
     )
-    result = upload.upload_bundle({"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=1)
+    result = upload.upload_bundle(
+        {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=1
+    )
     assert result["success"] is True
     assert result["submitted_objects"] == 0
 
@@ -114,8 +129,12 @@ def test_upload_bundle_wait_for_completion(monkeypatch):
             {"id": "job-1", "state": "processing"}
         ),
     )
-    monkeypatch.setattr(upload, "poll_job_status", lambda *a, **k: {"state": "completed", "id": "job-1"})
-    result = upload.upload_bundle({"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", wait_for_completion=True)
+    monkeypatch.setattr(
+        upload, "poll_job_status", lambda *a, **k: {"state": "completed", "id": "job-1"}
+    )
+    result = upload.upload_bundle(
+        {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", wait_for_completion=True
+    )
     assert result["job_state"] == "completed"
     assert result["final_job_data"]["id"] == "job-1"
 
@@ -126,7 +145,9 @@ def test_upload_bundle_http_error_retries_and_fails(monkeypatch):
         "post",
         lambda *a, **k: test_utils.FakeJSONResponse({"state": "x"}, status_code=500),
     )
-    result = upload.upload_bundle({"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=2)
+    result = upload.upload_bundle(
+        {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=2
+    )
     assert result["success"] is False
     assert "Upload failed after 2 attempts" in result["error"]
 
@@ -134,16 +155,18 @@ def test_upload_bundle_http_error_retries_and_fails(monkeypatch):
 def test_write_github_summary_single(monkeypatch, tmp_path):
     summary = tmp_path / "summary.md"
     monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
-    upload.write_github_summary([
-        {
-            "success": True,
-            "job_id": "job-1",
-            "job_state": "completed",
-            "total_objects": 2,
-            "submitted_objects": 2,
-            "failed_objects": [],
-        }
-    ])
+    upload.write_github_summary(
+        [
+            {
+                "success": True,
+                "job_id": "job-1",
+                "job_state": "completed",
+                "total_objects": 2,
+                "submitted_objects": 2,
+                "failed_objects": [],
+            }
+        ]
+    )
     text = summary.read_text()
     assert "CTX Bundle Upload Summary" in text
     assert "job-1" in text
@@ -245,7 +268,12 @@ def test_save_artifacts_handles_copy_failure(monkeypatch, tmp_path):
         return real_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", fake_import)
-    out_dir = upload.save_artifacts({"req_responses": [], "failed_objects": []}, str(tmp_path), "bundleB", str(bundle_file))
+    out_dir = upload.save_artifacts(
+        {"req_responses": [], "failed_objects": []},
+        str(tmp_path),
+        "bundleB",
+        str(bundle_file),
+    )
     assert Path(out_dir).exists()
 
 
@@ -255,7 +283,18 @@ def test_main_success_path(monkeypatch, tmp_path):
 
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
     monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
-    monkeypatch.setattr(upload, "upload_bundle", lambda *a, **k: {"success": True, "job_id": "j", "total_objects": 0, "submitted_objects": 0, "failed_objects": [], "job_state": "completed"})
+    monkeypatch.setattr(
+        upload,
+        "upload_bundle",
+        lambda *a, **k: {
+            "success": True,
+            "job_id": "j",
+            "total_objects": 0,
+            "submitted_objects": 0,
+            "failed_objects": [],
+            "job_state": "completed",
+        },
+    )
     monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
 
@@ -309,7 +348,9 @@ def test_main_directory_and_split_flow(monkeypatch, tmp_path):
     split2.write_text(json.dumps({"type": "bundle", "objects": []}))
 
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 100000)
-    monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [str(split1), str(split2)])
+    monkeypatch.setattr(
+        upload, "split_stix_bundle", lambda *a, **k: [str(split1), str(split2)]
+    )
     monkeypatch.setattr(
         upload,
         "upload_bundle",
@@ -334,7 +375,11 @@ def test_main_catches_bundleuploadfailed(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
     bundle_file.write_text(json.dumps({"type": "bundle", "objects": []}))
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
-    monkeypatch.setattr(upload, "upload_bundle", lambda *a, **k: (_ for _ in ()).throw(upload.BundleUploadFailed("bad")))
+    monkeypatch.setattr(
+        upload,
+        "upload_bundle",
+        lambda *a, **k: (_ for _ in ()).throw(upload.BundleUploadFailed("bad")),
+    )
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
 
     with pytest.raises(SystemExit) as exc:
@@ -345,7 +390,11 @@ def test_main_catches_bundleuploadfailed(monkeypatch, tmp_path):
 def test_main_catches_generic_exception(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
     bundle_file.write_text(json.dumps({"type": "bundle", "objects": []}))
-    monkeypatch.setattr(upload.os.path, "getsize", lambda *_: (_ for _ in ()).throw(RuntimeError("boom")))
+    monkeypatch.setattr(
+        upload.os.path,
+        "getsize",
+        lambda *_: (_ for _ in ()).throw(RuntimeError("boom")),
+    )
 
     with pytest.raises(SystemExit) as exc:
         upload.main([str(bundle_file)], "https://ctx", "key", "feed")

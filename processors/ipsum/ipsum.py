@@ -1,19 +1,20 @@
+import argparse
+import json
+import logging
 import os
 import shutil
 import sys
-import requests
-import json
-import logging
-import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, IPv4Address, Bundle
+
+import requests
+from stix2 import Bundle, Indicator, IPv4Address
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 IPSUM_FEED_URL_TEMPLATE = (
     "https://raw.githubusercontent.com/stamparm/ipsum/master/levels/{level}.txt"
 )
-BASE_OUTPUT_DIR = "bundles/ipsum/"
+BASE_OUTPUT_DIR = "outputs/ipsum"
 
 
 def create_ipsum_identity():
@@ -92,9 +93,9 @@ def create_stix_objects(
                 logger.info(f"Processed {processed}/{total_ips} IP addresses...")
 
             indicator_name = f"IPv4: {ip}"
-            indicator_id = generate_uuid5(indicator_name)
+            indicator_id = generate_uuid5(indicator_name, namespace=ipsum_marking_id)
             indicator_id_full = f"indicator--{indicator_id}"
-            
+
             ipv4_obj = IPv4Address(value=ip)
 
             indicator = Indicator(
@@ -166,18 +167,18 @@ def main():
         required=True,
         choices=range(1, 9),
         metavar="1-8",
-           help="Minimum category score/level (1-8). Fetches all levels from 8 down to this level.",
+        help="Minimum category score/level (1-8). Fetches all levels from 8 down to this level.",
     )
 
     args = parser.parse_args()
     min_level = args.min_level
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         ipsum_identity = create_ipsum_identity()
         ipsum_marking = create_ipsum_marking_definition()
@@ -194,11 +195,12 @@ def main():
             stix_objects,
             ipsum_identity,
             ipsum_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 
-        bundle_path = save_bundle_to_file(bundle, output_dir, f"ipsum_level_{min_level}")
+        bundle_path = save_bundle_to_file(
+            bundle, output_dir, f"ipsum_level_{min_level}"
+        )
 
         logger.info(
             f"Successfully created STIX bundle with {len(stix_objects)} objects"

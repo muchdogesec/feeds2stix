@@ -1,14 +1,13 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.cinsscore import cinsscore
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_cinsscore_identity():
@@ -65,7 +64,7 @@ def test_create_stix_objects():
     objects = cinsscore.create_stix_objects(
         ["1.2.3.4"],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7"},
         "2026-01-01T00:00:00.000Z",
     )
 
@@ -79,7 +78,7 @@ def test_create_stix_objects():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "id": "indicator--729f4445-4463-544f-909a-bf7d2c4e19b2",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
@@ -92,23 +91,23 @@ def test_create_stix_objects():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--e3993871-8875-5820-89e7-19c00b49bdbb",
+            "id": "relationship--b45594f5-0ed2-5b23-9b25-6a7fff78f247",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "source_ref": "indicator--729f4445-4463-544f-909a-bf7d2c4e19b2",
             "target_ref": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",
             ],
         },
     ]
@@ -133,13 +132,12 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",  # cinsscore identity
         "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",  # cinsscore marking
         "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",  # IP observable
-        "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",  # indicator
-        "relationship--ed262bb0-524c-5a04-b3bc-7931051880a9",  # relationship
+        "indicator--729f4445-4463-544f-909a-bf7d2c4e19b2",  # indicator
+        "relationship--b45594f5-0ed2-5b23-9b25-6a7fff78f247",  # relationship
     }
 
     assert {
@@ -148,7 +146,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--716afde3-c644-54f0-a63b-9e707f0cfa26",
+            "indicator--729f4445-4463-544f-909a-bf7d2c4e19b2",
             "indicates",
             "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
         ),

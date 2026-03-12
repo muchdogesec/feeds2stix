@@ -1,14 +1,15 @@
 # write function that takes bundle object and uploads it to cyberthreat exchange (ctx), main function takes bundle file and uploads it to ctx
-import json
-import sys
-import warnings
-import requests
-import os
-import logging
-import time
-from pathlib import Path
-from split_jsons import split_stix_bundle, get_file_size_kb
 import copy
+import json
+import logging
+import os
+import sys
+import time
+import warnings
+from pathlib import Path
+
+import requests
+from split_jsons import get_file_size_kb, split_stix_bundle
 
 # Setup logging
 logging.basicConfig(
@@ -107,7 +108,9 @@ def upload_bundle(
             logger.info(f"Retry attempt {attempt}/{max_retries - 1}")
 
         try:
-            req_responses.append({"request_url": url, "request_body": copy.deepcopy(current_bundle)})
+            req_responses.append(
+                {"request_url": url, "request_body": copy.deepcopy(current_bundle)}
+            )
             response = requests.post(url, headers=headers, json=current_bundle)
             req_responses[-1]["response_status"] = response.status_code
             req_responses[-1]["response_text"] = response.text
@@ -373,14 +376,14 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
                 json_files = []
                 for root, dirs, files in os.walk(bundle_file):
                     for file in files:
-                        if file.endswith('.json'):
+                        if file.endswith(".json"):
                             json_files.append(os.path.join(root, file))
                 json_files.sort()  # Sort alphabetically
                 logger.info(f"Found {len(json_files)} JSON files in directory")
                 all_bundle_files.extend(json_files)
             else:
                 all_bundle_files.append(bundle_file)
-        
+
         # Process files and split if necessary
         processed_files = []
         for bundle_file in all_bundle_files:
@@ -449,8 +452,18 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
                 submitted = result.get("submitted_objects", 0)
                 failed = len(result.get("failed_objects", []))
                 state = result.get("job_state") or "unknown"
-                logger.info(str({"job_id": job_id, "bundle_name": bundle_name_display, "total": total, "submitted": submitted, "failed": failed, "state": state}))
-
+                logger.info(
+                    str(
+                        {
+                            "job_id": job_id,
+                            "bundle_name": bundle_name_display,
+                            "total": total,
+                            "submitted": submitted,
+                            "failed": failed,
+                            "state": state,
+                        }
+                    )
+                )
 
         write_github_summary(results, is_multi_bundle)
 

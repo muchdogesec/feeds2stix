@@ -1,18 +1,19 @@
-import os
-import sys
-import requests
+import argparse
 import json
 import logging
-import argparse
+import os
+import sys
 from datetime import UTC, datetime
+
+import requests
 from stix2 import Indicator, IPv4Address
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -24,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CINSSCORE_FEED_URL = "https://cinsscore.com/list/ci-badguys.txt"
-BASE_OUTPUT_DIR = "bundles/cinsscore/"
+BASE_OUTPUT_DIR = "outputs/cinsscore"
 
 
 def create_cinsscore_identity():
@@ -77,7 +78,7 @@ def create_stix_objects(
         ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(indicator_name)
+        indicator_id = generate_uuid5(indicator_name, namespace=cinsscore_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
 
         indicator = Indicator(
@@ -113,9 +114,6 @@ def create_stix_objects(
     return stix_objects
 
 
-
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert CINS Score threat intelligence feed to STIX 2.1 format"
@@ -124,11 +122,11 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         cinsscore_identity = create_cinsscore_identity()
         cinsscore_marking = create_cinsscore_marking_definition()
@@ -145,7 +143,6 @@ def main():
             stix_objects,
             cinsscore_identity,
             cinsscore_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

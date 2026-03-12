@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
-import os
-import csv
-import re
-import requests
-import logging
 import argparse
+import csv
+import logging
+import os
+import re
 import sys
+from collections import defaultdict
 from datetime import datetime, timezone
-from stix2 import X509Certificate, Indicator, Malware, Relationship, Infrastructure
+
+import requests
+from stix2 import Indicator, Infrastructure, Malware, Relationship, X509Certificate
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    NAMESPACE_UUID,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -31,7 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CSV_URL = "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
-BASE_OUTPUT_DIR = "bundles/abuse_ch_sslblacklist/"
+BASE_OUTPUT_DIR = "outputs/abuse_ch_sslblacklist"
 
 
 def create_abuse_ch_identity():
@@ -108,7 +109,9 @@ def format_fingerprint(s):
     return ":".join(s[i : i + 2] for i in range(0, len(s), 2))
 
 
-def create_infrastructure_and_rels(malware_obj, infrastructure_type, cert_refs, marking_id):
+def create_infrastructure_and_rels(
+    malware_obj, infrastructure_type, cert_refs, marking_id
+):
     MAPPING = {
         "command-and-control": "C&C",
         "hosting-malware": "Malware distribution",
@@ -142,7 +145,7 @@ def create_infrastructure_and_rels(malware_obj, infrastructure_type, cert_refs, 
         marking_refs=malware_obj.object_marking_refs,
     )
     objects.append(infra_cert_rel)
-    for cert_ref, timestamp in cert_refs:
+    for cert_ref, indicator_ref, timestamp in cert_refs:
         infra_cert_rel = make_relationship(
             source_ref=infrastructure_obj.id,
             target_ref=cert_ref,
@@ -163,8 +166,23 @@ def create_infrastructure_and_rels(malware_obj, infrastructure_type, cert_refs, 
             marking_refs=malware_obj.object_marking_refs,
         )
         objects.append(mal_cert_rel)
+        mal_indicator_rel = make_relationship(
+            source_ref=indicator_ref,
+            target_ref=malware_obj.id,
+            relationship_type="indicates",
+            created_by_ref=malware_obj.created_by_ref,
+            created=timestamp,
+            modified=timestamp,
+            marking_refs=malware_obj.object_marking_refs,
+        )
+        objects.append(mal_indicator_rel)
     return objects
 
+def guess_malware_type(malware_name):
+    if malware_name.endswith("RAT"):
+        return "remote-access-trojan"
+    else:
+        return "unknown"
 
 def create_stix_objects_for_malware(
     malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None
@@ -193,15 +211,11 @@ def create_stix_objects_for_malware(
     logger.info(f"Processing '{malware_name}' with {len(files_data)} files...")
 
     # Create File objects
-    indicator_ids: list[tuple[str, datetime]] = []
     infrastructure_cert_rels = defaultdict(list)
     for file_data in files_data:
         file_obj = X509Certificate(hashes={"SHA-1": file_data["sha1_hash"]})
         if file_data["timestamp"] <= start_date:
             continue
-        infrastructure_cert_rels[file_data["infrastructure_type"]].append(
-            (file_obj.id, file_data["timestamp"])
-        )
         stix_objects.append(file_obj)
         indicator_name = "Certificate: " + format_fingerprint(file_data["sha1_hash"])
         indicator_id = "indicator--" + generate_uuid5(indicator_name, sslbl_marking_id)
@@ -224,7 +238,10 @@ def create_stix_objects_for_malware(
             ],
         )
         stix_objects.append(indicator_obj)
-        indicator_ids.append((indicator_obj.id, file_data["timestamp"]))
+
+        infrastructure_cert_rels[file_data["infrastructure_type"]].append(
+            (file_obj.id, indicator_obj.id, file_data["timestamp"])
+        )
 
         # Create Relationship between Indicator and File
         file_relationship = make_relationship(
@@ -247,7 +264,7 @@ def create_stix_objects_for_malware(
             created=earliest_date,
             modified=latest_date,
             name=malware_name,
-            malware_types=["remote-access-trojan"],
+            malware_types=[guess_malware_type(malware_name)],
             is_family=True,
             object_marking_refs=marking_refs,
         )
@@ -306,14 +323,14 @@ def main():
     start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundle_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+    bundle_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     abuse_ch_identity = create_abuse_ch_identity()
     sslbl_marking = create_sslbl_marking_definition()
 
     # Fetch external objects
-    feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    feeds2stix_marking = fetch_external_objects()
 
     # Fetch and parse CSV data
     malware_mapping = fetch_sslbl_feed()
@@ -331,7 +348,6 @@ def main():
         bundle = create_bundle_with_metadata(
             stix_objects=stix_objects,
             source_identity=abuse_ch_identity,
-            feeds2stix_identity=feeds2stix_identity,
             source_marking=sslbl_marking,
             feeds2stix_marking=feeds2stix_marking,
         )

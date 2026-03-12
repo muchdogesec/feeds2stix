@@ -1,22 +1,23 @@
-import os
-import uuid
-import requests
+import argparse
 import json
 import logging
-import argparse
+import os
+import uuid
 from datetime import UTC, datetime
-from stix2 import Indicator, DomainName
+
+import requests
+from stix2 import DomainName, Indicator
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    NAMESPACE_UUID,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -25,8 +26,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
-THREATVIEW_DOMAIN_FEED_URL = "https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt"
-BASE_OUTPUT_DIR = "bundles/threatview_domain/"
+THREATVIEW_DOMAIN_FEED_URL = (
+    "https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt"
+)
+BASE_OUTPUT_DIR = "outputs/threatview_domain"
 
 
 def create_threatview_identity():
@@ -61,7 +64,9 @@ def fetch_threatview_feed():
     return domains
 
 
-def create_stix_objects(domains, threatview_identity, threatview_marking, script_run_time):
+def create_stix_objects(
+    domains, threatview_identity, threatview_marking, script_run_time
+):
     """Create STIX objects for domains"""
     stix_objects = []
 
@@ -121,11 +126,11 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         threatview_identity = create_threatview_identity()
         threatview_marking = create_threatview_marking_definition()
@@ -142,7 +147,6 @@ def main():
             stix_objects,
             threatview_identity,
             threatview_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

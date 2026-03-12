@@ -1,14 +1,13 @@
 import json
-from datetime import UTC
-from unittest.mock import patch
-from pathlib import Path
 import sys
+from datetime import UTC
+from pathlib import Path
+from unittest.mock import patch
 
 import processors
 from processors.threatview.threatview_bitcoin import threatview_bitcoin
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_threatview_identity():
@@ -40,7 +39,9 @@ def test_create_threatview_marking_definition():
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "definition_type": "statement",
-        "definition": {"statement": "Origin: https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt"},
+        "definition": {
+            "statement": "Origin: https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt"
+        },
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -56,7 +57,10 @@ def test_fetch_threatview_feed():
     ):
         items = threatview_bitcoin.fetch_threatview_feed()
 
-    assert items == ["1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"]
+    assert items == [
+        "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+    ]
 
 
 def test_create_stix_objects():
@@ -77,7 +81,7 @@ def test_create_stix_objects():
                 "extension-definition--be78509e-6958-51b1-8b26-d17ee0eba2d7": {
                     "extension_type": "new-sco"
                 }
-            }
+            },
         },
         {
             "type": "indicator",
@@ -137,7 +141,6 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--699c5731-66cb-5236-b314-68acb4ba3a52",  # threatview identity
         "marking-definition--6808dd62-9c8e-5450-9b02-22d6115cbede",  # threatview marking

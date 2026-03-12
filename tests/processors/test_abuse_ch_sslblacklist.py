@@ -1,14 +1,13 @@
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.abuse_ch_sslblacklist import sslblacklist
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_abuse_ch_identity():
@@ -106,7 +105,7 @@ def test_create_infrastructure_and_rels():
         object_marking_refs=[
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
         ],
     )
 
@@ -116,16 +115,17 @@ def test_create_infrastructure_and_rels():
         [
             (
                 "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+                "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
                 datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
             )
         ],
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
     )
 
     assert stix_as_dict(objs[0]) == {
         "type": "infrastructure",
         "spec_version": "2.1",
-        "id": "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+        "id": "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2026-01-01T10:00:00.000Z",
         "modified": "2026-01-01T10:00:00.000Z",
@@ -134,18 +134,18 @@ def test_create_infrastructure_and_rels():
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+            "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
         ],
     }
     rels = [(obj.source_ref, obj.relationship_type, obj.target_ref) for obj in objs[1:]]
     assert rels == [
         (
-            "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
             "controls",
             "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
         ),
         (
-            "infrastructure--2a3e48cd-d284-5b5c-b2a2-207ef9209925",
+            "infrastructure--8099ce81-59b6-5316-a1c5-d6a15aaddc00",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
         ),
@@ -153,6 +153,11 @@ def test_create_infrastructure_and_rels():
             "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
+            "indicates",
+            "malware--301f8c24-291b-5a8c-8ca4-6e83e9138fd0",
         ),
     ]
 
@@ -169,7 +174,7 @@ def test_create_stix_objects_for_malware():
         "FamilyA",
         files_data,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
     )
     # test certificate, indicator and relationship from indicator to certificate - rest are tested in create_infrastructure_and_rels
     assert stix_as_dict(objects[:3]) == [
@@ -182,7 +187,7 @@ def test_create_stix_objects_for_malware():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--e7bb9c81-6f74-5375-9db2-a4daed6aa9ba",
+            "id": "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T10:00:00.000Z",
             "modified": "2026-01-01T10:00:00.000Z",
@@ -201,27 +206,30 @@ def test_create_stix_objects_for_malware():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--559ba789-4910-5a34-9d2e-477519f48eb0",
+            "id": "relationship--469b2848-2153-5034-a50b-8863d1d993e0",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T10:00:00.000Z",
             "modified": "2026-01-01T10:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--e7bb9c81-6f74-5375-9db2-a4daed6aa9ba",
+            "source_ref": "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
             "target_ref": "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",
             ],
         },
     ]
 
+def test_guess_malware_type():
+    assert sslblacklist.guess_malware_type("BadRAT") == "remote-access-trojan"
+    assert sslblacklist.guess_malware_type("UnknownFamily") == "unknown"
 
 def test_create_stix_objects_for_malware_all_before_start_date():
     files_data = [
@@ -235,7 +243,7 @@ def test_create_stix_objects_for_malware_all_before_start_date():
         "FamilyA",
         files_data,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
         start_date=datetime(2025, 1, 1, tzinfo=UTC),
     )
     assert objects == []
@@ -254,10 +262,10 @@ def test_create_all_stix_objects():
     grouped = sslblacklist.create_all_stix_objects(
         mapping,
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
     )
     assert "FamilyA" in grouped
-    assert len(grouped["FamilyA"]) == 8
+    assert len(grouped["FamilyA"]) == 9
 
 
 def test_main_writes_outputs(monkeypatch, tmp_path):
@@ -291,7 +299,6 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
     assert len(bundle_files) == 1
     bundle = json.loads(bundle_files[0].read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",  # abuse.ch identity
         "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",  # sslblacklist marking
@@ -303,6 +310,7 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
         "relationship--469b2848-2153-5034-a50b-8863d1d993e0",  # relationship 2
         "relationship--a6382ce1-cdcf-5825-98aa-6c270428b348",  # relationship 3
         "relationship--c0807faf-58d3-5d1b-a779-433093a959d9",  # relationship 4
+        "relationship--a6d2b059-83c1-5f12-baed-d9c5aa5500f7",  # relationship 5
     }
 
     assert {
@@ -329,5 +337,10 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
             "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
             "related-to",
             "x509-certificate--1e901a93-d663-59b6-88a6-edc0114b78c9",
+        ),
+        (
+            "indicator--8dde1a7c-f9bd-57ca-b178-1113195481b4",
+            "indicates",
+            "malware--8251c6a0-28e9-596c-9b77-0ca1a66ed61d",
         ),
     }

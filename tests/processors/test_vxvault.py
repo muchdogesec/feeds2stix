@@ -1,14 +1,13 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.vxvault import vxvault
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_vxvault_identity():
@@ -65,7 +64,7 @@ def test_create_stix_objects():
     objects = vxvault.create_stix_objects(
         ["http://example.com/malware.exe"],
         {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
-        {"id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"},
+        {"id": "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6"},
         "2026-01-01T00:00:00.000Z",
     )
 
@@ -79,7 +78,7 @@ def test_create_stix_objects():
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
+            "id": "indicator--8dcfeff4-974f-5140-8152-df075d32d752",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
@@ -92,23 +91,23 @@ def test_create_stix_objects():
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",
             ],
         },
         {
             "type": "relationship",
             "spec_version": "2.1",
-            "id": "relationship--501f2fb6-cbd5-5eff-b3ad-916110bcf983",
+            "id": "relationship--6d03e212-f1e6-51cb-a897-cddb49227eec",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2026-01-01T00:00:00.000Z",
             "modified": "2026-01-01T00:00:00.000Z",
             "relationship_type": "indicates",
-            "source_ref": "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
+            "source_ref": "indicator--8dcfeff4-974f-5140-8152-df075d32d752",
             "target_ref": "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",
             ],
         },
     ]
@@ -134,13 +133,12 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",  # vxvault identity
         "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",  # vxvault marking
         "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",  # URL observable
-        "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",  # indicator
-        "relationship--099974e3-5d22-5c3d-981c-14a935878327",  # relationship
+        "indicator--8dcfeff4-974f-5140-8152-df075d32d752",  # indicator
+        "relationship--6d03e212-f1e6-51cb-a897-cddb49227eec",  # relationship
     }
 
     assert {
@@ -149,7 +147,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--bc8ca968-edd3-5f65-a01f-7ffdcaed1b65",
+            "indicator--8dcfeff4-974f-5140-8152-df075d32d752",
             "indicates",
             "url--afdf5315-f854-54d9-8b78-fdc90c16e3d8",
         ),
