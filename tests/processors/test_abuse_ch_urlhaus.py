@@ -71,6 +71,7 @@ def test_download_urlhaus_data(monkeypatch, tmp_path):
     assert path.exists()
     assert path.read_bytes() == content
 
+
 def test_parse_csv_data(tmp_path, subtests):
     csv_file = tmp_path / "u.csv"
     csv_file.write_text(
@@ -155,13 +156,13 @@ def test_process_records():
             "valid_from": "2026-01-01T00:00:00Z",
             "revoked": True,
             "labels": ["malware", "loader", "bot"],
-            "external_references": [
-                {"source_name": "urlhaus_link", "url": "https://urlhaus.example/item"}
-            ],
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
                 "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0",
+            ],
+            "external_references": [
+                {"source_name": "urlhaus_link", "url": "https://urlhaus.example/item"}
             ],
         },
         {
@@ -178,6 +179,9 @@ def test_process_records():
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
                 "marking-definition--89b3aa69-1f6d-5df0-a84b-cb31fba7e0f0",
+            ],
+            "external_references": [
+                {"source_name": "urlhaus_link", "url": "https://urlhaus.example/item"}
             ],
         },
     ]

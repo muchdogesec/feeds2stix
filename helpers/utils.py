@@ -178,6 +178,8 @@ def make_relationship(
     marking_refs,
     created=None,
     modified=None,
+    external_references=None,
+    description=None,
 ):
     """Helper function to create a relationship object"""
     relationship_id = generate_uuid5(
@@ -194,6 +196,8 @@ def make_relationship(
         source_ref=source_ref,
         target_ref=target_ref,
         object_marking_refs=marking_refs,
+        external_references=external_references,
+        description=description,
     )
 
     return relationship
