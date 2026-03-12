@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 
-import os
-import requests
+import argparse
 import json
 import logging
-import argparse
+import os
 import shutil
-import tempfile
-from datetime import datetime, timezone, UTC
-from stix2 import Indicator, URL, Bundle
-from stix2.patterns import StringConstant
-from git import Repo
-from collections import defaultdict
-
 import sys
+import tempfile
+from collections import defaultdict
+from datetime import UTC, datetime, timezone
+
+import requests
+from git import Repo
+from stix2 import URL, Bundle, Indicator
+from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -225,7 +225,7 @@ def main():
     openphish_marking = create_openphish_marking_definition()
 
     # Fetch external objects
-    feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    feeds2stix_marking = fetch_external_objects()
     # Use temporary directory for repo clone
     with tempfile.TemporaryDirectory() as temp_dir:
         repo_clone_path = os.path.join(temp_dir, "openphish_repo")
@@ -250,7 +250,6 @@ def main():
                 url_data_for_date,
                 openphish_identity,
                 openphish_marking,
-                feeds2stix_identity,
                 feeds2stix_marking,
             )
             # Save bundle with date in filename
@@ -274,7 +273,6 @@ def process_urls_for_date(
     url_data_for_date,
     openphish_identity,
     openphish_marking,
-    feeds2stix_identity,
     feeds2stix_marking,
 ):
 
@@ -287,7 +285,6 @@ def process_urls_for_date(
     bundle = create_bundle_with_metadata(
         stix_objects=stix_objects,
         source_identity=openphish_identity,
-        feeds2stix_identity=feeds2stix_identity,
         source_marking=openphish_marking,
         feeds2stix_marking=feeds2stix_marking,
     )

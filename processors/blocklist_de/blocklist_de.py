@@ -1,23 +1,24 @@
+import argparse
+import json
+import logging
 import os
 import sys
 import uuid
-import requests
-import json
-import logging
-import argparse
 from datetime import UTC, datetime
+
+import requests
 from stix2 import Indicator, IPv4Address
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    NAMESPACE_UUID,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -62,7 +63,9 @@ def fetch_blocklist_de_feed():
     return ip_addresses
 
 
-def create_stix_objects(ip_addresses, blocklist_de_identity, blocklist_de_marking, script_run_time):
+def create_stix_objects(
+    ip_addresses, blocklist_de_identity, blocklist_de_marking, script_run_time
+):
     """Create STIX objects for IP addresses"""
     stix_objects = []
 
@@ -126,7 +129,7 @@ def main():
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         blocklist_de_identity = create_blocklist_de_identity()
         blocklist_de_marking = create_blocklist_de_marking_definition()
@@ -143,7 +146,6 @@ def main():
             stix_objects,
             blocklist_de_identity,
             blocklist_de_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 
@@ -154,7 +156,7 @@ def main():
         )
 
         print(f"BUNDLE_PATH={bundle_path}")
-        
+
         github_output = os.getenv("GITHUB_OUTPUT")
         if github_output:
             with open(github_output, "a") as f:

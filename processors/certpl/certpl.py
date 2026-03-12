@@ -1,22 +1,23 @@
-import os
-import uuid
-import requests
+import argparse
 import json
 import logging
-import argparse
+import os
+import uuid
 from datetime import UTC, datetime
-from stix2 import Indicator, DomainName
+
+import requests
+from stix2 import DomainName, Indicator
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    NAMESPACE_UUID,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -125,7 +126,7 @@ def main():
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         certpl_identity = create_certpl_identity()
         certpl_marking = create_certpl_marking_definition()
@@ -142,7 +143,6 @@ def main():
             stix_objects,
             certpl_identity,
             certpl_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

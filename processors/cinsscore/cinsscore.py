@@ -1,18 +1,19 @@
-import os
-import sys
-import requests
+import argparse
 import json
 import logging
-import argparse
+import os
+import sys
 from datetime import UTC, datetime
+
+import requests
 from stix2 import Indicator, IPv4Address
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -113,9 +114,6 @@ def create_stix_objects(
     return stix_objects
 
 
-
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert CINS Score threat intelligence feed to STIX 2.1 format"
@@ -128,7 +126,7 @@ def main():
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         cinsscore_identity = create_cinsscore_identity()
         cinsscore_marking = create_cinsscore_marking_definition()
@@ -145,7 +143,6 @@ def main():
             stix_objects,
             cinsscore_identity,
             cinsscore_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

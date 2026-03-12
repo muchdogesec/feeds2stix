@@ -1,14 +1,13 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.cinsscore import cinsscore
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_cinsscore_identity():
@@ -133,7 +132,6 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--c61334ee-05d8-5109-8c4e-14fa29bc4744",  # cinsscore identity
         "marking-definition--8d6fa91a-011b-5755-8fd2-1b0bde36eec7",  # cinsscore marking

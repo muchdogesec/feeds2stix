@@ -1,15 +1,14 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
-from processors.certpl import certpl
 from helpers import utils as helper_utils
-
-from tests.utils import stix_as_dict
+from processors.certpl import certpl
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_certpl_identity():
@@ -135,7 +134,6 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--5f500688-dc80-5611-8435-dc1561d3817e",  # certpl identity
         "marking-definition--83cddfd9-ec81-5521-b105-60482ecc9ba2",  # certpl marking

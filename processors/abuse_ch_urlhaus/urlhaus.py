@@ -10,14 +10,14 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
-from stix2.patterns import StringConstant
 
 import requests
 from stix2 import (
-    Bundle,
     URL,
+    Bundle,
     Indicator,
 )
+from stix2.patterns import StringConstant
 
 # Add parent directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
@@ -251,7 +251,7 @@ def main():
     source_marking = create_urlhaus_marking_definition()
 
     # Fetch external objects
-    feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    feeds2stix_marking = fetch_external_objects()
 
     # Download data
     csv_path = download_urlhaus_data()
@@ -272,7 +272,6 @@ def main():
         all_stix_objects,
         source_identity,
         source_marking,
-        feeds2stix_identity,
         feeds2stix_marking,
     )
 

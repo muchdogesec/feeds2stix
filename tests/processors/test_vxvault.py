@@ -1,14 +1,13 @@
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.vxvault import vxvault
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_vxvault_identity():
@@ -134,7 +133,6 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--aee958f7-4e54-55c5-aa62-ccb3a0bf11f3",  # vxvault identity
         "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",  # vxvault marking

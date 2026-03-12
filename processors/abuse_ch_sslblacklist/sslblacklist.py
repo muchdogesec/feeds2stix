@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
-import os
-import csv
-import re
-import requests
-import logging
 import argparse
+import csv
+import logging
+import os
+import re
 import sys
+from collections import defaultdict
 from datetime import datetime, timezone
-from stix2 import X509Certificate, Indicator, Malware, Relationship, Infrastructure
+
+import requests
+from stix2 import Indicator, Infrastructure, Malware, Relationship, X509Certificate
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    NAMESPACE_UUID,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
-    NAMESPACE_UUID,
 )
 
 logging.basicConfig(
@@ -108,7 +109,9 @@ def format_fingerprint(s):
     return ":".join(s[i : i + 2] for i in range(0, len(s), 2))
 
 
-def create_infrastructure_and_rels(malware_obj, infrastructure_type, cert_refs, marking_id):
+def create_infrastructure_and_rels(
+    malware_obj, infrastructure_type, cert_refs, marking_id
+):
     MAPPING = {
         "command-and-control": "C&C",
         "hosting-malware": "Malware distribution",
@@ -313,7 +316,7 @@ def main():
     sslbl_marking = create_sslbl_marking_definition()
 
     # Fetch external objects
-    feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+    feeds2stix_marking = fetch_external_objects()
 
     # Fetch and parse CSV data
     malware_mapping = fetch_sslbl_feed()
@@ -331,7 +334,6 @@ def main():
         bundle = create_bundle_with_metadata(
             stix_objects=stix_objects,
             source_identity=abuse_ch_identity,
-            feeds2stix_identity=feeds2stix_identity,
             source_marking=sslbl_marking,
             feeds2stix_marking=feeds2stix_marking,
         )

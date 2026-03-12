@@ -1,17 +1,17 @@
 import json
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
-from datetime import datetime, UTC
-import sys
+from unittest.mock import MagicMock, patch
+
 import pytest
 from git import Repo
 
 import processors
 from processors.openphish import openphish
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 @pytest.fixture
@@ -116,12 +116,12 @@ def test_create_openphish_marking_definition():
     assert stix_as_dict(marking) == {
         "type": "marking-definition",
         "spec_version": "2.1",
-        "id": "marking-definition--206a2635-63cc-573b-a1f3-9b355c5f523b",
+        "id": "marking-definition--f7187271-2598-5b00-9b1d-5b538f1e9b9b",
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "definition_type": "statement",
         "definition": {
-            "statement": "Origin: https://raw.githubusercontent.com/openphish/public_feed/"
+            "statement": "Origin: https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
         },
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -373,13 +373,12 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert len(bundle_files) == 1
     bundle = json.loads(bundle_files[0].read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--a42856ab-ed95-54c5-b97f-eb5bf4dd8a6a",  # openphish identity
-        "marking-definition--206a2635-63cc-573b-a1f3-9b355c5f523b",  # openphish marking
+        "marking-definition--f7187271-2598-5b00-9b1d-5b538f1e9b9b",  # openphish marking
         "url--792c59ad-b388-5dcb-bb99-918bd34e4504",  # URL observable
-        "indicator--af8c6bf4-5406-5dd9-b928-10b08d155203",  # indicator
-        "relationship--d9aadf01-c523-5ce9-b469-33cb86a07872",  # relationship
+        "indicator--71ac46dc-a164-5bbf-b3c7-2178bc907d22",  # indicator
+        "relationship--0e5aa9ef-4f2d-56bb-bf7a-d8ecb9def67a",  # relationship
     }
 
     assert {
@@ -388,7 +387,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         if obj["type"] == "relationship"
     } == {
         (
-            "indicator--af8c6bf4-5406-5dd9-b928-10b08d155203",
+            "indicator--71ac46dc-a164-5bbf-b3c7-2178bc907d22",
             "indicates",
             "url--792c59ad-b388-5dcb-bb99-918bd34e4504",
         ),

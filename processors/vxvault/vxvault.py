@@ -1,19 +1,20 @@
+import argparse
+import json
+import logging
 import os
 import shutil
 import sys
-import requests
-import json
-import logging
-import argparse
 from datetime import UTC, datetime
-from stix2 import Indicator, URL, Bundle
+
+import requests
+from stix2 import URL, Bundle, Indicator
 
 from helpers.utils import (
-    generate_uuid5,
-    fetch_external_objects,
+    create_bundle_with_metadata,
     create_identity_object,
     create_marking_definition_object,
-    create_bundle_with_metadata,
+    fetch_external_objects,
+    generate_uuid5,
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
@@ -125,7 +126,7 @@ def main():
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        feeds2stix_identity, feeds2stix_marking = fetch_external_objects()
+        feeds2stix_marking = fetch_external_objects()
 
         vxvault_identity = create_vxvault_identity()
         vxvault_marking = create_vxvault_marking_definition()
@@ -142,7 +143,6 @@ def main():
             stix_objects,
             vxvault_identity,
             vxvault_marking,
-            feeds2stix_identity,
             feeds2stix_marking,
         )
 

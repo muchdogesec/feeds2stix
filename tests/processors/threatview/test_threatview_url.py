@@ -1,14 +1,13 @@
 import json
-from datetime import UTC
-from unittest.mock import patch
-from pathlib import Path
 import sys
+from datetime import UTC
+from pathlib import Path
+from unittest.mock import patch
 
 import processors
 from processors.threatview.threatview_url import threatview_url
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_threatview_identity():
@@ -40,7 +39,9 @@ def test_create_threatview_marking_definition():
         "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
         "created": "2020-01-01T00:00:00.000Z",
         "definition_type": "statement",
-        "definition": {"statement": "Origin: " + threatview_url.THREATVIEW_URL_FEED_URL},
+        "definition": {
+            "statement": "Origin: " + threatview_url.THREATVIEW_URL_FEED_URL
+        },
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -132,7 +133,6 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     bundle = json.loads(Path(bundle_path).read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--699c5731-66cb-5236-b314-68acb4ba3a52",  # threatview identity
         "marking-definition--ed57066c-39b9-5cc0-93db-4e9696b6050d",  # threatview marking

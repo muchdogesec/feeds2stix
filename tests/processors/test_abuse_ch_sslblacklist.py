@@ -1,14 +1,13 @@
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
-import sys
 
 import processors
 from processors.abuse_ch_sslblacklist import sslblacklist
-
-from tests.utils import stix_as_dict
 from tests import utils as test_utils
+from tests.utils import stix_as_dict
 
 
 def test_create_abuse_ch_identity():
@@ -291,7 +290,6 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
     assert len(bundle_files) == 1
     bundle = json.loads(bundle_files[0].read_text())
     assert {obj["id"] for obj in bundle["objects"]} == {
-        "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix identity
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",  # abuse.ch identity
         "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216",  # sslblacklist marking
