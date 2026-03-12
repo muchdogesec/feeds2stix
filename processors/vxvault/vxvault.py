@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 OASIS_NAMESPACE_UUID = "00abedb4-aa42-466c-9c01-fed23315a9b7"
 VXVAULT_FEED_URL = "http://vxvault.net/URL_List.php"
-BASE_OUTPUT_DIR = "bundles/vxvault/"
+BASE_OUTPUT_DIR = "outputs/vxvault"
 
 
 def create_vxvault_identity():
@@ -122,7 +122,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 

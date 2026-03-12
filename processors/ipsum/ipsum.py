@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 IPSUM_FEED_URL_TEMPLATE = (
     "https://raw.githubusercontent.com/stamparm/ipsum/master/levels/{level}.txt"
 )
-BASE_OUTPUT_DIR = "bundles/ipsum/"
+BASE_OUTPUT_DIR = "outputs/ipsum"
 
 
 def create_ipsum_identity():
@@ -174,7 +174,7 @@ def main():
     min_level = args.min_level
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 

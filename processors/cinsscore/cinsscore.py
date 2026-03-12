@@ -25,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CINSSCORE_FEED_URL = "https://cinsscore.com/list/ci-badguys.txt"
-BASE_OUTPUT_DIR = "bundles/cinsscore/"
+BASE_OUTPUT_DIR = "outputs/cinsscore"
 
 
 def create_cinsscore_identity():
@@ -122,7 +122,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 

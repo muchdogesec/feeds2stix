@@ -30,7 +30,7 @@ OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 THREATVIEW_BITCOIN_FEED_URL = (
     "https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt"
 )
-BASE_OUTPUT_DIR = "bundles/threatview_bitcoin/"
+BASE_OUTPUT_DIR = "outputs/threatview_bitcoin"
 
 
 def create_threatview_identity():
@@ -127,7 +127,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 

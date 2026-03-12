@@ -32,7 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CSV_URL = "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
-BASE_OUTPUT_DIR = "bundles/abuse_ch_sslblacklist/"
+BASE_OUTPUT_DIR = "outputs/abuse_ch_sslblacklist"
 
 
 def create_abuse_ch_identity():
@@ -323,7 +323,7 @@ def main():
     start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundle_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+    bundle_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     abuse_ch_identity = create_abuse_ch_identity()

@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import shutil
 import uuid
 from datetime import UTC, datetime
@@ -160,14 +161,17 @@ def setup_output_directory(base_dir, clean=True):
     Returns:
         Path to the bundles output directory
     """
-    output_dir = os.path.join(base_dir, "bundles")
+    base_dir = Path(base_dir)
+    output_dir = base_dir / "bundles"
+    data_dir = base_dir / "data"
 
-    if clean and os.path.exists(output_dir):
-        logger.info(f"Cleaning output directory: {output_dir}")
-        shutil.rmtree(output_dir)
+    if clean and base_dir.exists():
+        logger.info(f"Cleaning output directory: {base_dir}")
+        shutil.rmtree(base_dir)
 
-    os.makedirs(output_dir, exist_ok=True)
-    return output_dir
+    for dir_path in [output_dir, data_dir]:
+        dir_path.mkdir(parents=True, exist_ok=True)
+    return output_dir, data_dir
 
 
 def make_relationship(

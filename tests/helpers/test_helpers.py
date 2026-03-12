@@ -85,9 +85,11 @@ def test_setup_output_directory_clean(tmp_path):
     bundles = base / "bundles"
     bundles.mkdir(parents=True)
     (bundles / "old.txt").write_text("x")
-    output_dir = h.setup_output_directory(str(base), clean=True)
-    assert output_dir.endswith("bundles")
+    output_dir, data_dir = h.setup_output_directory(str(base), clean=True)
     assert os.path.exists(output_dir)
+    assert os.path.exists(data_dir)
+    assert output_dir == base / "bundles"
+    assert data_dir == base / "data"
     assert not (Path(output_dir) / "old.txt").exists()
 
 

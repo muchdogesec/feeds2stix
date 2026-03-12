@@ -35,7 +35,7 @@ from helpers.utils import (
 
 # Constants
 URLHAUS_URL = "https://urlhaus.abuse.ch/downloads/csv_recent/"
-OUTPUT_DIR = "bundles/abuse_ch_urlhaus"
+OUTPUT_DIR = "outputs/abuse_ch_urlhaus"
 
 # Set up logging
 logging.basicConfig(
@@ -61,14 +61,14 @@ def create_urlhaus_marking_definition():
     )
 
 
-def download_urlhaus_data() -> Path:
+def download_urlhaus_data(data_dir: Path) -> Path:
     """Download the URLhaus CSV data."""
     logger.info(f"Downloading URLhaus data from {URLHAUS_URL}")
     response = requests.get(URLHAUS_URL, timeout=300)
     response.raise_for_status()
 
     # Save CSV data
-    csv_path = Path("urlhaus_data.csv")
+    csv_path = data_dir / "urlhaus_data.csv"
     with open(csv_path, "wb") as f:
         f.write(response.content)
     logger.info(f"CSV data saved to {csv_path}")
@@ -244,7 +244,7 @@ def main():
     args.start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundles_dir = setup_output_directory(OUTPUT_DIR, clean=True)
+    bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     source_identity = create_urlhaus_identity()
@@ -254,7 +254,7 @@ def main():
     feeds2stix_marking = fetch_external_objects()
 
     # Download data
-    csv_path = download_urlhaus_data()
+    csv_path = download_urlhaus_data(data_dir)
     # Parse CSV
     latest_timestamp, records = parse_csv_data(csv_path, start_date=args.start_date)
 
@@ -276,7 +276,7 @@ def main():
 
     bundle_path = save_bundle_to_file(
         bundle,
-        Path(OUTPUT_DIR) / "bundles",
+        bundles_dir,
         "urlhaus",
     )
 

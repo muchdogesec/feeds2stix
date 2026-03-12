@@ -67,8 +67,9 @@ def test_download_urlhaus_data(monkeypatch, tmp_path):
         "processors.abuse_ch_urlhaus.urlhaus.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ) as mock_get:
-        path = urlhaus.download_urlhaus_data()
+        path = urlhaus.download_urlhaus_data(tmp_path)
     assert path.exists()
+    assert path == tmp_path / "urlhaus_data.csv"
     assert path.read_bytes() == content
 
 
@@ -215,7 +216,7 @@ def test_main_writes_outputs(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(sys, "argv", ["urlhaus.py"])
-    monkeypatch.setattr(urlhaus, "OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setattr(urlhaus, "OUTPUT_DIR", tmp_path/"urlhaus")
 
     csv_path = tmp_path / "u.csv"
     csv_path.write_text(
