@@ -179,7 +179,7 @@ def create_infrastructure_and_rels(
     return objects
 
 def guess_malware_type(malware_name):
-    if malware_name.endswith("RAT"):
+    if malware_name.upper().endswith("RAT"):
         return "remote-access-trojan"
     else:
         return "unknown"
