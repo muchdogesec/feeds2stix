@@ -305,9 +305,11 @@ def test_main_success_path(monkeypatch, tmp_path):
 
 def test_main_success_writes_github_output(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
-    bundle_file.write_text(json.dumps({"type": "bundle", "objects": []}))
+    bundle_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]}))
     gh = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(gh))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "fake-token")
 
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
     monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
@@ -325,6 +327,13 @@ def test_main_success_writes_github_output(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+    # Mock hashmanager
+    monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0))
+    monkeypatch.setattr(upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
 
     with pytest.raises(SystemExit) as exc:
         upload.main([str(bundle_file)], "https://ctx", "key", "feed")
@@ -373,14 +382,22 @@ def test_main_directory_and_split_flow(monkeypatch, tmp_path):
 
 def test_main_catches_bundleuploadfailed(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
-    bundle_file.write_text(json.dumps({"type": "bundle", "objects": []}))
+    bundle_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]}))
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
+    # Mock hashmanager
+    monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0))
+    monkeypatch.setattr(upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
     monkeypatch.setattr(
         upload,
         "upload_bundle",
         lambda *a, **k: (_ for _ in ()).throw(upload.BundleUploadFailed("bad")),
     )
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+    monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
 
     with pytest.raises(SystemExit) as exc:
         upload.main([str(bundle_file)], "https://ctx", "key", "feed")
