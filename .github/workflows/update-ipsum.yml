@@ -25,6 +25,8 @@ jobs:
   process-and-upload:
     runs-on: ubuntu-latest
     environment: cyberthreatexchange-updates
+    env:
+      PYTHONPATH: .
     
     steps:
       - name: Checkout repository
@@ -60,7 +62,6 @@ jobs:
           IPSUM_FEED_ID: ${{ vars.IPSUM_FEED_ID }}
           IPSUM_MIN_LEVEL: ${{ vars.IPSUM_MIN_LEVEL }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
-          PYTHONPATH: .
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           

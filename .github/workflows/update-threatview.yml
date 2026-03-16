@@ -51,6 +51,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    env:
+      PYTHONPATH: .
 
     steps:
       - name: Checkout repository

@@ -8,6 +8,8 @@ on:
 jobs:
   process-and-upload:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     
     steps:
       - name: Checkout repository
@@ -35,7 +37,6 @@ jobs:
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           BLOCKLIST_DE_FEED_ID: ${{ vars.BLOCKLIST_DE_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
-          PYTHONPATH: .
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
