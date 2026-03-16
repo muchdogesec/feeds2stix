@@ -32,6 +32,7 @@ jobs:
           python processors/certpl/certpl.py
       
       - name: Upload bundle to CTX
+        id: upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
@@ -54,9 +55,17 @@ jobs:
           echo "Uploading $BUNDLE_PATH to feed $CERTPL_FEED_ID..."
           python helpers/upload.py "$BUNDLE_PATH" --feed_id "$CERTPL_FEED_ID"
       
+      - name: Upload dedupe database
+        if: steps.upload.outputs.dedupe_artifact_name
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+      
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: certpl-upload-artifacts
           path: |

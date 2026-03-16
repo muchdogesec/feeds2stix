@@ -532,9 +532,7 @@ def main(
 
         # ── Persist hash DB ──────────────────────────────────────────────
         hashmanager.save_db(hash_conn, _hash_db_path)
-        if use_artifacts:
-            logger.info("Uploading hash DB artifact %r …", _artifact_name)
-            hashmanager.upload_artifact(_hash_db_path, _artifact_name, gh_repo, gh_token)
+        logger.info("Hash DB saved to %s", _hash_db_path)
         # ────────────────────────────────────────────────────────────────
 
         logger.info("=" * 120)
@@ -584,6 +582,9 @@ def main(
                     f.write(f"success={str(all_successful).lower()}\n")
                     f.write(f"bundles_processed={len(results)}\n")
                     f.write(f"artifacts_dir={artifacts_dir}\n")
+                    if use_artifacts:
+                        f.write(f"dedupe_artifact_name={_artifact_name}\n")
+                        f.write(f"dedupe_path={_hash_db_path}\n")
                     if len(results) == 1:
                         result = results[0]
                         f.write(f"job_id={result.get('job_id', '')}\n")
