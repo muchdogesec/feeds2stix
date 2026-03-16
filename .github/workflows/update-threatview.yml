@@ -77,6 +77,7 @@ jobs:
       
       - name: Upload bundle to CTX
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
