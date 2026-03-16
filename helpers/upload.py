@@ -427,6 +427,7 @@ def main(
         if use_artifacts:
             logger.info("Downloading hash DB artifact %r …", _artifact_name)
             hashmanager.download_artifact(_artifact_name, gh_repo, gh_token, _hash_db_path)
+            hashmanager.cleanup_old_artifacts(_artifact_name, gh_repo, gh_token)
         hash_conn = hashmanager.load_db(_hash_db_path)
         # ───────────────────────────────────────────────────────────────────
 
@@ -541,6 +542,7 @@ def main(
             successful = sum(1 for r in results if r.get("success"))
             total_objects = sum(r.get("total_objects", 0) for r in results)
             submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
+            skipped_objects = sum(r.get("skipped_objects", 0) for r in results)
             failed_objects_count = sum(
                 len(r.get("failed_objects", [])) for r in results
             )
@@ -550,6 +552,7 @@ def main(
             )
             logger.info(f"   Total objects: {total_objects}")
             logger.info(f"   Submitted: {submitted_objects}")
+            logger.info(f"   Skipped: {skipped_objects}")
             logger.info(f"   Failed: {failed_objects_count}")
         else:
             result = results[0]
@@ -561,6 +564,9 @@ def main(
                         logger.info(f"   Job State: {result['job_state']}")
                 logger.info(
                     f"   Submitted: {result.get('submitted_objects', 0)}/{result.get('total_objects', 0)} objects"
+                )
+                logger.info(
+                    f"   Skipped: {result.get('skipped_objects', 0)} objects"
                 )
                 logger.info(
                     f"   Failed: {len(result.get('failed_objects', []))} objects"

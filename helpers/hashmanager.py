@@ -249,3 +249,52 @@ def download_artifact(
     except Exception as exc:
         logger.warning("Failed to extract artifact %r: %s", artifact_name, exc)
         return False
+
+
+
+def cleanup_old_artifacts(
+    artifact_name: str, repo: str, token: str, keep_count: int = 10
+) -> None:
+    """Delete old artifacts with the same name, keeping only the most recent *keep_count*."""
+    list_url = f"{_GH_API_BASE}/repos/{repo}/actions/artifacts"
+    params = {"name": artifact_name, "per_page": 100}
+    
+    try:
+        resp = requests.get(list_url, headers=_gh_headers(token), params=params, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as exc:
+        logger.warning("Could not list artifacts for cleanup: %s", exc)
+        return
+
+    artifacts = data.get("artifacts", [])
+    if len(artifacts) <= keep_count:
+        return
+
+    # Artifacts are sorted newest-first by default, so delete from keep_count onwards.
+    to_delete = artifacts[keep_count:]
+    logger.info(
+        "Cleaning up %d old artifacts (keeping %d most recent)",
+        len(to_delete),
+        keep_count,
+    )
+
+    for artifact in to_delete:
+        artifact_id = artifact.get("id")
+        if not artifact_id:
+            continue
+        
+        delete_url = f"{_GH_API_BASE}/repos/{repo}/actions/artifacts/{artifact_id}"
+        try:
+            del_resp = requests.delete(
+                delete_url, headers=_gh_headers(token), timeout=30
+            )
+            del_resp.raise_for_status()
+            logger.debug("Deleted artifact %s (id=%s)", artifact_name, artifact_id)
+        except Exception as exc:
+            logger.warning(
+                "Failed to delete artifact %s (id=%s): %s",
+                artifact_name,
+                artifact_id,
+                exc,
+            )
