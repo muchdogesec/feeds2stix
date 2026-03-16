@@ -10,6 +10,7 @@ from pathlib import Path
 
 import requests
 from split_jsons import get_file_size_kb, split_stix_bundle
+import hashmanager
 
 # Setup logging
 logging.basicConfig(
@@ -366,7 +367,15 @@ def save_artifacts(result, artifacts_base_dir, bundle_name, bundle_file):
     return bundle_artifacts_dir
 
 
-def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
+def main(
+    bundle_files,
+    api_base_url,
+    api_key,
+    feed_id,
+    max_size_kb=10_000,
+    hash_db_path=None,
+    use_artifacts=True,
+):
     try:
         # Expand directories to individual files
         all_bundle_files = []
@@ -407,6 +416,20 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
         artifacts_dir = "upload_artifacts"
         os.makedirs(artifacts_dir, exist_ok=True)
 
+        # ── Hash-manager setup ──────────────────────────────────────────────
+        _hash_db_path = hash_db_path or os.path.join(artifacts_dir, "stix_hashes.db")
+        _artifact_name = f"feed_{feed_id.replace('-', '')}_dupedb"
+        
+        # Get GitHub credentials (validation already done in argument parsing)
+        gh_repo = os.getenv("GITHUB_REPOSITORY")
+        gh_token = os.getenv("GITHUB_TOKEN")
+        
+        if use_artifacts:
+            logger.info("Downloading hash DB artifact %r …", _artifact_name)
+            hashmanager.download_artifact(_artifact_name, gh_repo, gh_token, _hash_db_path)
+        hash_conn = hashmanager.load_db(_hash_db_path)
+        # ───────────────────────────────────────────────────────────────────
+
         logger.info("=" * 120)
         logger.info("=" * 120)
 
@@ -432,15 +455,55 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
                 )
                 continue
 
+            # ── Filter already-uploaded objects ──────────────────────────
+            original_objects = bundle.get("objects", [])
+            new_objects, skipped_count = hashmanager.filter_new_objects(
+                original_objects, hash_conn
+            )
+            if skipped_count:
+                logger.info(
+                    "Skipped %d already-uploaded objects in %s",
+                    skipped_count,
+                    bundle_file,
+                )
+            if not new_objects:
+                logger.info(
+                    "All %d objects in %s already uploaded; skipping.",
+                    len(original_objects),
+                    bundle_file,
+                )
+                results.append(
+                    {
+                        "success": True,
+                        "bundle_file": bundle_file,
+                        "total_objects": len(original_objects),
+                        "submitted_objects": 0,
+                        "skipped_objects": skipped_count,
+                        "failed_objects": [],
+                        "job_id": None,
+                        "job_state": "skipped",
+                    }
+                )
+                continue
+
+            filtered_bundle = {**bundle, "objects": new_objects}
+            # ────────────────────────────────────────────────────────────────
+
             result = upload_bundle(
-                bundle,
+                filtered_bundle,
                 api_base_url,
                 api_key,
                 feed_id,
                 wait_for_completion=is_multi_bundle,
             )
             result["bundle_file"] = bundle_file
+            result["skipped_objects"] = skipped_count
             results.append(result)
+
+            # ── Record successfully uploaded objects ─────────────────────
+            if result.get("success"):
+                hashmanager.record_uploaded_objects(new_objects, hash_conn)
+            # ────────────────────────────────────────────────────────────────
 
             bundle_name = Path(bundle_file).stem
             save_artifacts(result, artifacts_dir, bundle_name, bundle_file)
@@ -466,6 +529,13 @@ def main(bundle_files, api_base_url, api_key, feed_id, max_size_kb=10_000):
                 )
 
         write_github_summary(results, is_multi_bundle)
+
+        # ── Persist hash DB ──────────────────────────────────────────────
+        hashmanager.save_db(hash_conn, _hash_db_path)
+        if use_artifacts:
+            logger.info("Uploading hash DB artifact %r …", _artifact_name)
+            hashmanager.upload_artifact(_hash_db_path, _artifact_name, gh_repo, gh_token)
+        # ────────────────────────────────────────────────────────────────
 
         logger.info("=" * 120)
         if is_multi_bundle:
@@ -547,8 +617,11 @@ if __name__ == "__main__":
         description="Upload STIX bundle(s) to CyberThreat eXchange (CTX)",
         epilog="""
 Environment Variables:
-  CTX_BASE_URL    Base URL for the CTX API
-  CTX_API_KEY     API key for authentication
+  CTX_BASE_URL          Base URL for the CTX API
+  CTX_API_KEY           API key for authentication
+  GITHUB_REPOSITORY     GitHub repository in owner/repo format (required for artifact operations)
+  GITHUB_TOKEN          GitHub token with actions:read/write scope (required for artifact operations)
+  GITHUB_RUN_ID         Set automatically inside GitHub Actions runners
 
 Example:
   export CTX_BASE_URL="https://api.cyberthreatexchange.com"
@@ -556,6 +629,7 @@ Example:
   python helpers/upload.py bundles/ipsum/bundles/ipsum_level_8.json --feed_id YOUR_FEED_ID
   python helpers/upload.py bundle1.json bundle2.json bundle3.json --feed_id YOUR_FEED_ID
   python helpers/upload.py large_bundle.json --feed_id YOUR_FEED_ID --max-size 4000
+  python helpers/upload.py bundle.json --feed_id YOUR_FEED_ID --no-artifacts
         """,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -574,6 +648,19 @@ Example:
         type=float,
         help="Maximum size of bundles in kilobytes (KB). Bundles larger than this will be automatically split.",
     )
+    parser.add_argument(
+        "--hash-db",
+        "--hash_db",
+        dest="hash_db",
+        help="Path to the SQLite hash database file (default: upload_artifacts/stix_hashes.db).",
+    )
+    parser.add_argument(
+        "--no-artifacts",
+        "--no_artifacts",
+        dest="use_artifacts",
+        action="store_false",
+        help="Disable GitHub artifact operations.",
+    )
 
     args = parser.parse_args()
     args.max_size = args.max_size or float(os.getenv("MAX_BUNDLE_SIZE_KB", 10_000))
@@ -588,4 +675,28 @@ Example:
         logger.error("CTX_API_KEY environment variable is not set")
         sys.exit(1)
 
-    main(args.bundle_files, api_base_url, api_key, args.feed_id, args.max_size)
+    # Validate artifact access requirements early
+    gh_repo = os.getenv("GITHUB_REPOSITORY")
+    gh_token = os.getenv("GITHUB_TOKEN")
+    can_use_artifacts = args.use_artifacts and gh_repo and gh_token
+    
+    if args.use_artifacts and not can_use_artifacts:
+        logger.error(
+            "Artifact operations requested but required environment variables are missing:\n"
+            "  GITHUB_REPOSITORY: %s\n"
+            "  GITHUB_TOKEN: %s\n"
+            "Use --no-artifacts to disable artifact operations.",
+            "set" if gh_repo else "NOT SET",
+            "set" if gh_token else "NOT SET",
+        )
+        sys.exit(1)
+
+    main(
+        args.bundle_files,
+        api_base_url,
+        api_key,
+        args.feed_id,
+        args.max_size,
+        hash_db_path=args.hash_db,
+        use_artifacts=can_use_artifacts,
+    )
