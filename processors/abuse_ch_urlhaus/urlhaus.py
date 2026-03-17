@@ -223,7 +223,6 @@ def process_records(
             marking_refs=object_marking_refs,
             created=indicator.created,
             modified=indicator.modified,
-            external_references=indicator.external_references[:1],  # Include only the URLhaus link reference
         )
         all_stix_objects.append(relationship)
     return all_stix_objects

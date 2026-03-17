@@ -113,12 +113,6 @@ With relationship to Indicator:
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
 		"marking-definition--<UUID OF FEED MARKING DEF>"
-	],
-	"external_references": [
-		{
-			"source_name": "urlhaus_link",
-			"url": "<urlhaus_link>"
-		}
 	]
 }
 ```

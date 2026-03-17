@@ -12,7 +12,6 @@ Contains a list of Bitcoin wallets known to be related to criminal activity.
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
 https://raw.githubusercontent.com/muchdogesec/stix2extensions/refs/heads/main/automodel_generated/extension-definitions/scos/cryptocurrency-wallet.json
-https://raw.githubusercontent.com/muchdogesec/stix2extensions/refs/heads/main/automodel_generated/extension-definitions/scos/cryptocurrency-transaction.json
 
 #### Identity
 
@@ -101,10 +100,6 @@ With relationship to Indicator:
 ```
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-
-#### Crypto TX
-
-For each wallet, we should use crypto2stix to get all transactions the wallet is linked to and create `crypto-transaction` objects for them
 
 #### Indicator
 
