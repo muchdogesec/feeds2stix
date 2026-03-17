@@ -16,6 +16,8 @@ jobs:
   process-and-upload:
     runs-on: ubuntu-latest
     environment: cyberthreatexchange-updates
+    env:
+      PYTHONPATH: .
     
     steps:
       - name: Checkout repository
@@ -80,12 +82,13 @@ jobs:
           eval $CMD
       
       - name: Upload bundles to CTX
+        id: upload
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           URLHAUS_FEED_ID: ${{ vars.URLHAUS_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
-          PYTHONPATH: .
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
@@ -102,9 +105,17 @@ jobs:
           echo "Uploading bundles from $BUNDLE_PATH to feed $URLHAUS_FEED_ID..."
           python helpers/upload.py "$BUNDLE_PATH" --feed_id "$URLHAUS_FEED_ID"
       
+      - name: Upload dedupe database
+        if: steps.upload.outputs.dedupe_artifact_name
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+      
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: urlhaus-upload-artifacts
           path: |
