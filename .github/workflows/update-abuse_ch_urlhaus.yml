@@ -15,7 +15,13 @@ on:
 jobs:
   process-and-upload:
     runs-on: ubuntu-latest
-    environment: cyberthreatexchange-updates
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env:
+          - cyberthreatexchange-updates-production
+          - cyberthreatexchange-updates-staging
+    environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .
     
@@ -117,7 +123,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: urlhaus-upload-artifacts
+          name: urlhaus-upload-artifacts-${{ matrix.target_env }}
           path: |
             ${{ steps.process.outputs.bundle_path }}
             upload_artifacts/
