@@ -58,12 +58,60 @@ def test_fetch_threatview_feed():
     assert items == ["1.2.3.4", "5.6.7.8"]
 
 
+def test_fetch_ip_guide_metadata_filters_nulls():
+    payload = {
+        "ip": "1.2.3.4",
+        "network": {
+            "cidr": "1.2.3.0/24",
+            "hosts": {"start": "1.2.3.1", "end": "1.2.3.254"},
+            "autonomous_system": {
+                "asn": 13335,
+                "name": "CLOUDFLARENET - Cloudflare, Inc.",
+                "organization": "Cloudflare, Inc.",
+                "country": "US",
+                "rir": "ARIN",
+            },
+        },
+        "location": {
+            "city": None,
+            "country": "US",
+            "timezone": None,
+            "latitude": 40.0,
+            "longitude": -3.0,
+        },
+    }
+
+    with patch(
+        "processors.threatview.threatview_ip.threatview_ip.requests.get",
+        return_value=test_utils.FakeResponse(content=json.dumps(payload).encode()),
+    ):
+        metadata = threatview_ip.fetch_ip_guide_metadata("1.2.3.4")
+
+    assert metadata == {
+        "x_ip_guide_cidr": "1.2.3.0/24",
+        "x_ip_guide_hosts_start": "1.2.3.1",
+        "x_ip_guide_hosts_end": "1.2.3.254",
+        "x_ip_guide_asn": 13335,
+        "x_ip_guide_as_name": "CLOUDFLARENET - Cloudflare, Inc.",
+        "x_ip_guide_as_organization": "Cloudflare, Inc.",
+        "x_ip_guide_as_country": "US",
+        "x_ip_guide_as_rir": "ARIN",
+        "x_ip_guide_country": "US",
+        "x_ip_guide_latitude": 40.0,
+        "x_ip_guide_longitude": -3.0,
+    }
+
+
 def test_create_stix_objects():
     objects = threatview_ip.create_stix_objects(
         ["1.2.3.4"],
         {"id": "identity--699c5731-66cb-5236-b314-68acb4ba3a52"},
         {"id": "marking-definition--a070d1fd-3989-5629-a0f6-44b589a8ec00"},
         "2026-01-01T00:00:00.000Z",
+        geo_lookup_fn=lambda _ip: {
+            "x_ip_guide_country": "US",
+            "x_ip_guide_asn": 13335,
+        },
     )
 
     assert stix_as_dict(objects) == [
@@ -72,6 +120,8 @@ def test_create_stix_objects():
             "spec_version": "2.1",
             "id": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
             "value": "1.2.3.4",
+            "x_ip_guide_country": "US",
+            "x_ip_guide_asn": 13335,
         },
         {
             "type": "indicator",
@@ -121,6 +171,9 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     with patch(
         "processors.threatview.threatview_ip.threatview_ip.fetch_threatview_feed",
         return_value=["1.2.3.4"],
+    ), patch(
+        "processors.threatview.threatview_ip.threatview_ip.fetch_ip_guide_metadata",
+        return_value={},
     ):
         result = threatview_ip.main()
 

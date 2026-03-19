@@ -71,3 +71,12 @@ To avoid issues with large files, the Github actions split the bundles in 10mb c
 ## License
 
 [Apache 2.0](/LICENSE).
+
+## Fork Notice
+
+This repository is maintained as a fork of `muchdogesec/feeds2stix`.
+
+Only one custom change is added in this fork: GEO enrichment for IP indicators (via `ip.guide`) in the ThreatView IP processor.
+
+The project remains distributed under the Apache 2.0 license. Original attribution, copyright notices,
+and license terms are preserved.
