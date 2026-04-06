@@ -43,7 +43,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const workflow_id = 'abuse_ch_urlhaus-processor.yml';
+            const workflow_id = 'update-abuse_ch_urlhaus.yml';
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
