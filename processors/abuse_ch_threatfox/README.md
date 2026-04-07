@@ -9,7 +9,7 @@ https://threatfox.abuse.ch/
 ## Data source
 
 For first run: https://threatfox.abuse.ch/export/csv/full/
-For updates: https://threatfox.abuse.ch/export/csv/recent/
+For subsequent updates: https://threatfox.abuse.ch/export/csv/recent/
 
 ## Data schema
 
