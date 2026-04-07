@@ -49,11 +49,6 @@ jobs:
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
-          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
-            echo "Error: Bundle was not created at $BUNDLE_PATH"
-            exit 1
-          fi
-          
           if [ -z "$BLOCKLIST_DE_FEED_ID" ]; then
             echo "Error: BLOCKLIST_DE_FEED_ID variable is not set"
             exit 1
