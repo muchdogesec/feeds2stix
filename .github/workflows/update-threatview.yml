@@ -91,11 +91,6 @@ jobs:
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
-          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
-            echo "Error: Bundle was not created at $BUNDLE_PATH"
-            exit 1
-          fi
-          
           if [ -z "$FEED_ID" ]; then
             echo "Error: ${{ matrix.feed.feed_id_var }} variable is not set"
             exit 1
