@@ -88,6 +88,7 @@ jobs:
           FEED_ID: ${{ vars[matrix.feed.feed_id_var] }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
           PYTHONPATH: .
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
