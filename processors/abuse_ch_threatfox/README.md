@@ -1,18 +1,4 @@
-# threatfox
-
-TO BE BUILT -- THIS IS A DRAFT SPEC
-
-## tl;dr logic of the script
-
-The script works like so
-
-1. Downloads the data from `https://threatfox.abuse.ch/export/csv/full/`
-2. reads the body of the response, only considering CLI argument values entered by user
-3. for user entered malware entry or first unique malware entry identified in csv, turns the entries found in the csv into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/threatfox/stix2_objects`.
-4. the created objects are packaged in a STIX 2.1 bundle
-5. If no `malware` value passed to cli, script moves back to step 3 to next malware object until all malwares are covered
-
-Note this script can handle updates to data in a graceful way. Because a copy of all STIX `bundles/abuse_ch/threatfox/stix2_objects` is stored the script does not need to process all data on each run. On update runs the script will only consider data greater than the highest `modified` time for the malware specified.
+# abuse.ch threatfox
 
 ## Overview
 
@@ -22,7 +8,9 @@ https://threatfox.abuse.ch/
 
 ## Data source
 
-https://threatfox.abuse.ch/export/csv/full/
+Full dump: https://threatfox.abuse.ch/export/csv/full/
+
+The full dump is always downloaded. The `--start-date` argument filters records in Python after download.
 
 ## Data schema
 
@@ -33,13 +21,7 @@ https://threatfox.abuse.ch/export/csv/full/
 #                                                              #
 # Terms Of Use: https://threatfox.abuse.ch/faq/#tos            #
 # For questions please contact threatfox [at] abuse.ch         #
-################################################################
 #
-# "first_seen_utc","ioc_id","ioc_value","ioc_type","threat_type","fk_malware","malware_alias","malware_printable","last_seen_utc","confidence_level","reference","tags","anonymous","reporter"
-"2024-07-16 06:45:19", "1301611", "http://rocheholding.top/rudolph/five/fre.php", "url", "botnet_cc", "win.lokipws", "Burkina,Loki,LokiBot,LokiPWS", "Loki Password Stealer (PWS)", "2024-07-16 08:11:39", "75", "https://bazaar.abuse.ch/sample/d5a6b19ed0cb225a61c510bff2f2713b3a69435527f41fbb83d4e8343effaa13/", "lokibot", "0", "abuse_ch"
-"2024-07-16 05:25:36", "1301610", "8.134.12.90:7777", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-987654321", "0", "abuse_ch"
-"2024-07-16 05:25:35", "1301609", "172.245.184.135:8888", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-987654321", "0", "abuse_ch"
-"2024-07-16 05:25:34", "1301608", "91.208.73.75:82", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike,cs-watermark-100000", "0", "abuse_ch"
 "2024-07-16 05:25:33", "1301606", "8.223.20.63:443", "ip:port", "botnet_cc", "win.cobalt_strike", "Agentemis,BEACON,CobaltStrike,cobeacon", "Cobalt Strike", "", "100", "None", "CobaltStrike", "0", "abuse_ch"
 [...more records...]
 # Number of entries: 1217668
@@ -49,20 +31,34 @@ Where `[...more records...]` is more rows removed for brevity here.
 
 The last row should be ignored.
 
-The results of this file are sorted by `first_seen_utc` in descending day order. The results inside a day are not necessarily in the time order. e.g. results will always be in order `2024-07-16`, `2024-07-15`, `2024-07-14`, etc. but could be in order `2024-07-16 06:45:19`, `2024-07-16 08:11:39`, `2024-07-16 05:25:36`
-
 ## Data Normalisation
 
 Note `last_seen_utc` does not always have a value in the input CSV, in which case it inherits `first_seen_utc`
 
-## STIX objects
+## Mapping
 
-### Imported objects:
+#### Imported objects
 
-* marking-definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/feeds2stix.json
-* identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/feeds2stix.json
+```json
+{
+	"type": "identity",
+	"spec_version": "2.1",
+	"id": "identity--<UUIDV5>",
+	"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+	"created": "2020-01-01T00:00:00.000Z",
+	"modified": "2020-01-01T00:00:00.000Z",
+	"name": "abuse.ch",
+	"description": "abuse.ch has been effecting change on cybercrime for almost twenty years, owing to global recognition of our identified and tracked cyber threat signals. Supported by a community of 15,000 specialist researchers, abuse.ch's independent intelligence is relied on by security researchers, network operators and law enforcement agencies.",
+	"identity_class": "organization",
+	"contact_information": "https://abuse.ch/",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+	]
+}
+```
 
-### Generated object mappings
+Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
 
 #### Marking Definition
 
@@ -70,25 +66,35 @@ This is hardcoded and never changes;
 
 ```json
 {
-    "type": "marking-definition",
-    "spec_version": "2.1",
-    "id": "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "2020-01-01T00:00:00.000Z",
-    "definition_type": "statement",
-    "definition": {
-        "statement": "Origin data source: https://threatfox.abuse.ch/export/csv/full/"
-    },
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ]
+	"type": "marking-definition",
+	"spec_version": "2.1",
+	"id": "marking-definition--<UUIDV5>",
+	"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+	"created": "2020-01-01T00:00:00.000Z",
+	"definition_type": "statement",
+	"definition": {
+		"statement": "Origin data source: https://threatfox.abuse.ch/export/csv/recent/"
+	},
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+	]
 }
 ```
 
-#### Observables 
+Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
-For each unique `ioc_value` entry, observables can be created as follows;
+#### Observables
+
+Various types of observable exist;
+
+URL
+IP+Port
+Domain
+sha256_hash
+sha1_hash
+md5_hash
+Autonomous System (extracted from tags)
 
 ##### ioc_type=ip:port
 
@@ -157,6 +163,19 @@ For `protocols`, if `DstPort` =
 }
 ```
 
+##### ioc_type=sha1_hash
+
+```json
+{
+	"type": "file",
+	"spec_version": "2.1",
+	"id": "file--<GENERATED BY STIX2 LIB>",
+	"hashes": {
+		"SHA-1": "<ioc_value>"
+	}
+}
+```
+
 ##### ioc_type=sha256_hash
 
 ```json
@@ -170,6 +189,47 @@ For `protocols`, if `DstPort` =
 }
 ```
 
+UUID generated by STIX2 library
+
+##### Autonomous System (from tags)
+
+For each tag matching the pattern `AS<number>` (case-insensitive), an `autonomous-system` observable is created alongside the primary IOC observable:
+
+```json
+{
+	"type": "autonomous-system",
+	"spec_version": "2.1",
+	"id": "autonomous-system--<GENERATED BY STIX2 LIB>",
+	"number": <number>,
+	"name": "AS<number>"
+}
+```
+
+Note: `autonomous-system` objects are added to the bundle and linked to the malware via `related-to`, but are **not** linked to the indicator and do **not** contribute a separate `indicates` relationship.
+
+With relationship to Indicator (for ip+port, both objects linked to indicator):
+
+```json
+{
+	"type": "relationship",
+	"spec_version": "2.1",
+	"id": "relationship--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<first_seen_utc>",
+	"modified": "<first_seen_utc>",
+	"relationship_type": "indicates",
+	"source_ref": "indicator--<UUID>",
+	"target_ref": "<TYPE>--<UUID>",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
+}
+```
+
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+
 #### Malware
 
 For each unique `malware_printable` entry a Malware objects is created as follows;
@@ -179,65 +239,69 @@ For each unique `malware_printable` entry a Malware objects is created as follow
 	"type": "malware",
 	"spec_version": "2.1",
 	"id": "malware--<UUIDV5>",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "created_by_ref": "identity--<UUID OF FEED ID>",
 	"created": "Earliest <first_seen_utc> for all observables linked to this malware",
 	"modified": "Latest <last_seen_utc> for all observables linked to this malware",
 	"name": "<malware_printable>",
 	"malware_types": [
-		"unknown"
+		"remote-access-trojan <IF NAME ENDS IN RAT>",
+		"adware <IF NAME STARTS WITH Adware.>",
+		"ransomware <IF NAME STARTS WITH Ransomware.>",
+		"worm <IF NAME STARTS WITH Worm.>",
+		"unknown <IF NOT MATCHES ANY OTHER TYPE>"
 	],
 	"aliases": [
 		"<all unique malware_alias for observables linked to this malware as a list>"
 	],
 	"is_family": true,
-	"sample_refs": [
-		"<ALL STIX FILE OBJECTS CREATED FOR MALWARE>"
-	],
-	"labels": [
-		"all unique tags for observables linked to this malware as a list"
-	],
 	"external_references": [
 		{
-			"source_name": "threatfox_malware",
-			"external_id": "<threatfox_malware>"
-	    },
+			"source_name": "malpedia",
+			"external_id": "https://malpedia.caad.fkie.fraunhofer.de/details/<fk_malware>"
+	    }
 	],
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
     ]
 }
 ```
 
 Note `<last_seen_utc>` might be `null` for all observables. In which case it is replaced with `first_seen_utc` so `modified` time can be populated.
 
-UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `name` value
+The `malware_types` list is derived from the `malware_alias` values **and** `malware_printable` itself. Each name is checked against the same rules above. If the resulting set contains more than one type, `"unknown"` is removed.
+
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `name` value
 
 #### Indicators 
 
-Each row has a `reference` and `reporter` value. All observables with the same `malware_printable` , `reference` and `reporter` are grouped and an Indicator objects is created as follows...
+For each row (aka SCO) an indicator is created
 
 ```json
 {
     "type": "indicator",
     "spec_version": "2.1",
     "id": "indicator--<UUIDV5>",
-    "created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "created_by_ref": "identity--<UUID OF FEED ID>",
     "created": "Earliest <first_seen_utc> for all observables linked to this indicator",
     "modified": "Latest <last_seen_utc> for all observables linked to this indicator",
     "indicator_types": [
     	"malicious-activity"
     ],
     "name": "<malware_printable>",
-    "pattern": "<STIX PATTERN FOR EACH SCO LINKED TO MALWARE AND FROM THIS REFERENCE/REPORTED JOINED WITH OR OPERATORS>",
+    "pattern": "<STIX PATTERN — see pattern notes below>",
     "pattern_type": "stix",
     "valid_from": "Same as `created` value",
+    "confidence": "<confidence_level>",
     "labels": [
         "all unique tags for observables linked to this malware as a list"
     ],
-	"confidence": "highest <confidence_level> for all observables linked to this indicator",
 	"external_references": [
+	 	{
+			"source_name": "threatfox_ioc_id",
+			"external_id": "<ioc_id>"
+	    },
 	 	{
 			"source_name": "threatfox_reporter",
 			"external_id": "<reporter>"
@@ -249,95 +313,161 @@ Each row has a `reference` and `reporter` value. All observables with the same `
 	],
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
     ]
   }
 ```
 
-UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `name` and `external_references.external_id` (where `external_references.source_name==threatfox_reporter`
- 
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `<malware_printable>+<ioc_id>`
+
 Note `<last_seen_utc>` might be `null` for all observables returned. In which case it is replaced with `first_seen_utc` so `modified` time can be populated.
 
-Each indicator created is then linked to the malware objects like so;
+##### Indicator patterns
+
+Patterns are built from the observable objects created for the same record.
+
+| `ioc_type` | Pattern |
+|---|---|
+| `url` | `[ url:value = '<ioc_value>' ]` |
+| `domain` | `[ domain-name:value = '<ioc_value>' ]` |
+| `md5_hash` | `[ file:hashes.'MD5' = '<ioc_value>' ]` |
+| `sha1_hash` | `[ file:hashes.'SHA-1' = '<ioc_value>' ]` |
+| `sha256_hash` | `[ file:hashes.'SHA-256' = '<ioc_value>' ]` |
+| `ip:port` | `[ ( network-traffic:dst_port = <port> AND network-traffic:dst_ref.value = '<ip>' ) ]` |
+
+If any `AS<number>` tags are present, one additional OR clause is appended per ASN:
+
+```
+[ <primary pattern> OR autonomous-system:number = <number> ]
+```
+
+#### Malware–Indicator relationships
+
+Each indicator is linked to the malware object with an `indicates` relationship:
 
 ```json
 {
 	"type": "relationship",
 	"spec_version": "2.1",
-	"id": "relationship--<Indicator UUID>",
-	"created_by_ref": "identity--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "created": "<INDICATOR CREATED TIME>",
-    "modified": "<INDICATOR MODIFIED TIME>",
-    "relationship_type": "detects",
-    "source_ref": "indicator--<ID>",
-    "target_ref": "malware--<ID>",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
-    ]
+	"id": "relationship--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<MALWARE CREATED TIME>",
+	"modified": "<MALWARE MODIFIED TIME>",
+	"relationship_type": "indicates",
+	"source_ref": "indicator--<ID>",
+	"target_ref": "malware--<ID>",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
 }
 ```
 
-UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `source_ref+target_ref`
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `source_ref+target_ref`
 
-And each object listed in the pattern of the Indicator is linked to it like so;
+Non-ASN observables (URL, domain, file, ipv4-addr, network-traffic) are also linked to the malware with a `related-to` relationship:
 
 ```json
 {
 	"type": "relationship",
 	"spec_version": "2.1",
-	"id": "relationship--<UUIDV5>",
-    "created": "<first_seen_utc> value for target_ref observable",
-    "modified": "<last_seen_utc> value for target_ref observable",
-    "relationship_type": "detects",
-    "source_ref": "indicator--<ID>",
-    "target_ref": "<OBJECT_ID>",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--865d4e5d-f46d-4908-b2ab-50a8f227be07",
-        "marking-definition--418465b1-2dbe-41b7-b994-19817164e793"
-    ]
+	"id": "relationship--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<INDICATOR CREATED TIME>",
+	"modified": "<INDICATOR MODIFIED TIME>",
+	"relationship_type": "related-to",
+	"source_ref": "<observable type>--<ID>",
+	"target_ref": "malware--<ID>",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
 }
 ```
 
-UUIDv5 is generated using namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and `source_ref+target_ref`
-
-All the generated objects are placed into STIX bundles in the directory `bundles/abuse_ch/threatfox`.
-
-A bundle is per malware `name`;
-
-```json
-{
-    "type": "bundle",
-    "id": "bundle--<UUIDV5>",
-    "objects": [
-        "ALL STIX OBJECTS CREATED"
-    ]
-}
-```
-
-The UUID is generated using the namespace `865d4e5d-f46d-4908-b2ab-50a8f227be07` and an md5 of all the sorted objects in the bundle.
-
-Any `(` and `)` characters in the `name` value are removed before saving the bundle filename. All `-` characters are replaced with `_`
+`autonomous-system` observables also receive a `related-to` relationship to the malware (not `indicates`).
 
 ## Run the script
 
 ```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NAME" --update
+python processors/abuse_ch_threatfox/threatfox.py \
+  [--malware-printable "Cobalt Strike"] \
+  [--start-date 2024-07-01]
 ```
 
-Where:
+| Argument | Description |
+|---|---|
+| `--malware-printable` | Process only records matching this `malware_printable` value. Leave empty to process all. |
+| `--signature` | Alias of `--malware-printable` for workflow compatibility. |
+| `--start-date` | Only include records with `first_seen_utc` on or after this date (`YYYY-MM-DD[T[HH:MM[:SS]]]`). |
 
-* `malware` (optional, dictionary): the name is the `malware_printable` value to filter on
-    * default is all
-* `update` (optional): if passed will search for the highest `modified` time in the malware objects that match the input. The script will identify if any new data has been added since `modified` and script run time for that malware. If true, then the new observables will be added, and indicator/malware/bundle updated / added to reflect changes.
+Output bundles are written to `outputs/abuse_ch_threatfox/bundles/<malware_name>/`.
 
-e.g. 
 
-```shell
-python3 processors/abuse_ch/threatfox/threatfox.py --malware "NjRAT"
+### Output
+
+The script creates separate bundles for each malware family:
+* `outputs/abuse_ch_threatfox/bundles/<malware_name>/<malware_name>_0.json`
+* `outputs/abuse_ch_threatfox/bundles/<malware_name>/<malware_name>_1.json` (if needed)
+
+Bundles are automatically split when they reach 10,000 STIX objects to manage memory and file size.
+
+Each bundle contains:
+* Observable objects (e.g. URL, domain-name, file, ipv4-addr, network-traffic, autonomous-system)
+* Indicator objects with patterns for each record
+* Malware objects for each family
+* Relationship objects (`indicates` and `related-to`)
+
+## GitHub Action
+
+The processor is automated via GitHub Actions at [`update-abuse_ch_threatfox.yml`](../../.github/workflows/update-abuse_ch_threatfox.yml).
+
+### Schedule
+
+The workflow runs automatically every 6 hours:
+
+```yaml
+schedule:
+	- cron: '0 */6 * * *'  # Every 6 hours
 ```
 
-Would only process results for `NjRAT`.
+### How It Works
+
+1. **Fetch Last Run Time**: Uses GitHub API to retrieve the timestamp of the last successful run of this workflow
+2. **Process Data**: Runs `processors/abuse_ch_threatfox/threatfox.py` with optional `--start-date` and `--signature` filters
+3. **Create STIX Bundles**: Generates separate bundles per `malware_printable` family
+4. **Upload to CTX**: Uploads generated bundles to CyberThreat eXchange using `THREATFOX_FEED_ID`
+
+### Manual Dispatch
+
+The workflow can also be triggered manually with custom parameters:
+
+- **`start_date`**: Filter records by date (YYYY-MM-DD format)
+  - Set to `"auto"` (default) to use the last successful run time
+  - Set to a specific date like `"2024-07-15"` to process records from that date onwards
+  - Leave empty to process all records
+- **`signature`**: Process only a specific malware family (for example, `"Cobalt Strike"`)
+  - Leave empty to process all signatures
+
+### Configuration
+
+Required secrets and variables:
+
+- **Secrets**:
+  - `CTX_BASE_URL`: Base URL for the CTX API
+  - `CTX_API_KEY`: API key for CTX authentication
+
+- **Variables**:
+	- `THREATFOX_FEED_ID`: The CTX feed ID to upload bundles to
+	- `MAX_BUNDLE_SIZE_KB`: Maximum bundle size in KB (bundles exceeding this will be split)
+
+### Incremental Updates
+
+The workflow intelligently handles incremental updates:
+
+- For scheduled runs: Automatically filters by the last successful run time
+- For manual runs with `start_date="auto"`: Uses the last successful run time
+- This ensures only new ThreatFox records are processed on each run, avoiding duplicate processing
