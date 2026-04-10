@@ -22,18 +22,11 @@ on:
 
 jobs:
   process-and-upload:
-    if: |
-      github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.target_environment == 'all' ||
-      (github.event.inputs.target_environment == 'staging' && contains(matrix.target_env, 'staging')) ||
-      (github.event.inputs.target_environment == 'production' && contains(matrix.target_env, 'production'))
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        target_env:
-          - cyberthreatexchange-updates-production
-          - cyberthreatexchange-updates-staging
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
     environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .

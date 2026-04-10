@@ -53,20 +53,13 @@ jobs:
 
   process-feeds:
     needs: generate-matrix
-    if: |
-      github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.target_environment == 'all' ||
-      (github.event.inputs.target_environment == 'staging' && contains(matrix.target_env, 'staging')) ||
-      (github.event.inputs.target_environment == 'production' && contains(matrix.target_env, 'production'))
     runs-on: ubuntu-latest
     name: "Process ThreatView Feed: ${{ matrix.feed.name }} @ ${{ matrix.target_env }}"
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
-        target_env:
-          - cyberthreatexchange-updates-production
-          - cyberthreatexchange-updates-staging
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
         feed: ${{ fromJson(needs.generate-matrix.outputs.matrix).feed }}
     environment: ${{ matrix.target_env }}
     env:
