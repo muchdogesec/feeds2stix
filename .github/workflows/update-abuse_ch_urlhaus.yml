@@ -98,8 +98,8 @@ jobs:
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
-          if [ -z "$BUNDLE_PATH" ] || [ ! -d "$BUNDLE_PATH" ]; then
-            echo "Error: Bundle directory was not created at $BUNDLE_PATH"
+          if [ -z "$BUNDLE_PATH" ] || [ ! -f "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle file was not created at $BUNDLE_PATH"
             exit 1
           fi
           

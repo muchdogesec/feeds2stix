@@ -67,6 +67,7 @@ jobs:
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           OPENPHISH_FEED_ID: ${{ vars.OPENPHISH_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           

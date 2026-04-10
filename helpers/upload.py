@@ -418,7 +418,10 @@ def main(
 
         # ── Hash-manager setup ──────────────────────────────────────────────
         _hash_db_path = hash_db_path or os.path.join(artifacts_dir, "stix_hashes.db")
+        prefix = os.getenv("ARTIFACT_PREFIX", "")
         _artifact_name = f"feed_{feed_id.replace('-', '')}_dupedb"
+        if prefix:
+            _artifact_name = f"{prefix}_{_artifact_name}"
         
         # Get GitHub credentials (validation already done in argument parsing)
         gh_repo = os.getenv("GITHUB_REPOSITORY")
