@@ -1,13 +1,28 @@
 name: CINS Score Feed to STIX Processor
 
 on:
-  schedule:
-    # Run daily at 04:00 UTC
-    - cron: '0 4 * * *'
+  # schedule:
+  #   # Run daily at 04:00 UTC
+  #   - cron: '0 4 * * *'
   workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
 
 jobs:
   process-and-upload:
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.target_environment == 'all' ||
+      (github.event.inputs.target_environment == 'staging' && contains(matrix.target_env, 'staging')) ||
+      (github.event.inputs.target_environment == 'production' && contains(matrix.target_env, 'production'))
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

@@ -1,11 +1,20 @@
 name: Abuse.ch URLhaus Feed to STIX Processor
 
 on:
-  schedule:
-    # Run every 6 hours
-    - cron: '*/6 * * * *'
+  # schedule:
+  #   # Run every 6 hours
+  #   - cron: '*/6 * * * *'
   workflow_dispatch:
     inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
       start_date:
         description: 'Start date for filtering records (YYYY-MM-DD[T[HH:MM[:SS]]]). Use "auto" to use last run date, or leave empty to process all.'
         required: false
@@ -14,6 +23,11 @@ on:
 
 jobs:
   process-and-upload:
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.target_environment == 'all' ||
+      (github.event.inputs.target_environment == 'staging' && contains(matrix.target_env, 'staging')) ||
+      (github.event.inputs.target_environment == 'production' && contains(matrix.target_env, 'production'))
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

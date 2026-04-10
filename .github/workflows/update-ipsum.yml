@@ -1,11 +1,20 @@
 name: IPSum Feed to STIX Processor
 
 on:
-  schedule:
-    # Run daily at 02:00 UTC (1 hour after feed updates at 01:00 UTC)
-    - cron: '0 2 * * *'
+  # schedule:
+  #   # Run daily at 02:00 UTC (1 hour after feed updates at 01:00 UTC)
+  #   - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
       min_level:
         description: 'Minimum level (1-8). Fetches all levels from 8 down to this level.'
         required: true
@@ -23,6 +32,11 @@ on:
 
 jobs:
   process-and-upload:
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.target_environment == 'all' ||
+      (github.event.inputs.target_environment == 'staging' && contains(matrix.target_env, 'staging')) ||
+      (github.event.inputs.target_environment == 'production' && contains(matrix.target_env, 'production'))
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
