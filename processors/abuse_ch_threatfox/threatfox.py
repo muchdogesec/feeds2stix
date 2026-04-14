@@ -50,6 +50,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+class BadRecordException(Exception):
+    pass
+
 
 def create_threatfox_identity():
     """Create the abuse.ch identity object."""
@@ -250,9 +253,6 @@ def _build_indicator_pattern(observables: List[object]) -> str:
                     ip_pattern += f' AND network-traffic:dst_ref.value = {StringConstant(ipvalue)}'
                     ip_pattern = f"( {ip_pattern} )"
                 patterns.append(ip_pattern)
-            case "autonomous-system":
-                asn_pattern = f"autonomous-system:number = {observable.number}"
-                patterns.append(asn_pattern)
 
 
     if not patterns:
@@ -323,16 +323,18 @@ def create_malware_objects(
 
     created = min(record["first_seen_utc"] for record in records)
     modified = max(record["last_seen_utc"] for record in records)
+    fk_malware = None
+    aliases = set()
 
-    aliases = sorted(
-        {
-            alias
-            for record in records
-            for alias in _split_csv_list(record.get("malware_alias"))
-        }
-    )
-    aliases = aliases or []
-    fk_malware = next((r.get("fk_malware") for r in records if r.get("fk_malware")), None)
+    for record in records:
+        created = min(created, record["first_seen_utc"])
+        modified = max(modified, record["last_seen_utc"])
+        fk_malware = fk_malware or record.get("fk_malware")
+        aliases.update(_split_csv_list(record.get("malware_alias")))
+
+    aliases.discard(malware_name)
+    aliases = sorted(aliases)
+
     malware_types = sorted({guess_malware_type(malware_name) for malware_name in aliases + [malware_name]})
     if len(malware_types) > 1:
         malware_types.remove("unknown")
@@ -397,8 +399,6 @@ def process_records(
     bundles_created = 0
 
     indicator_ids = []
-    observable_ids = []
-    included_records = []
 
     def flush_bundle(force=False):
         nonlocal bundles_created
@@ -425,51 +425,51 @@ def process_records(
 
     processed_records = 0
     for record in records:
-        processed_records += 1
-        if start_date and record["first_seen_utc"] < start_date:
-            continue
-        flush_bundle()
+        try:
+            processed_records += 1
+            if start_date and record["first_seen_utc"] < start_date:
+                continue
+            flush_bundle()
 
-        observables = create_observables_for_record(record)
-        if not observables:
-            continue
+            observables = create_observables_for_record(record)
+            if not observables:
+                continue
 
-        indicator = create_indicator_object(
-            record,
-            observables,
-            source_identity["id"],
-            source_marking["id"],
-            object_marking_refs,
-        )
-        included_records.append(record)
-        indicator_ids.append((indicator.id, indicator.created, indicator.modified))
-        all_stix_objects.append(indicator)
+            indicator = create_indicator_object(
+                record,
+                observables,
+                source_identity["id"],
+                source_marking["id"],
+                object_marking_refs,
+            )
+            indicator_ids.append((indicator.id, indicator.created, indicator.modified))
+            all_stix_objects.append(indicator)
 
-        for observable in observables:
-            all_stix_objects.append(observable)
-            indicator_ids.append((observable.id, indicator.created, indicator.modified))
-            if observable.type != 'autonomous-system':
-                all_stix_objects.append(
-                    make_relationship(
-                        source_ref=indicator.id,
-                        target_ref=observable.id,
-                        relationship_type="indicates",
-                        created_by_ref=source_identity["id"],
-                        marking_refs=object_marking_refs,
-                        created=indicator.created,
-                        modified=indicator.modified,
+            for observable in observables:
+                all_stix_objects.append(observable)
+                indicator_ids.append((observable.id, indicator.created, indicator.modified))
+                if observable.type != 'autonomous-system':
+                    all_stix_objects.append(
+                        make_relationship(
+                            source_ref=indicator.id,
+                            target_ref=observable.id,
+                            relationship_type="indicates",
+                            created_by_ref=source_identity["id"],
+                            marking_refs=object_marking_refs,
+                            created=indicator.created,
+                            modified=indicator.modified,
+                        )
                     )
-                )
 
-        flush_bundle()
+            flush_bundle()
+        except Exception as e:
+            msg = f"Error processing record on line {record.get('line_number')}: {record['raw']}"
+            raise BadRecordException(msg) from e
 
-    if not included_records:
-        return []
     if malware_name != "Unknown":
-        logger.info(f"Creating malware object for {malware_name} with {len(included_records)} records")
         for obj in create_malware_objects(
             malware_name,
-            included_records,
+            records,
             indicator_ids,
             source_identity["id"],
             object_marking_refs,
