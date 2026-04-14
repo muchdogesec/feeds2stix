@@ -98,7 +98,7 @@ This is hardcoded and never changes;
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking Definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
 #### X509 Certificate
 
@@ -147,6 +147,8 @@ For each entry an Indicator object is created as follows
     ]
 }
 ```
+
+UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and `name` value
 
 #### Malware
 
