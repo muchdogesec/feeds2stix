@@ -52,7 +52,7 @@ def create_sslbl_marking_definition():
     )
 
 
-def clean_listing_reason(reason):
+def split_listing_reason(reason):
     C2_PATTERN = re.compile(r"^(.+?)(?:\s*C&C)$", re.IGNORECASE)
     DISTRIBUTION_PATTERN = re.compile(
         r"^(.+?)(?:\s*malware distribution)$", re.IGNORECASE
@@ -90,7 +90,7 @@ def fetch_sslbl_feed():
 
         listing_date_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         listing_date_dt = listing_date_dt.replace(tzinfo=timezone.utc)
-        malware_name, malware_type = clean_listing_reason(listing_reason)
+        malware_name, malware_type = split_listing_reason(listing_reason)
 
         retval[malware_name].append(
             {
@@ -178,11 +178,13 @@ def create_infrastructure_and_rels(
         objects.append(mal_indicator_rel)
     return objects
 
+
 def guess_malware_type(malware_name):
     if malware_name.upper().endswith("RAT"):
         return "remote-access-trojan"
     else:
         return "unknown"
+
 
 def create_stix_objects_for_malware(
     malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None

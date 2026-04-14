@@ -131,7 +131,7 @@ For each entry an Indicator object is created as follows
     "indicator_types": [
         "malicious-activity"
     ],
-    "name": "Certificate: <fingerprint>",
+    "name": "Certificate: <sha1/fingerprint>",
     "pattern": "[ x509-certificate:hashes.'SHA-1' = '<sha1_hash>' ]",
     "pattern_type": "stix",
     "external_references": [
