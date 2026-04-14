@@ -57,7 +57,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
 #### File
 
@@ -122,7 +122,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 }
 ```
 
-Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 ## Usage
 
