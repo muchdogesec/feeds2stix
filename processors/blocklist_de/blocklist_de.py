@@ -81,8 +81,7 @@ def create_stix_objects(
         ipv4_obj = IPv4Address(value=ip)
 
         indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(indicator_name, namespace=blocklist_de_marking_id)
-        indicator_id_full = f"indicator--{indicator_id}"
+        indicator_id_full = "indicator--" + generate_uuid5(indicator_name, namespace=blocklist_de_marking_id)
 
         indicator = Indicator(
             id=indicator_id_full,

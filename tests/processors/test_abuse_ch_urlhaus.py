@@ -156,7 +156,7 @@ def test_process_records():
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",
             "revoked": True,
-            "labels": ["malware", "loader", "bot"],
+            "labels": ["bot", "loader", "malware"],
             "object_marking_refs": [
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",

@@ -78,8 +78,7 @@ def create_stix_objects(domains, certpl_identity, certpl_marking, script_run_tim
         domain_obj = DomainName(value=domain)
 
         indicator_name = f"Domain Name: {domain}"
-        indicator_id = generate_uuid5(indicator_name, namespace=certpl_marking_id)
-        indicator_id_full = f"indicator--{indicator_id}"
+        indicator_id_full = "indicator--" + generate_uuid5(indicator_name, namespace=certpl_marking_id)
 
         indicator = Indicator(
             id=indicator_id_full,

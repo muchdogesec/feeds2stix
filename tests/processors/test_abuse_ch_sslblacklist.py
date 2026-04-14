@@ -51,19 +51,19 @@ def test_create_sslbl_marking_definition():
 
 def test_clean_listing_reason(subtests):
     with subtests.test("c2"):
-        assert sslblacklist.clean_listing_reason("MyFamily C&C") == (
+        assert sslblacklist.split_listing_reason("MyFamily C&C") == (
             "MyFamily",
             "command-and-control",
         )
 
     with subtests.test("distribution"):
-        assert sslblacklist.clean_listing_reason("Bad malware distribution") == (
+        assert sslblacklist.split_listing_reason("Bad malware distribution") == (
             "Bad",
             "hosting-malware",
         )
 
     with subtests.test("fallback"):
-        assert sslblacklist.clean_listing_reason("something else") == ("Unknown", None)
+        assert sslblacklist.split_listing_reason("something else") == ("Unknown", None)
 
 
 def test_fetch_sslbl_feed():

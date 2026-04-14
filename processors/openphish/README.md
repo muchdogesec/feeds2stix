@@ -59,7 +59,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
 #### URL
 
@@ -82,8 +82,8 @@ With relationship to Indicator:
 	"spec_version": "2.1",
 	"id": "relationship--<UUID V5>",
 	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<LINE COMMIT DATE>",
-	"modified": "<LINE COMMIT DATE>",
+	"created": "<indicator.created>",
+	"modified": "<indicator.modified>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
 	"target_ref": "url--<UUID>",
@@ -122,7 +122,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 }
 ```
 
-Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 ### Timestamp Determination
 
@@ -165,11 +165,11 @@ python processors/openphish/openphish.py --since-date 2024-07-01
 
 ### Output
 
-The script creates a single STIX bundle file for each date:
-* `bundles/openphish/bundles/openphish_DATE.json`
+The script creates STIX bundle files grouped by date and hour:
+* `outputs/openphish/bundles/openphish_YYYYMMDD_HH.json`
 
 Each bundle contains:
-* URL objects for each phishing URL in the feed
+* URL objects for phishing URLs first seen in that hour window
 * Indicator objects with patterns matching the URLs (with accurate first-seen timestamps from Git history)
 * Relationships linking Indicators to URL objects
 * Identity and Marking Definition objects
@@ -180,5 +180,6 @@ The script performs the following steps:
 1. Clones or updates the OpenPhish GitHub repository locally
 2. Analyzes the Git commit history of `feed.txt`
 3. Identifies when each URL first appeared in the feed
-4. Creates STIX objects with accurate timestamps based on Git commit dates
-5. Generates a single bundle with all processed URLs
+4. Groups URLs by their first-seen date and hour
+5. Creates STIX objects with accurate timestamps based on Git commit dates
+6. Generates separate bundles for each date+hour group

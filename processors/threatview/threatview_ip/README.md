@@ -119,7 +119,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 }
 ```
 
-Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 ## Usage
 

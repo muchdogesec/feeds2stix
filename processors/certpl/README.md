@@ -59,7 +59,34 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+
+#### Indicator
+
+```json
+{
+	"type": "indicator",
+	"spec_version": "2.1",
+	"id": "indicator--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<SCRIPT RUN TIME>",
+	"modified": "<SCRIPT RUN TIME>",
+	"valid_from": "<SCRIPT RUN TIME>",
+	"indicator_types": [
+		"malicious-activity"
+	],
+	"name": "Domain Name: <VALUE>",
+	"pattern": "[domain-name:value='<VALUE>']",
+	"pattern_type": "stix",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
+}
+```
+
+Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 #### Domain Name
 
@@ -97,32 +124,6 @@ With relationship to Indicator:
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
-#### Indicator
-
-```json
-{
-	"type": "indicator",
-	"spec_version": "2.1",
-	"id": "indicator--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUN TIME>",
-	"modified": "<SCRIPT RUN TIME>",
-	"valid_from": "<SCRIPT RUN TIME>",
-	"indicator_types": [
-		"malicious-activity"
-	],
-	"name": "Domain Name: <VALUE>",
-	"pattern": "[domain-name:value='<VALUE>']",
-	"pattern_type": "stix",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-Identity `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
 ## Usage
 

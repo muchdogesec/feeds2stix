@@ -146,10 +146,11 @@ def create_indicator_object(
         tags = [tag.strip() for tag in record["tags"].split(",")]
 
     # Add threat type as first label
-    labels = []
+    labels = ["malware"]  # Default label
     if record["threat"]:
         labels.append(record["threat"])
     labels.extend(tags)
+    labels = sorted(set(labels))  # Remove duplicates
 
     # Determine if revoked (offline)
     revoked = record["url_status"] == "offline"
