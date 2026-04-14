@@ -79,7 +79,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 	"created": "2020-01-01T00:00:00.000Z",
 	"definition_type": "statement",
 	"definition": {
-		"statement": "Origin: https://raw.githubusercontent.com/stamparm/ipsum/master/levels/1.txt"
+		"statement": "Origin: https://github.com/stamparm/ipsum"
 	},
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -89,6 +89,37 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 ```
 
 Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+
+
+#### Indicator
+
+```json
+{
+	"type": "indicator",
+	"spec_version": "2.1",
+	"id": "indicator--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<SCRIPT RUN TIME>",
+	"modified": "<SCRIPT RUN TIME>",
+	"valid_from": "<SCRIPT RUN TIME>",
+	"confidence": "<VALUE>",
+	"indicator_types": [
+		"malicious-activity"
+	],
+	"name": "IPv4: <VALUE>",
+	"pattern": "[ipv4-addr:value='<VALUE>']",
+	"pattern_type": "stix",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
+}
+```
+
+Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+
+`"confidence": "<VALUE>",` is determined by the level the IPv4 is found in.
 
 #### IPv4
 
@@ -126,36 +157,6 @@ With relationship to Indicator:
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 
-#### Indicator
-
-```json
-{
-	"type": "indicator",
-	"spec_version": "2.1",
-	"id": "indicator--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUN TIME>",
-	"modified": "<SCRIPT RUN TIME>",
-	"valid_from": "<SCRIPT RUN TIME>",
-	"confidence": "<VALUE>",
-	"indicator_types": [
-		"malicious-activity"
-	],
-	"name": "IPv4: <VALUE>",
-	"pattern": "[ipv4-addr:value='<VALUE>']",
-	"pattern_type": "stix",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
-
-`marking-definition--<UUIDV5>` is a single marking definition for all IPSum data pointing to https://github.com/stamparm/ipsum
-`"confidence": "<VALUE>",` is determined by the level the IPv4 is found in.
 
 ## Usage
 
