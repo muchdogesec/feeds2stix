@@ -355,6 +355,9 @@ def main():
             args.name_contains
         )
 
+    if any(r['status'] == 'failed' for r in results):
+        sys.exit(121)  # Exit with code 121 if any deletions failed
+
 
 if __name__ == "__main__":
     main()
