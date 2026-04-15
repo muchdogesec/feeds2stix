@@ -1,0 +1,67 @@
+name: Clean Hashmanager Artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      name_contains:
+        description: 'Filter artifacts by substring in name (e.g., staging, production, ipsum). Leave empty for all.'
+        required: false
+        type: string
+      feeds:
+        description: 'Specific feed IDs (space-separated, leave empty for all). Examples: 575680fe-10d7-42d5-b25e-13b31f899c75'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run (preview only, no deletion)'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  clean-hashmanagers:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Display configuration
+        run: |
+          echo "Name contains: ${{ inputs.name_contains || '(all)' }}"
+          echo "Feeds: ${{ inputs.feeds || '(all)' }}"
+          echo "Dry run: ${{ inputs.dry_run }}"
+      
+      - name: Clean hashmanager artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          
+          CMD="python helpers/clean_hashmanagers.py --verbose"
+          
+          # Add name-contains filter if specified
+          if [ -n "${{ inputs.name_contains }}" ]; then
+            CMD="$CMD --name-contains '${{ inputs.name_contains }}'"
+          fi
+          
+          # Add feeds filter if specified
+          if [ -n "${{ inputs.feeds }}" ]; then
+            CMD="$CMD --feeds ${{ inputs.feeds }}"
+          fi
+          
+          # Add dry-run flag if enabled
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+          
+          echo "Running: $CMD"
+          eval $CMD
