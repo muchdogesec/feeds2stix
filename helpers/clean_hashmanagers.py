@@ -103,8 +103,10 @@ def filter_hashmanager_artifacts(
     filter_desc = f" (name contains '{name_contains}')" if name_contains else ""
     if feeds:
         filter_desc += f" (feeds: {', '.join(feeds)})"
-    logger.info(f"Filtered to {len(artifacts_to_remove)} hashmanager artifacts{filter_desc}")
-    return artifacts_to_remove
+    if not filter_desc:
+        filter_desc = " (no additional filters)"
+    logger.info(f"Filtered to {len(artifacts_to_remove)} hashmanager artifacts {filter_desc}")
+    return filter_desc, artifacts_to_remove
 
 
 def delete_artifact(artifact_id: int, token: str) -> bool:
@@ -178,7 +180,7 @@ def write_github_step_summary(
     summary_file: str,
     results: list[dict],
     dry_run: bool,
-    name_contains: Optional[str] = None,
+    filter_desc: str,
 ) -> None:
     """Write a GitHub Actions step summary with a table of results."""
     try:
@@ -186,7 +188,7 @@ def write_github_step_summary(
             f.write("## 🗑️ Hashmanager Cleanup Results\n\n")
             
             f.write("### Configuration\n\n")
-            f.write(f"- **Filter**: {f'Name contains `{name_contains}`' if name_contains else 'All hashmanager artifacts'}\n")
+            f.write(f"- **Filter**: {filter_desc}\n")
             f.write(f"- **Mode**: {'🔍 Dry Run (Preview)' if dry_run else '🗑️ Delete'}\n\n")
             
             if not results:
@@ -306,12 +308,14 @@ def main():
     logger.info(f"Repository: {GITHUB_REPO}")
     if args.name_contains:
         logger.info(f"Filter: Name contains '{args.name_contains}'")
-    else:
+    if args.feeds:
+        logger.info(f"Filter: Feeds: {', '.join(args.feeds)}")
+    if not args.name_contains and not args.feeds:
         logger.info("Filter: ALL hashmanager artifacts")
     logger.info(f"Dry run: {args.dry_run}")
     logger.info(f"{'='*80}\n")
     
-    hashmanager_artifacts = filter_hashmanager_artifacts(
+    filter_desc, hashmanager_artifacts = filter_hashmanager_artifacts(
         all_artifacts, name_contains=args.name_contains, feeds=args.feeds
     )
     
@@ -352,8 +356,11 @@ def main():
             github_step_summary, 
             results, 
             args.dry_run, 
-            args.name_contains
+            filter_desc
         )
+
+    if any(r['status'] == 'failed' for r in results):
+        sys.exit(121)  # Exit with code 121 if any deletions failed
 
 
 if __name__ == "__main__":
