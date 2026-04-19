@@ -1,9 +1,9 @@
 name: IPSum Feed to STIX Processor
 
 on:
-  # schedule:
-  #   # Run daily at 02:00 UTC (1 hour after feed updates at 01:00 UTC)
-  #   - cron: '0 2 * * *'
+  schedule:
+    # Run daily at 02:00 UTC (1 hour after feed updates at 01:00 UTC)
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       target_environment:

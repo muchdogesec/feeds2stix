@@ -1,9 +1,9 @@
 name: CINS Score Feed to STIX Processor
 
 on:
-  # schedule:
-  #   # Run daily at 04:00 UTC
-  #   - cron: '0 4 * * *'
+  schedule:
+    # Run daily at 04:00 UTC
+    - cron: '0 4 * * *'
   workflow_dispatch:
     inputs:
       target_environment:

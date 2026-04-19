@@ -1,9 +1,9 @@
 name: ThreatView Feeds to STIX Processor
 
 on:
-  # schedule:
-  #   # All feeds run daily at 6am
-  #   - cron: '0 6 * * *'
+  schedule:
+    # All feeds run daily at 6am
+    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       target_environment:
