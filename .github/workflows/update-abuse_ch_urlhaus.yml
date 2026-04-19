@@ -1,9 +1,9 @@
 name: Abuse.ch URLhaus Feed to STIX Processor
 
 on:
-  # schedule:
-  #   # Run every 6 hours
-  #   - cron: '*/6 * * * *'
+  schedule:
+    # Run every 6 hours
+    - cron: '*/6 * * * *'
   workflow_dispatch:
     inputs:
       target_environment:
