@@ -1,4 +1,4 @@
-name: OpenPhish Feed to STIX Processor
+name: "[Update CTX] OpenPhish"
 
 on:
   schedule:

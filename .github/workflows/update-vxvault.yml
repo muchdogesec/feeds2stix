@@ -1,4 +1,4 @@
-name: VXVault Feed to STIX Processor
+name: "[Update CTX] VXVault"
 
 on:
   schedule:

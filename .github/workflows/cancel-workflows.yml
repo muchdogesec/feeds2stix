@@ -1,0 +1,177 @@
+name: Cancel Running Workflows
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Filter workflows by name (e.g., "abuse" to cancel all workflows with "abuse" in filename). Leave empty to cancel ALL running workflows.'
+        required: false
+        type: string
+      include_queued:
+        description: 'Also cancel queued (pending) workflows'
+        required: false
+        type: boolean
+        default: true
+      dry_run:
+        description: 'Preview what would be cancelled without actually cancelling'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  actions: write
+
+jobs:
+  cancel-workflows:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Cancel matching workflows
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const nameFilter = '${{ inputs.name }}'.toLowerCase();
+            const includeQueued = '${{ inputs.include_queued }}' === 'true';
+            const dryRun = '${{ inputs.dry_run }}' === 'true';
+            
+            console.log(dryRun ? '🔍 DRY RUN MODE - No workflows will be cancelled\n' : 'Fetching running workflows...');
+            if (nameFilter) {
+              console.log(`Filtering by name: "${nameFilter}"`);
+            } else {
+              console.log('⚠️  No filter provided - will cancel ALL running workflows!');
+            }
+            
+            // Get all workflow runs
+            const statuses = includeQueued ? ['in_progress', 'queued'] : ['in_progress'];
+            const cancelled = [];
+            const skipped = [];
+            
+            for (const status of statuses) {
+              let page = 1;
+              let hasMore = true;
+              
+              while (hasMore) {
+                const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  status: status,
+                  per_page: 100,
+                  page: page
+                });
+                
+                if (data.workflow_runs.length === 0) {
+                  hasMore = false;
+                  break;
+                }
+                
+                for (const run of data.workflow_runs) {
+                  // Skip this workflow itself to avoid self-cancellation
+                  if (run.id === context.runId) {
+                    console.log(`⏭️  Skipping self (run ${run.id})`);
+                    continue;
+                  }
+                  
+                  // Extract workflow filename from path
+                  const workflowPath = run.path || '';
+                  const workflowFile = workflowPath.split('/').pop() || '';
+                  
+                  // Apply name filter if provided
+                  if (nameFilter && !workflowFile.toLowerCase().includes(nameFilter)) {
+                    skipped.push({
+                      workflow: workflowFile,
+                      runId: run.id,
+                      status: status,
+                      reason: 'Name filter mismatch'
+                    });
+                    continue;
+                  }
+                  
+                  if (!dryRun) {
+                    try {
+                      await github.rest.actions.cancelWorkflowRun({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        run_id: run.id
+                      });
+                      
+                      cancelled.push({
+                        workflow: workflowFile,
+                        runId: run.id,
+                        status: status,
+                        result: '✅ Success'
+                      });
+                    } catch (error) {
+                      cancelled.push({
+                        workflow: workflowFile,
+                        runId: run.id,
+                        status: status,
+                        result: `❌ Failed: ${error.message}`
+                      });
+                    }
+                  } else {
+                    cancelled.push({
+                      workflow: workflowFile,
+                      runId: run.id,
+                      status: status,
+                      result: '🔍 Would cancel'
+                    });
+                  }
+                }
+                
+                page++;
+                if (data.workflow_runs.length < 100) {
+                  hasMore = false;
+                }
+              }
+            }
+            
+            // Print summary tables
+            console.log('\n📊 Summary:');
+            console.log(`Total: ${cancelled.length} cancelled, ${skipped.length} skipped\n`);
+            
+            // Write to step summary
+            await core.summary
+              .addHeading('Workflow Cancellation Summary', 2)
+              .addRaw(`**Total:** ${cancelled.length} cancelled, ${skipped.length} skipped\n\n`)
+              .write();
+            
+            if (cancelled.length > 0) {
+              const cancelledRows = cancelled.map(item => [
+                item.workflow,
+                item.runId.toString(),
+                item.status,
+                item.result
+              ]);
+              
+              await core.summary
+                .addHeading('Cancelled Workflows', 3)
+                .addTable([
+                  [{data: 'Workflow', header: true}, {data: 'Run ID', header: true}, {data: 'Status', header: true}, {data: 'Result', header: true}],
+                  ...cancelledRows
+                ])
+                .write();
+            }
+            
+            if (skipped.length > 0) {
+              const skippedRows = skipped.map(item => [
+                item.workflow,
+                item.runId.toString(),
+                item.status,
+                item.reason
+              ]);
+              
+              await core.summary
+                .addHeading('Skipped Workflows', 3)
+                .addTable([
+                  [{data: 'Workflow', header: true}, {data: 'Run ID', header: true}, {data: 'Status', header: true}, {data: 'Reason', header: true}],
+                  ...skippedRows
+                ])
+                .write();
+            }
+            
+            if (cancelled.length === 0 && skipped.length === 0) {
+              await core.summary
+                .addRaw('ℹ️  No matching workflows found to cancel')
+                .write();
+              console.log('ℹ️  No matching workflows found to cancel');
+            }

@@ -1,4 +1,4 @@
-name: IPSum Feed to STIX Processor
+name: "[Update CTX] IPsum"
 
 on:
   schedule:

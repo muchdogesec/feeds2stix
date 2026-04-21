@@ -1,4 +1,4 @@
-name: CERT.PL Feed to STIX Processor
+name: "[Update CTX] CERT.PL"
 
 on:
   schedule:

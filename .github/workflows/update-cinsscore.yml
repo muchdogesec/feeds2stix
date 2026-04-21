@@ -1,4 +1,4 @@
-name: CINS Score Feed to STIX Processor
+name: "[Update CTX] CINS Score"
 
 on:
   schedule:

@@ -1,4 +1,4 @@
-name: ThreatView Feeds to STIX Processor
+name: "[Update CTX] ThreatView"
 
 on:
   schedule:

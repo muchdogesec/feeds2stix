@@ -1,4 +1,4 @@
-name: Abuse.ch URLhaus Feed to STIX Processor
+name: "[Update CTX] Abuse.ch URLhaus"
 
 on:
   schedule:
