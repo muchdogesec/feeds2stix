@@ -5,11 +5,10 @@ import logging
 import os
 import sys
 import time
-import warnings
 from pathlib import Path
 
 import requests
-from split_jsons import get_file_size_kb, split_stix_bundle
+from split_jsons import split_stix_bundle
 import hashmanager
 
 # Setup logging
@@ -182,7 +181,6 @@ def upload_bundle(
                     "req_responses": req_responses,
                     "job_state": job_result.get("state"),
                 }
-
                 if wait_for_completion and job_id:
                     logger.info(f"Waiting for job {job_id} to complete...")
                     final_job_data = poll_job_status(job_id, api_base_url, api_key)
@@ -368,7 +366,9 @@ def main(
 
         # Process files and split if necessary
         processed_files = []
-        for bundle_file in all_bundle_files:
+        print(f"::group::Splitting bundles larger than {max_size_kb} KB")
+        for i, bundle_file in enumerate(all_bundle_files):
+            logger.info(f"Checking bundle {i+1} of {len(all_bundle_files)}: {bundle_file}")
             bundle_size = os.path.getsize(bundle_file) / 1024
             if bundle_size > max_size_kb:
                 logger.info(
@@ -382,6 +382,7 @@ def main(
                     f"Bundle {bundle_file} ({bundle_size:.2f} KB) is within max size, no splitting needed"
                 )
                 processed_files.append(bundle_file)
+        print("::endgroup::")
 
         results = []
 
@@ -394,14 +395,16 @@ def main(
         _artifact_name = f"feed_{feed_id.replace('-', '')}_dupedb"
         if prefix:
             _artifact_name = f"{prefix}_{_artifact_name}"
-        
+
         # Get GitHub credentials (validation already done in argument parsing)
         gh_repo = os.getenv("GITHUB_REPOSITORY")
         gh_token = os.getenv("GITHUB_TOKEN")
-        
+
         if use_artifacts:
             logger.info("Downloading hash DB artifact %r …", _artifact_name)
-            hashmanager.download_artifact(_artifact_name, gh_repo, gh_token, _hash_db_path)
+            hashmanager.download_artifact(
+                _artifact_name, gh_repo, gh_token, _hash_db_path
+            )
             hashmanager.cleanup_old_artifacts(_artifact_name, gh_repo, gh_token)
         hash_conn = hashmanager.load_db(_hash_db_path)
         # ───────────────────────────────────────────────────────────────────
@@ -409,9 +412,9 @@ def main(
         logger.info("=" * 120)
         logger.info("=" * 120)
 
-        for bundle_file in processed_files:
-            logger.info(f"Processing bundle: {bundle_file}")
-
+        print(f"::group::CTX Bundle Upload - Processing {len(processed_files)} bundle(s)")
+        for i, bundle_file in enumerate(processed_files, 1):
+            logger.info(f"Processing bundle {i} of {len(processed_files)}: {bundle_file}")
             try:
                 with open(bundle_file, "r") as f:
                     bundle = json.load(f)
@@ -503,6 +506,8 @@ def main(
                 )
             )
 
+        print("::endgroup::")
+
         write_github_summary(results)
 
         # ── Persist hash DB ──────────────────────────────────────────────
@@ -516,13 +521,9 @@ def main(
         total_objects = sum(r.get("total_objects", 0) for r in results)
         submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
         skipped_objects = sum(r.get("skipped_objects", 0) for r in results)
-        failed_objects_count = sum(
-            len(r.get("failed_objects", [])) for r in results
-        )
+        failed_objects_count = sum(len(r.get("failed_objects", [])) for r in results)
 
-        logger.info(
-            f"✅ Processed {successful}/{total_bundles} bundles successfully"
-        )
+        logger.info(f"✅ Processed {successful}/{total_bundles} bundles successfully")
         logger.info(f"   Total objects: {total_objects}")
         logger.info(f"   Submitted: {submitted_objects}")
         logger.info(f"   Skipped: {skipped_objects}")
@@ -635,7 +636,7 @@ Example:
     gh_repo = os.getenv("GITHUB_REPOSITORY")
     gh_token = os.getenv("GITHUB_TOKEN")
     can_use_artifacts = args.use_artifacts and gh_repo and gh_token
-    
+
     if args.use_artifacts and not can_use_artifacts:
         logger.error(
             "Artifact operations requested but required environment variables are missing:\n"
