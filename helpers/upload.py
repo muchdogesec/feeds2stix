@@ -217,7 +217,7 @@ def upload_bundle(
     }
 
 
-def write_github_summary(results, is_multi_bundle=False):
+def write_github_summary(results):
     """Write GitHub Actions step summary."""
     summary_file = os.getenv("GITHUB_STEP_SUMMARY")
     if not summary_file:
@@ -383,7 +383,6 @@ def main(
                 )
                 processed_files.append(bundle_file)
 
-        is_multi_bundle = len(processed_files) > 1
         results = []
 
         artifacts_dir = "upload_artifacts"
@@ -471,7 +470,7 @@ def main(
                 api_base_url,
                 api_key,
                 feed_id,
-                wait_for_completion=is_multi_bundle,
+                wait_for_completion=True,
             )
             result["bundle_file"] = bundle_file
             result["skipped_objects"] = skipped_count
@@ -485,27 +484,26 @@ def main(
             bundle_name = Path(bundle_file).stem
             save_artifacts(result, artifacts_dir, bundle_name, bundle_file)
 
-            if is_multi_bundle:
-                job_id = result.get("job_id") or "N/A"
-                bundle_name_display = Path(bundle_file).name[:28]
-                total = result.get("total_objects", 0)
-                submitted = result.get("submitted_objects", 0)
-                failed = len(result.get("failed_objects", []))
-                state = result.get("job_state") or "unknown"
-                logger.info(
-                    str(
-                        {
-                            "job_id": job_id,
-                            "bundle_name": bundle_name_display,
-                            "total": total,
-                            "submitted": submitted,
-                            "failed": failed,
-                            "state": state,
-                        }
-                    )
+            job_id = result.get("job_id") or "N/A"
+            bundle_name_display = Path(bundle_file).name[:28]
+            total = result.get("total_objects", 0)
+            submitted = result.get("submitted_objects", 0)
+            failed = len(result.get("failed_objects", []))
+            state = result.get("job_state") or "unknown"
+            logger.info(
+                str(
+                    {
+                        "job_id": job_id,
+                        "bundle_name": bundle_name_display,
+                        "total": total,
+                        "submitted": submitted,
+                        "failed": failed,
+                        "state": state,
+                    }
                 )
+            )
 
-        write_github_summary(results, is_multi_bundle)
+        write_github_summary(results)
 
         # ── Persist hash DB ──────────────────────────────────────────────
         hashmanager.save_db(hash_conn, _hash_db_path)
@@ -513,47 +511,22 @@ def main(
         # ────────────────────────────────────────────────────────────────
 
         logger.info("=" * 120)
-        if is_multi_bundle:
-            total_bundles = len(results)
-            successful = sum(1 for r in results if r.get("success"))
-            total_objects = sum(r.get("total_objects", 0) for r in results)
-            submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
-            skipped_objects = sum(r.get("skipped_objects", 0) for r in results)
-            failed_objects_count = sum(
-                len(r.get("failed_objects", [])) for r in results
-            )
+        total_bundles = len(results)
+        successful = sum(1 for r in results if r.get("success"))
+        total_objects = sum(r.get("total_objects", 0) for r in results)
+        submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
+        skipped_objects = sum(r.get("skipped_objects", 0) for r in results)
+        failed_objects_count = sum(
+            len(r.get("failed_objects", [])) for r in results
+        )
 
-            logger.info(
-                f"✅ Processed {successful}/{total_bundles} bundles successfully"
-            )
-            logger.info(f"   Total objects: {total_objects}")
-            logger.info(f"   Submitted: {submitted_objects}")
-            logger.info(f"   Skipped: {skipped_objects}")
-            logger.info(f"   Failed: {failed_objects_count}")
-        else:
-            result = results[0]
-            if result.get("success"):
-                logger.info("✅ Upload successful!")
-                if result.get("job_id"):
-                    logger.info(f"   Job ID: {result['job_id']}")
-                    if result.get("job_state"):
-                        logger.info(f"   Job State: {result['job_state']}")
-                logger.info(
-                    f"   Submitted: {result.get('submitted_objects', 0)}/{result.get('total_objects', 0)} objects"
-                )
-                logger.info(
-                    f"   Skipped: {result.get('skipped_objects', 0)} objects"
-                )
-                logger.info(
-                    f"   Failed: {len(result.get('failed_objects', []))} objects"
-                )
-            else:
-                logger.error(
-                    f"❌ Upload failed: {result.get('error', 'Unknown error')}"
-                )
-                logger.error(
-                    f"   Failed objects: {len(result.get('failed_objects', []))}/{result.get('total_objects', 0)}"
-                )
+        logger.info(
+            f"✅ Processed {successful}/{total_bundles} bundles successfully"
+        )
+        logger.info(f"   Total objects: {total_objects}")
+        logger.info(f"   Submitted: {submitted_objects}")
+        logger.info(f"   Skipped: {skipped_objects}")
+        logger.info(f"   Failed: {failed_objects_count}")
         logger.info("=" * 120)
 
         github_output = os.getenv("GITHUB_OUTPUT")
