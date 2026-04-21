@@ -186,6 +186,7 @@ def upload_bundle(
                 if wait_for_completion and job_id:
                     logger.info(f"Waiting for job {job_id} to complete...")
                     final_job_data = poll_job_status(job_id, api_base_url, api_key)
+                    result['success'] = final_job_data.get("state") == "completed"
                     result["job_state"] = final_job_data.get("state")
                     result["final_job_data"] = final_job_data
                     logger.info(f"Job {job_id} final state: {result['job_state']}")
@@ -226,73 +227,45 @@ def write_github_summary(results, is_multi_bundle=False):
         with open(summary_file, "a", encoding="utf-8") as f:
             f.write("## CTX Bundle Upload Summary\n\n")
 
-            if is_multi_bundle:
-                f.write("### Individual Bundle Results\n\n")
-                f.write("| Job ID | Bundle | Total | Submitted | Failed | State |\n")
-                f.write("|--------|--------|-------|-----------|--------|-------|\n")
+            f.write("### Bundles Job Results\n\n")
+            f.write("| Job ID | Bundle | Total | Submitted | Failed | State |\n")
+            f.write("|--------|--------|-------|-----------|--------|-------|\n")
 
-                # Limit to first 50 results to avoid step summary size limits
-                results_to_show = results[:50]
-                remaining_count = len(results) - len(results_to_show)
+            # Limit to first 50 results to avoid step summary size limits
+            results_to_show = results[:50]
+            remaining_count = len(results) - len(results_to_show)
 
-                for result in results_to_show:
-                    job_id = result.get("job_id", "N/A")
-                    bundle_name = Path(result.get("bundle_file", "unknown")).name
-                    total = result.get("total_objects", 0)
-                    submitted = result.get("submitted_objects", 0)
-                    failed = len(result.get("failed_objects", []))
-                    state = result.get("job_state", "unknown")
-                    state_emoji = (
-                        "✅"
-                        if state == "completed"
-                        else ("⏳" if state in ["pending", "processing"] else "❌")
-                    )
+            for result in results_to_show:
+                job_id = result.get("job_id", "N/A")
+                bundle_name = Path(result.get("bundle_file", "unknown")).name
+                total = result.get("total_objects", 0)
+                submitted = result.get("submitted_objects", 0)
+                failed = len(result.get("failed_objects", []))
+                state = result.get("job_state", "unknown")
+                state_emoji = (
+                    "✅"
+                    if state == "completed"
+                    else ("⏳" if state in ["pending", "processing"] else "❌")
+                )
 
-                    f.write(
-                        f"| `{job_id}` | `{bundle_name}` | {total} | {submitted} | {failed} | {state_emoji} {state} |\n"
-                    )
+                f.write(
+                    f"| `{job_id}` | `{bundle_name}` | {total} | {submitted} | {failed} | {state_emoji} {state} |\n"
+                )
 
-                if remaining_count > 0:
-                    f.write(f"\n\n*...and {remaining_count} more bundles*\n\n")
+            if remaining_count > 0:
+                f.write(f"\n\n*...and {remaining_count} more bundles*\n\n")
 
-                f.write("\n### Overall Summary\n\n")
-                total_bundles = len(results)
-                successful = sum(1 for r in results if r.get("success"))
-                total_objects = sum(r.get("total_objects", 0) for r in results)
-                submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
-                failed_objects = sum(len(r.get("failed_objects", [])) for r in results)
+            f.write("\n### Overall Summary\n\n")
+            total_bundles = len(results)
+            successful = sum(1 for r in results if r.get("success"))
+            total_objects = sum(r.get("total_objects", 0) for r in results)
+            submitted_objects = sum(r.get("submitted_objects", 0) for r in results)
+            failed_objects = sum(len(r.get("failed_objects", [])) for r in results)
 
-                f.write(f"- **Bundles Processed:** {successful}/{total_bundles}\n")
-                f.write(f"- **Total Objects:** {total_objects}\n")
-                f.write(f"- **Submitted Objects:** {submitted_objects}\n")
-                f.write(f"- **Failed Objects:** {failed_objects}\n")
-
-            else:
-                result = results[0] if results else {}
-
-                if result.get("success"):
-                    f.write("✅ **Status:** Upload successful\n\n")
-                    if result.get("job_id"):
-                        f.write(f"- **Job ID:** `{result['job_id']}`\n")
-                        if result.get("job_state"):
-                            f.write(f"- **Job State:** {result['job_state']}\n")
-                    f.write(f"- **Total Objects:** {result.get('total_objects', 0)}\n")
-                    f.write(
-                        f"- **Submitted Objects:** {result.get('submitted_objects', 0)}\n"
-                    )
-                    f.write(
-                        f"- **Failed Objects:** {len(result.get('failed_objects', []))}\n"
-                    )
-                else:
-                    f.write("❌ **Status:** Upload failed\n\n")
-                    f.write(f"- **Error:** {result.get('error', 'Unknown error')}\n")
-                    f.write(f"- **Total Objects:** {result.get('total_objects', 0)}\n")
-                    f.write(
-                        f"- **Failed Objects:** {len(result.get('failed_objects', []))}\n"
-                    )
-
-                if result.get("bundle_file"):
-                    f.write(f"- **Bundle:** `{result['bundle_file']}`\n")
+            f.write(f"- **Bundles Processed:** {successful}/{total_bundles}\n")
+            f.write(f"- **Total Objects:** {total_objects}\n")
+            f.write(f"- **Submitted Objects:** {submitted_objects}\n")
+            f.write(f"- **Failed Objects:** {failed_objects}\n")
 
             f.write("\n")
         logger.info("GitHub Actions summary written")
