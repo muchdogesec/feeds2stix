@@ -199,7 +199,7 @@ def test_write_github_summary_multi(monkeypatch, tmp_path):
         is_multi_bundle=True,
     )
     text = summary.read_text()
-    assert "Individual Bundle Results" in text
+    assert "Job Results" in text
     assert "Overall Summary" in text
 
 
