@@ -18,6 +18,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  actions: write
+
 jobs:
   cancel-workflows:
     runs-on: ubuntu-latest
