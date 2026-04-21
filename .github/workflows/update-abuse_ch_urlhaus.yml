@@ -102,6 +102,7 @@ jobs:
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           URLHAUS_FEED_ID: ${{ vars.URLHAUS_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
           
