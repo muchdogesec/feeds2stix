@@ -1,4 +1,4 @@
-name: Abuse.ch SSL Blacklist Feed to STIX Processor
+name: "[Update CTX] Abuse.ch SSL Blacklist"
 
 on:
   schedule:

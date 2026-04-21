@@ -1,4 +1,4 @@
-name: blocklist.de Feed to STIX Processor
+name: "[Update CTX] blocklist.de"
 
 on:
   schedule:

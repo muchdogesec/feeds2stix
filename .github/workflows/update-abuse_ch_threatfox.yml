@@ -1,4 +1,4 @@
-name: Abuse.ch ThreatFox Feed to STIX Processor
+name: "[Update CTX] Abuse.ch ThreatFox"
 
 on:
   schedule:
