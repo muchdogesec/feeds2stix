@@ -195,8 +195,7 @@ def test_write_github_summary_multi(monkeypatch, tmp_path):
                 "submitted_objects": 1,
                 "failed_objects": [{"id": "x"}],
             },
-        ],
-        is_multi_bundle=True,
+        ]
     )
     text = summary.read_text()
     assert "Job Results" in text
@@ -205,7 +204,7 @@ def test_write_github_summary_multi(monkeypatch, tmp_path):
 
 def test_write_github_summary_no_env(monkeypatch):
     monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
-    upload.write_github_summary([{"success": True}], is_multi_bundle=False)
+    upload.write_github_summary([{"success": True}])
 
 
 def test_write_github_summary_multi_truncates_after_50(monkeypatch, tmp_path):
@@ -224,7 +223,7 @@ def test_write_github_summary_multi_truncates_after_50(monkeypatch, tmp_path):
                 "failed_objects": [],
             }
         )
-    upload.write_github_summary(results, is_multi_bundle=True)
+    upload.write_github_summary(results)
     text = summary.read_text()
     assert "and 5 more bundles" in text
 
@@ -305,7 +304,9 @@ def test_main_success_path(monkeypatch, tmp_path):
 
 def test_main_success_writes_github_output(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
-    bundle_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]}))
+    bundle_file.write_text(
+        json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]})
+    )
     gh = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(gh))
     monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
@@ -329,10 +330,16 @@ def test_main_success_writes_github_output(monkeypatch, tmp_path):
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
     # Mock hashmanager
     monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
-    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None
+    )
     monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
-    monkeypatch.setattr(upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0))
-    monkeypatch.setattr(upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
     monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
 
     with pytest.raises(SystemExit) as exc:
@@ -382,14 +389,22 @@ def test_main_directory_and_split_flow(monkeypatch, tmp_path):
 
 def test_main_catches_bundleuploadfailed(monkeypatch, tmp_path):
     bundle_file = tmp_path / "one.json"
-    bundle_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]}))
+    bundle_file.write_text(
+        json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]})
+    )
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
     # Mock hashmanager
     monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
-    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None
+    )
     monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
-    monkeypatch.setattr(upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0))
-    monkeypatch.setattr(upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
     monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
     monkeypatch.setattr(
         upload,
