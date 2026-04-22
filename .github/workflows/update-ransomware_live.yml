@@ -123,6 +123,7 @@ jobs:
       - name: Upload bundles to CTX
         id: upload
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
           RANSOMWARE_LIVE_FEED_ID: ${{ vars.RANSOMWARE_LIVE_FEED_ID }}
