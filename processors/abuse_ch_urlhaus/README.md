@@ -1,7 +1,21 @@
-## abuse.ch URL Haus
+# abuse.ch URLhaus
 
-Dynamic feed of bad URLs 
-https://urlhaus.abuse.ch/downloads/csv_recent/
+## Overview
+
+URLhaus is a project from abuse.ch with the goal of sharing malicious URLs that are being used for malware distribution. The feed provides recent URLs distributing malware, along with metadata about their status and associated tags.
+
+**Feed URL:** https://urlhaus.abuse.ch/downloads/csv_recent/  
+**Update Schedule:** Continuous updates  
+**Format:** CSV with URL details and metadata
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `url`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `url` (indicates)
 
 ## Data schema
 
@@ -191,7 +205,7 @@ Each bundle contains:
 * Relationships linking Indicators to URLs
 * Identity and Marking Definition objects
 
-## Github Action
+## GitHub Action
 
 A GitHub Actions workflow runs every 15 minutes to:
 1. Download the latest URLhaus CSV feed

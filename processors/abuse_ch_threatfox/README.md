@@ -2,7 +2,33 @@
 
 ## Overview
 
-> ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware with the infosec community, AV vendors and threat intelligence providers.
+ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware with the infosec community, AV vendors and threat intelligence providers.
+
+https://threatfox.abuse.ch/
+
+**Feed URL:** https://threatfox.abuse.ch/export/csv/full/  
+**Update Schedule:** Continuous updates  
+**Format:** CSV with IOC details and metadata
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `network-traffic`
+- `url`
+- `domain-name`
+- `file`
+- `autonomous-system`
+- `indicator`
+- `malware`
+- `infrastructure`
+
+**Relationships:**
+- `indicator` → `malware` (indicates)
+- `indicator` → `infrastructure` (indicates)
+- `observable` → `malware` (related-to)
+- `observable` → `infrastructure` (related-to)
+- `ipv4-addr` → `autonomous-system` (related-to)
 
 https://threatfox.abuse.ch/
 
@@ -390,7 +416,7 @@ Non-ASN observables (URL, domain, file, ipv4-addr, network-traffic) are also lin
 
 `autonomous-system` observables also receive a `related-to` relationship to the malware (not `indicates`).
 
-## Run the script
+## Usage
 
 ```shell
 python processors/abuse_ch_threatfox/threatfox.py \

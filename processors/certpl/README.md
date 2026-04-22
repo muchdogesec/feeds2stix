@@ -1,6 +1,21 @@
-## CERT.PL Domains
+# CERT.PL Domains
 
-Dynamic feed of bad URLs https://hole.cert.pl/domains/domains.txt
+## Overview
+
+CERT.PL provides a dynamic feed of malicious domain names identified by Poland's national computer security incident response team.
+
+**Feed URL:** https://hole.cert.pl/domains/v2/domains.txt  
+**Update Schedule:** Daily  
+**Format:** One domain per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `domain-name`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `domain-name` (indicates)
 
 ## Data generation
 
@@ -112,7 +127,7 @@ With relationship to Indicator:
 	"created": "<SCRIPT RUN TIME>",
 	"modified": "<SCRIPT RUN TIME>",
 	"relationship_type": "indicates",
-	"source_ref": "domain-name--<UUID>",
+	"source_ref": "indicator--<UUID>",
 	"target_ref": "domain-name--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -144,20 +159,11 @@ Each bundle contains:
 * Relationships linking Indicators to domain-name objects
 * Identity and Marking Definition objects
 
-## Github action
+## GitHub Action
 
-The processor is linked to a Github action that downloads data from the feed every 24 hours at 05:00 UTC.
+The processor is linked to a GitHub action that downloads data from the feed every 24 hours at 05:00 UTC.
 
 The workflow:
 1. Fetches domains from https://hole.cert.pl/domains/v2/domains.txt
 2. Converts domains to STIX 2.1 bundle
 3. Uploads bundle to CTX via `helpers/upload.py`
-
-You need to set the following secrets and variables:
-
-**Secrets:**
-* `CTX_BASE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
-* `CTX_API_KEY`: for team that owns the feed ID selected
-
-**Variables:**
-* `CERTPL_FEED_ID`: the CTX feed ID for CERT.PL

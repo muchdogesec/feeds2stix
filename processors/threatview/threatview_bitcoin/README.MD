@@ -1,10 +1,21 @@
 # ThreatView Bitcoin
 
-https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt
+## Overview
 
-Not sure of update schedule.
+ThreatView's Bitcoin feed contains cryptocurrency wallet addresses associated with malicious activity and cybercrime.
 
-Contains a list of Bitcoin wallets known to be related to criminal activity.
+**Feed URL:** https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt  
+**Update Schedule:** Unknown  
+**Format:** One Bitcoin address per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `cryptocurrency-wallet`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `cryptocurrency-wallet` (indicates)
 
 ## Mapping
 
@@ -127,30 +138,6 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 ```
 
 Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
-
-## Usage
-
-```bash
-python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
-```
-
-### Examples
-
-Process the ThreatView Bitcoin feed:
-```bash
-python processors/threatview/threatview_bitcoin/threatview_bitcoin.py
-```
-
-### Output
-
-The script creates a single STIX bundle file:
-* `bundles/threatview_bitcoin/bundles/threatview_bitcoin_<date>.json`
-
-Each bundle contains:
-* Cryptocurrency wallet objects for each Bitcoin address in the feed
-* Indicator objects with patterns matching the Bitcoin addresses
-* Relationships linking Indicators to cryptocurrency wallet objects
-* Identity and Marking Definition objects
 
 ## Usage
 

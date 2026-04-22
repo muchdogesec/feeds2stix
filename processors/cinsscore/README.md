@@ -1,6 +1,21 @@
-## CINS Score
+# CINS Score
 
-Dynamic feed of bad URLs https://cinsscore.com/list/ci-badguys.txt
+## Overview
+
+The Collective Intelligence Network Security (CINS) Army provides threat intelligence to improve network security. The CINS Score feed contains IP addresses identified as malicious through community intelligence.
+
+**Feed URL:** https://cinsscore.com/list/ci-badguys.txt  
+**Update Schedule:** Continuous updates  
+**Format:** One IPv4 address per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `ipv4-addr` (indicates)
 
 ## Data generation
 
@@ -143,7 +158,7 @@ Each bundle contains:
 * Relationships linking Indicators to IPv4 addresses
 * Identity and Marking Definition objects
 
-## Github action
+## GitHub Action
 
 The processor is linked to a GitHub action that downloads data from the feed daily at 04:00 UTC.
 
