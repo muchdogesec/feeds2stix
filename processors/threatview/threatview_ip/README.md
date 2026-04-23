@@ -1,10 +1,21 @@
 # ThreatView IP
 
-https://threatview.io/Downloads/IP-High-Confidence-Feed.txt
+## Overview
 
-Not sure of update schedule.
+ThreatView's high-confidence IP feed contains IPv4 addresses identified as malicious through verified threat intelligence.
 
-Contains a list of ipv4-addr
+**Feed URL:** https://threatview.io/Downloads/IP-High-Confidence-Feed.txt  
+**Update Schedule:** Unknown  
+**Format:** One IPv4 address per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `ipv4-addr` (indicates)
 
 ## Mapping
 
@@ -57,15 +68,15 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
 #### ipv4-addr
 ```json
 {
 	"type": "ipv4-addr",
 	"spec_version": "2.1",
-	"id": "ipv4-addr-<UUID>",
-	"hashes": "<VALUE>"
+	"id": "ipv4-addr--<UUID>",
+	"value": "<VALUE>"
 }
 ```
 
@@ -83,7 +94,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN FIRST SEEN DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "ipv4-addr-<UUID>",
+	"target_ref": "ipv4-addr--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -109,7 +120,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 		"malicious-activity"
 	],
 	"name": "IPv4: <VALUE>",
-	"pattern": "[ipv4-addrvalue='<VALUE>']",
+	"pattern": "[ipv4-addr:value='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

@@ -1,10 +1,21 @@
 # ThreatView SHA1
 
-https://threatview.io/Downloads/SHA-HASH-FEED.txt
+## Overview
 
-Not sure of update schedule.
+ThreatView's SHA1 feed contains SHA-1 file hashes of known malicious files.
 
-Contains a list of SHA1 Hashes
+**Feed URL:** https://threatview.io/Downloads/SHA-HASH-FEED.txt  
+**Update Schedule:** Unknown  
+**Format:** One SHA-1 hash per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `file`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `file` (indicates)
 
 ## Mapping
 
@@ -67,7 +78,7 @@ Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22
 	"spec_version": "2.1",
 	"id": "file--<UUID>",
 	"hashes": {
-		"SHA-256": "<SHA-256>"
+		"SHA-1": "<SHA-1>"
 	}
 }
 ```
@@ -112,7 +123,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 		"malicious-activity"
 	],
 	"name": "File: <VALUE>",
-	"pattern": "[file:hashes.SHA-256='<VALUE>']",
+	"pattern": "[file:hashes.'SHA-1'='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

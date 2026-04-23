@@ -1,14 +1,23 @@
-## OpenPhish
+# OpenPhish
 
-Dynamic feed of phishing URLs
+## Overview
 
-https://github.com/openphish/public_feed?tab=readme-ov-file
+OpenPhish provides timely, accurate, and relevant phishing intelligence. The feed is maintained in a public GitHub repository and updated every 12 hours.
 
-Feed: https://github.com/openphish/public_feed/blob/main/feed.txt
+**Feed URL:** https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt  
+**Update Schedule:** Every 12 hours  
+**Format:** One URL per line (plain text)
 
-Updated every 12 hours.
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `url`
+- `indicator`
 
-### Mapping
+**Relationships:**
+- `indicator` → `url` (indicates)
+
+## Mapping
 
 #### Imported objects
 
@@ -183,3 +192,24 @@ The script performs the following steps:
 4. Groups URLs by their first-seen date and hour
 5. Creates STIX objects with accurate timestamps based on Git commit dates
 6. Generates separate bundles for each date+hour group
+
+## GitHub Action
+
+The processor is linked to a GitHub action that downloads data from the feed every 12 hours.
+
+The workflow:
+1. Clones the OpenPhish GitHub repository
+2. Analyzes Git history to determine when URLs were first added
+3. Converts URLs to STIX 2.1 bundles grouped by date and hour
+4. Uploads bundles to CTX via `helpers/upload.py`
+
+### Required Configuration
+
+You need to set the following secrets and variables:
+
+**Secrets:**
+* `CTX_BASE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
+* `CTX_API_KEY`: for team that owns the feed ID selected
+
+**Variables:**
+* `OPENPHISH_FEED_ID`: the CTX feed ID for OpenPhish
