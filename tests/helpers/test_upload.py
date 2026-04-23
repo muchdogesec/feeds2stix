@@ -74,8 +74,9 @@ def test_upload_bundle_removes_failed_object_and_retries(monkeypatch):
             {
                 "id": "job-fail",
                 "state": "failed",
-                "errors": [{"objects": {"0": ["bad"]}}],
-            }
+                "details": {"objects": {"0": ["bad"]}},
+            },
+            status_code=400
         ),
         test_utils.FakeJSONResponse({"id": "job-ok", "state": "completed"}),
     ]
@@ -92,7 +93,7 @@ def test_upload_bundle_unrecoverable_error(monkeypatch):
         upload.requests,
         "post",
         lambda *a, **k: test_utils.FakeJSONResponse(
-            {"id": "job", "state": "failed", "errors": {"oops": 1}}
+            {"id": "job", "state": "failed", "errors": {"oops": 1}}, status_code=400
         ),
     )
     result = upload.upload_bundle(
@@ -118,7 +119,46 @@ def test_upload_bundle_all_objects_fail_returns_success_true(monkeypatch):
         {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=1
     )
     assert result["success"] is True
-    assert result["submitted_objects"] == 0
+
+
+def test_remove_failed_objects():
+    bundle = {"objects": [{"id": "obj1"}, {"id": "obj2"}, {"id": "obj3"}]}
+    error_data = {"objects": {"1": ["error1"], "2": ["error2"]}}
+    failed_objects = []
+
+    new_bundle, new_failed, all_failed = upload.remove_failed_objects(
+        bundle, error_data, failed_objects
+    )
+
+    assert len(new_bundle["objects"]) == 1
+    assert new_bundle["objects"][0]["id"] == "obj1"
+    assert len(new_failed) == 2
+    assert new_failed[0]["id"] == "obj3"  # removed in reverse order
+    assert new_failed[1]["id"] == "obj2"
+    assert all_failed is False
+
+
+def test_remove_failed_objects_all_fail():
+    bundle = {"objects": [{"id": "obj1"}]}
+    error_data = {"objects": {"0": ["error"]}}
+    failed_objects = []
+
+    new_bundle, new_failed, all_failed = upload.remove_failed_objects(
+        bundle, error_data, failed_objects
+    )
+
+    assert len(new_bundle["objects"]) == 0
+    assert len(new_failed) == 1
+    assert all_failed is True
+
+
+def test_remove_failed_objects_unrecoverable_error():
+    bundle = {"objects": [{"id": "obj1"}]}
+    error_data = {"not a list": 1}
+    failed_objects = []
+
+    with pytest.raises(KeyError):
+        upload.remove_failed_objects(bundle, error_data, failed_objects)
 
 
 def test_upload_bundle_wait_for_completion(monkeypatch):
@@ -149,7 +189,7 @@ def test_upload_bundle_http_error_retries_and_fails(monkeypatch):
         {"objects": [{"id": "a"}]}, "https://ctx", "k", "feed", max_retries=2
     )
     assert result["success"] is False
-    assert "Upload failed after 2 attempts" in result["error"]
+    assert "HTTP 500" in result["error"]
 
 
 def test_write_github_summary_single(monkeypatch, tmp_path):

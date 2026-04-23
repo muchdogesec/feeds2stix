@@ -13,7 +13,7 @@ import hashmanager
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", stream=sys.stdout
 )
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,43 @@ class BundleUploadFailed(Exception):
     """Exception raised when bundle upload fails with unrecoverable errors."""
 
     pass
+
+
+def remove_failed_objects(current_bundle, error_data, failed_objects):
+    """
+    Remove failed objects from the bundle based on error data.
+
+    Args:
+        current_bundle: The current bundle dictionary
+        error_data: Error data from the API response
+        failed_objects: List to append failed objects to
+
+    Returns:
+        tuple: (modified_bundle, updated_failed_objects, all_failed_flag)
+    """
+
+    objects_removed = 0
+    for index, error in reversed(error_data["objects"].items()):
+        index = int(index)
+        obj = current_bundle["objects"][index]
+        failed_objects.append(
+            {
+                "id": obj.get("id"),
+                "errors": error,
+            }
+        )
+        current_bundle["objects"].pop(index)
+        logger.debug(f"Object {index} ({obj.get('type')}) failed: {error}")
+        objects_removed += 1
+    logger.info(
+        f"Removed {objects_removed} problematic objects, retrying..."
+    )
+
+    all_failed = not current_bundle.get("objects")
+    if all_failed:
+        logger.warning("All objects failed validation")
+
+    return current_bundle, failed_objects, all_failed
 
 
 def poll_job_status(job_id, api_base_url, api_key, poll_interval=5, max_wait=300):
@@ -117,58 +154,9 @@ def upload_bundle(
             job_result = response.json()
             req_responses[-1]["response_json"] = job_result
             del req_responses[-1]["response_text"]  # Remove text to save space
-            if not response.ok:
-                logger.warning(
-                    f"Upload attempt failed with status {response.status_code}: {response.text}"
-                )
-                raise Exception(f"HTTP {response.status_code}: {response.text}")
 
             job_id = job_result.get("id")
-            if job_result["state"] == "failed":
-                logger.warning(f"Some objects failed validation")
-                error_data = job_result.get("errors", {})
-                if (
-                    not isinstance(error_data, list)
-                    or not error_data
-                    or "objects" not in error_data[0]
-                ):
-                    raise BundleUploadFailed(error_data)
-
-                error_data = error_data[0]
-
-                objects_removed = 0
-                for index, error in reversed(error_data["objects"].items()):
-                    index = int(index)
-                    obj = current_bundle["objects"][index]
-                    failed_objects.append(
-                        {
-                            "id": obj.get("id"),
-                            "errors": error,
-                        }
-                    )
-                    current_bundle["objects"].pop(index)
-                    logger.debug(f"Object {index} ({obj.get('type')}) failed: {error}")
-                    objects_removed += 1
-                logger.info(
-                    f"Removed {objects_removed} problematic objects, retrying..."
-                )
-
-                if not current_bundle.get("objects"):
-                    logger.warning("All objects failed validation")
-                    return {
-                        "success": True,
-                        "job_id": job_id,
-                        "total_objects": total_objects,
-                        "submitted_objects": 0,
-                        "failed_objects": failed_objects,
-                        "error": "All objects failed validation",
-                        "req_responses": req_responses,
-                        "job_state": "failed",
-                    }
-
-                continue
-
-            else:
+            if response.ok:
                 logger.info(f"Successfully uploaded bundle, job_id: {job_id}")
                 logger.info(f"State: {job_result.get('state')}")
 
@@ -184,12 +172,41 @@ def upload_bundle(
                 if wait_for_completion and job_id:
                     logger.info(f"Waiting for job {job_id} to complete...")
                     final_job_data = poll_job_status(job_id, api_base_url, api_key)
-                    result['success'] = final_job_data.get("state") == "completed"
+                    result["success"] = final_job_data.get("state") == "completed"
                     result["job_state"] = final_job_data.get("state")
                     result["final_job_data"] = final_job_data
                     logger.info(f"Job {job_id} final state: {result['job_state']}")
 
                 return result
+            elif response.status_code == 400:
+                logger.warning(f"Some objects failed validation")
+                if (
+                    'details' not in job_result
+                    or 'objects' not in job_result['details']
+                ):
+                    raise BundleUploadFailed(job_result)
+                error_data = job_result['details']
+                current_bundle, failed_objects, all_failed = remove_failed_objects(
+                    current_bundle, error_data, failed_objects
+                )
+
+                if all_failed:
+                    logger.warning("All objects failed validation")
+                    return {
+                        "success": True,
+                        "job_id": job_id,
+                        "total_objects": total_objects,
+                        "submitted_objects": 0,
+                        "failed_objects": failed_objects,
+                        "error": "All objects failed validation",
+                        "req_responses": req_responses,
+                        "job_state": "failed",
+                    }
+
+                continue
+            else:
+                logger.error(f"Unexpected status code: {response.status_code}")
+                raise BundleUploadFailed(f"HTTP {response.status_code}: {response.text}")
 
         except BundleUploadFailed as e:
             logger.error("Unrecoverable error during upload")
@@ -368,7 +385,9 @@ def main(
         processed_files = []
         print(f"::group::Splitting bundles larger than {max_size_kb} KB")
         for i, bundle_file in enumerate(all_bundle_files):
-            logger.info(f"Checking bundle {i+1} of {len(all_bundle_files)}: {bundle_file}")
+            logger.info(
+                f"Checking bundle {i+1} of {len(all_bundle_files)}: {bundle_file}"
+            )
             bundle_size = os.path.getsize(bundle_file) / 1024
             if bundle_size > max_size_kb:
                 logger.info(
@@ -412,9 +431,13 @@ def main(
         logger.info("=" * 120)
         logger.info("=" * 120)
 
-        print(f"::group::CTX Bundle Upload - Processing {len(processed_files)} bundle(s)")
+        print(
+            f"::group::CTX Bundle Upload - Processing {len(processed_files)} bundle(s)"
+        )
         for i, bundle_file in enumerate(processed_files, 1):
-            logger.info(f"Processing bundle {i} of {len(processed_files)}: {bundle_file}")
+            logger.info(
+                f"Processing bundle {i} of {len(processed_files)}: {bundle_file}"
+            )
             try:
                 with open(bundle_file, "r") as f:
                     bundle = json.load(f)
