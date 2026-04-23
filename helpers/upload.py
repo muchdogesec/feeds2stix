@@ -49,7 +49,7 @@ def poll_job_status(job_id, api_base_url, api_key, poll_interval=5, max_wait=300
             return {"state": "timeout", "id": job_id}
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=15)
             if not response.ok:
                 logger.warning(f"Failed to poll job {job_id}: {response.status_code}")
                 time.sleep(poll_interval)
