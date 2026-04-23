@@ -30,8 +30,6 @@ https://threatfox.abuse.ch/
 - `observable` → `infrastructure` (related-to)
 - `ipv4-addr` → `autonomous-system` (related-to)
 
-https://threatfox.abuse.ch/
-
 ## Data source
 
 Full dump: https://threatfox.abuse.ch/export/csv/full/
