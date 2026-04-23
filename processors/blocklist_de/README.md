@@ -1,6 +1,21 @@
-## blocklist.de
+# blocklist.de
 
-Dynamic feed of bad URLs https://lists.blocklist.de/lists/all.txt
+## Overview
+
+blocklist.de is a free and voluntary service that tracks IP addresses involved in attacks via SSH, Mail-Login, FTP, Webserver and other services.
+
+**Feed URL:** https://lists.blocklist.de/lists/all.txt  
+**Update Schedule:** Continuous updates  
+**Format:** One IPv4 address per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `ipv4-addr` (indicates)
 
 ## Data generation
 
@@ -144,7 +159,7 @@ Each bundle contains:
 * Relationships linking Indicators to IPv4 addresses
 * Identity and Marking Definition objects
 
-## Github action
+## GitHub Action
 
 The processor is linked to a Github action that downloads data from the feed every 24 hours at 06:00 UTC.
 

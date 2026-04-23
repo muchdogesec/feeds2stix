@@ -1,24 +1,34 @@
 # abuse.ch SSLBL SSL Certificate Blacklist (SHA1 Fingerprints)
 
-![](processors/abuse_ch/sslblacklist/sslblacklist.png)
-
-## tl;dr logic of the script
-
-The script works like so
-
-1. downloads csv from `https://sslbl.abuse.ch/blacklist/sslblacklist.csv`
-2. turns the entries found in the csv doc into STIX objects (as described in this doc). STIX objects are stored to the filesystemstore in `bundles/abuse_ch/sslblacklist/stix2_objects`.
-3. the stix objects are stored in STIX bundles by the malware they are linked to in the data (`Listingreason` column of input csv)
+![](sslblacklist.png)
 
 ## Overview
 
-> The SSL Certificate Blacklist (CSV) is a CSV that contains SHA1 Fingerprint of all SSL certificates blacklisted on SSLBL. This format is useful if you want to process the blacklisted SSL certificate further, e.g. loading them into your SIEM. The CSV contains the following values:
-> * Listing date (UTC)
-> * SHA1 Fingerprint of the blacklisted SSL certificate
-> * Listing reason
-> The SSL Certificate Blacklist (CSV) gets generated every 5 minutes. Please do not fetch it more often than every 5 minutes.
+The SSL Certificate Blacklist (CSV) is a CSV that contains SHA1 Fingerprint of all SSL certificates blacklisted on SSLBL. This format is useful if you want to process the blacklisted SSL certificate further, e.g. loading them into your SIEM. The CSV contains the following values:
+* Listing date (UTC)
+* SHA1 Fingerprint of the blacklisted SSL certificate
+* Listing reason
+
+The SSL Certificate Blacklist (CSV) gets generated every 5 minutes. Please do not fetch it more often than every 5 minutes.
 
 https://sslbl.abuse.ch/blacklist/#ssl-certificates-csv
+
+**Feed URL:** https://sslbl.abuse.ch/blacklist/sslblacklist.csv  
+**Update Schedule:** Every 5 minutes  
+**Format:** CSV with certificate fingerprints and listing reasons
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `x509-certificate`
+- `indicator`
+- `malware`
+- `infrastructure`
+
+**Relationships:**
+- `indicator` → `x509-certificate` (indicates)
+- `infrastructure` → `x509-certificate` (related-to)
+- `malware` → `x509-certificate` (related-to)
 
 ## Data source
 
@@ -367,7 +377,7 @@ Each bundle contains:
 * Malware objects for each identified family
 * Relationships linking Indicators to Files and Malware
 
-## Github Action
+## GitHub Action
 
 A GitHub Actions workflow runs every 2 hours to:
 1. Download the latest SSLBL CSV feed

@@ -1,14 +1,26 @@
-## Phishtank
+# PhishTank
 
-Dynamic feed of phishing URLs
+## Overview
 
-https://www.phishtank.com/developer_info.php
+PhishTank is a collaborative clearing house for data and information about phishing on the Internet. It provides an open API for developers and researchers to integrate anti-phishing data into their applications at no charge.
 
-Feed: http://data.phishtank.com/data/online-valid.json
+**Feed URL:** http://data.phishtank.com/data/online-valid.json  
+**Update Schedule:** Hourly (on the hour)  
+**Format:** JSON with phishing URL details
 
-Files are still only updated every hour on the hour, so there's no need to check every minute.
+**Note:** Users can pass `--latest_submission` time to filter results after a specified date. This is used mainly for data update logic.
 
-User should be able to pass `--latest_submission` time to filter results after the specified date. This is used mainly for data update logic.
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `url`
+- `indicator`
+- `ipv4-addr`
+- `autonomous-system`
+
+**Relationships:**
+- `indicator` → `url` (indicates)
+- `ipv4-addr` → `autonomous-system` (related-to)
 
 ## Data generation
 
@@ -90,7 +102,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
 
 #### URL
 
@@ -272,7 +284,7 @@ With relationship to Indicator:
 }
 ```
 
-## Github action
+## GitHub Action
 
 The processor should also be linked to a Github action that downloads data from the feed every 24 hours (after feed update schedule)
 

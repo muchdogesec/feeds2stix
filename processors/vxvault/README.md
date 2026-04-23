@@ -1,6 +1,21 @@
-## VX Vault
+# VX Vault
 
-Dynamic feed of bad URLs http://vxvault.net/URL_List.php
+## Overview
+
+VX Vault provides a feed of URLs distributing malware samples. The feed contains recently identified malware distribution URLs.
+
+**Feed URL:** http://vxvault.net/URL_List.php  
+**Update Schedule:** Continuous updates  
+**Format:** One URL per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `url`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `url` (indicates)
 
 ## Data generation
 
@@ -143,7 +158,7 @@ Each bundle contains:
 * Relationships linking Indicators to URL objects
 * Identity and Marking Definition objects
 
-## Github action
+## GitHub Action
 
 The processor is linked to a GitHub action that downloads data from the feed daily at 03:00 UTC.
 

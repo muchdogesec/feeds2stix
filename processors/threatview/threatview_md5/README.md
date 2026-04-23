@@ -1,10 +1,21 @@
 # ThreatView MD5
 
-https://threatview.io/Downloads/MD5-HASH-ALL.txt
+## Overview
 
-Not sure of update schedule.
+ThreatView's MD5 feed contains MD5 file hashes of known malicious files.
 
-Contains a list of MD5
+**Feed URL:** https://threatview.io/Downloads/MD5-HASH-ALL.txt  
+**Update Schedule:** Unknown  
+**Format:** One MD5 hash per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `file`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `file` (indicates)
 
 ## Mapping
 

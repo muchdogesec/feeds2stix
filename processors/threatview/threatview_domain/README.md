@@ -1,10 +1,21 @@
 # ThreatView Domain
 
-https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt
+## Overview
 
-Not sure of update schedule.
+ThreatView's high-confidence domain feed contains domain names identified as malicious through verified threat intelligence.
 
-Contains a list of domains
+**Feed URL:** https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt  
+**Update Schedule:** Unknown  
+**Format:** One domain per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `domain-name`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `domain-name` (indicates)
 
 ## Mapping
 
@@ -63,10 +74,10 @@ Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22
 
 ```json
 {
-	"type": "domain",
+	"type": "domain-name",
 	"spec_version": "2.1",
-	"id": "domain--<UUID>",
-	"hashes": "<VALUE>"
+	"id": "domain-name--<UUID>",
+	"value": "<VALUE>"
 }
 ```
 
@@ -84,7 +95,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN FIRST SEEN DATE>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "domain--<UUID>",
+	"target_ref": "domain-name--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -110,7 +121,7 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 		"malicious-activity"
 	],
 	"name": "Domain: <VALUE>",
-	"pattern": "[domain:value='<VALUE>']",
+	"pattern": "[domain-name:value='<VALUE>']",
 	"pattern_type": "stix",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -127,31 +138,6 @@ Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value 
 ```bash
 python processors/threatview/threatview_domain/threatview_domain.py
 ```
-
-### Examples
-
-Process the ThreatView Domain feed:
-```bash
-python processors/threatview/threatview_domain/threatview_domain.py
-```
-
-### Output
-
-The script creates a single STIX bundle file:
-* `bundles/threatview_domain/bundles/threatview_domain_<date>.json`
-
-Each bundle contains:
-* Domain name objects for each domain in the feed
-* Indicator objects with patterns matching the domains
-* Relationships linking Indicators to domain name objects
-* Identity and Marking Definition objects
-
-## Usage
-
-```bash
-python processors/threatview/threatview_domain/threatview_domain.py
-```
-
 
 ### Output
 

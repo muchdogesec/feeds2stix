@@ -1,6 +1,21 @@
-## IPSum
+# IPSum
 
-Daily feed of bad IPs (categorised by scores) https://github.com/stamparm/ipsum
+## Overview
+
+IPsum is a threat intelligence feed based on 30+ different publicly available lists of suspicious and/or malicious IP addresses. The feed provides 8 confidence levels, from level 1 (lots of false positives) to level 8 (no false positives).
+
+**Feed URL:** https://raw.githubusercontent.com/stamparm/ipsum/master/levels/[1-8].txt  
+**Update Schedule:** Daily around 01:00 UTC  
+**Format:** One IPv4 address per line (plain text)
+
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `indicator`
+
+**Relationships:**
+- `indicator` → `ipv4-addr` (indicates)
 
 ## Data generation
 
@@ -146,7 +161,7 @@ With relationship to Indicator:
 	"modified": "<SCRIPT RUN TIME>",
 	"relationship_type": "indicates",
 	"source_ref": "indicator--<UUID>",
-	"target_ref": "ipv4--<UUID>",
+	"target_ref": "ipv4-addr--<UUID>",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -202,7 +217,7 @@ Each bundle contains:
 * Relationships linking Indicators to IPv4 addresses
 * Identity and Marking Definition objects
 
-## Github action
+## GitHub Action
 
 The processor is linked to a Github action that downloads data from the feed every 24 hours at 02:00 UTC.
 
