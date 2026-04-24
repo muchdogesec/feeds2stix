@@ -21,3 +21,4 @@ upload_artifacts/
 .env
 .pytest_cache/
 .vscode/
+*.env

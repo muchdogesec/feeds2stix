@@ -1,0 +1,158 @@
+name: "[Update CTX] Ransomware Live"
+
+on:
+  schedule:
+    # Run every 12 hours at 00:00 and 12:00 UTC
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+      since_date:
+        description: 'Only process victims discovered on or after this date (YYYY-MM-DD). Use "auto" to use last successful run time, or leave empty to process all.'
+        required: true
+        type: string
+        default: 'auto'
+      until_date:
+        description: 'Only process victims discovered on or before this date (YYYY-MM-DD). Leave empty for no upper bound.'
+        required: false
+        type: string
+      groups:
+        description: 'Space-separated list of ransomware group names to process (e.g. "akira clop lockbit"). Leave empty for all groups.'
+        required: false
+        type: string
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson(github.event_name == 'schedule' && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+    env:
+      PYTHONPATH: .
+      CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+      CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
+      VULMATCH_BASE_URL: ${{ secrets.VULMATCH_BASE_URL }}
+      VULMATCH_API_KEY: ${{ secrets.VULMATCH_API_KEY }}
+      RANSOMWARE_LIVE_API_KEY: ${{ secrets.RANSOMWARE_LIVE_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get last successful workflow run time
+        id: last_run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflow_id = 'update-ransomware_live.yml';
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflow_id,
+              status: 'success',
+              per_page: 1
+            });
+
+            if (runs.data.workflow_runs.length > 0) {
+              const lastRun = runs.data.workflow_runs[0];
+              const lastRunTime = lastRun.updated_at;
+              console.log(`Last successful run: ${lastRunTime}`);
+              // run at lastRunTime - 1 hour to ensure we don't miss any records due to timing issues
+              const adjustedTime = new Date(new Date(lastRunTime).getTime() - 60 * 60 * 1000).toISOString();
+              console.log(`Using adjusted last run time for processing: ${adjustedTime}`);
+              return adjustedTime;
+            } else {
+              console.log('No previous successful runs found');
+              return '';
+            }
+
+      - name: Process Ransomware Live data and create STIX bundles
+        id: process
+        run: |
+          set -e
+
+          last_run_date=${{ steps.last_run.outputs.result }}
+          since_date="${{ inputs.since_date }}"
+
+          CMD="python processors/ransomware_live/ransomware_live.py"
+
+          # For scheduled runs or when since_date is 'auto', use last successful run time.
+          # If no previous run exists, omit --since-date (process all).
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "$since_date" = "auto" ]; then
+            if [ -n "$last_run_date" ]; then
+              echo "Using last successful run time: $last_run_date"
+              CMD="$CMD --since-date '$last_run_date'"
+            else
+              echo "No previous successful run found; processing all available data"
+            fi
+          elif [ -n "$since_date" ]; then
+            CMD="$CMD --since-date '$since_date'"
+          fi
+
+          if [ -n "${{ inputs.until_date }}" ]; then
+            CMD="$CMD --until-date '${{ inputs.until_date }}'"
+          fi
+
+          if [ -n "${{ inputs.groups }}" ]; then
+            CMD="$CMD --groups ${{ inputs.groups }}"
+          fi
+
+          echo "Running: $CMD"
+          eval $CMD
+
+      - name: Upload bundles to CTX
+        id: upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          RANSOMWARE_LIVE_FEED_ID: ${{ vars.RANSOMWARE_LIVE_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+
+          if [ -z "$RANSOMWARE_LIVE_FEED_ID" ]; then
+            echo "Error: RANSOMWARE_LIVE_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading $BUNDLE_PATH to feed $RANSOMWARE_LIVE_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$RANSOMWARE_LIVE_FEED_ID"
+
+      - name: Upload dedupe database
+        if: steps.upload.outputs.dedupe_artifact_name
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ransomware-live-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            ${{ steps.process.outputs.bundle_path }}
+            upload_artifacts/
+          retention-days: 7
