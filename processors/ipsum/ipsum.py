@@ -7,7 +7,7 @@ import sys
 from datetime import UTC, datetime
 
 import requests
-from stix2 import Bundle, Indicator, IPv4Address
+from stix2 import Bundle, Indicator, IPv4Address, StringConstant
 
 from helpers.utils import (
     create_bundle_with_metadata,
@@ -108,7 +108,7 @@ def create_stix_objects(
                 confidence=confidence,
                 indicator_types=["malicious-activity"],
                 name=indicator_name,
-                pattern=f"[ipv4-addr:value='{ip}']",
+                pattern=f"[ipv4-addr:value = {StringConstant(ip)} ]",
                 pattern_type="stix",
                 object_marking_refs=[
                     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

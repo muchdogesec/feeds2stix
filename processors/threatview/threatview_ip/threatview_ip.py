@@ -6,7 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 import requests
-from stix2 import Indicator, IPv4Address
+from stix2 import Indicator, IPv4Address, StringConstant
 
 from helpers.utils import (
     NAMESPACE_UUID,
@@ -91,7 +91,7 @@ def create_stix_objects(
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[ipv4-addr:value='{ip}']",
+            pattern=f"[ipv4-addr:value = {StringConstant(ip)} ]",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

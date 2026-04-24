@@ -6,7 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 import requests
-from stix2 import Indicator
+from stix2 import Indicator, StringConstant
 from stix2extensions import CryptocurrencyWallet
 
 from helpers.utils import (
@@ -94,7 +94,7 @@ def create_stix_objects(
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[cryptocurrency-wallet:value='{wallet}']",
+            pattern=f"[cryptocurrency-wallet:value = {StringConstant(wallet)}]",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

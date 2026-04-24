@@ -86,7 +86,7 @@ def test_create_stix_objects():
             "modified": "2026-01-01T00:00:00.000Z",
             "name": "Domain Name: evil.example",
             "indicator_types": ["malicious-activity"],
-            "pattern": "[domain-name:value='evil.example']",
+            "pattern": "[domain-name:value = 'evil.example']",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",

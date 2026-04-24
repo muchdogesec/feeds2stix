@@ -7,7 +7,7 @@ import sys
 from datetime import UTC, datetime
 
 import requests
-from stix2 import URL, Bundle, Indicator
+from stix2 import URL, Bundle, Indicator, StringConstant
 
 from helpers.utils import (
     create_bundle_with_metadata,
@@ -89,7 +89,7 @@ def create_stix_objects(urls, vxvault_identity, vxvault_marking, script_run_time
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[url:value='{url}']",
+            pattern=f"[url:value = {StringConstant(url)}]",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",

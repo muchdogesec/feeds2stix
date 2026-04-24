@@ -84,7 +84,7 @@ def test_create_stix_objects():
             "modified": "2026-01-01T00:00:00.000Z",
             "name": "URL: https://example.com/malware",
             "indicator_types": ["malicious-activity"],
-            "pattern": "[url:value='https://example.com/malware']",
+            "pattern": "[url:value = 'https://example.com/malware']",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",

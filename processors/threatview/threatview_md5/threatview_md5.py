@@ -6,7 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 import requests
-from stix2 import File, Indicator
+from stix2 import File, Indicator, StringConstant
 
 from helpers.utils import (
     NAMESPACE_UUID,
@@ -88,7 +88,7 @@ def create_stix_objects(
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[file:hashes.MD5='{md5_hash}']",
+            pattern=f"[file:hashes.MD5 = {StringConstant(md5_hash)} ]",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
