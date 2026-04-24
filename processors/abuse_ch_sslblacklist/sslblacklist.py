@@ -10,7 +10,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 
 import requests
-from stix2 import Indicator, Infrastructure, Malware, Relationship, X509Certificate
+from stix2 import Indicator, Infrastructure, Malware, Relationship, StringConstant, X509Certificate
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
@@ -229,7 +229,7 @@ def create_stix_objects_for_malware(
             valid_from=file_data["timestamp"],
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[ x509-certificate:hashes.'SHA-1' = '{file_data['sha1_hash']}' ]",
+            pattern=f"[ x509-certificate:hashes.'SHA-1' = {StringConstant(file_data['sha1_hash'])} ]",
             pattern_type="stix",
             object_marking_refs=marking_refs,
             external_references=[

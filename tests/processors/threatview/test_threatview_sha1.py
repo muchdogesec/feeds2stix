@@ -87,7 +87,7 @@ def test_create_stix_objects():
             "modified": "2026-01-01T00:00:00.000Z",
             "name": "File SHA-1: da39a3ee5e6b4b0d3255bfef95601890afd80709",
             "indicator_types": ["malicious-activity"],
-            "pattern": "[file:hashes.'SHA-1'='da39a3ee5e6b4b0d3255bfef95601890afd80709']",
+            "pattern": "[file:hashes.'SHA-1' = 'da39a3ee5e6b4b0d3255bfef95601890afd80709' ]",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2026-01-01T00:00:00Z",

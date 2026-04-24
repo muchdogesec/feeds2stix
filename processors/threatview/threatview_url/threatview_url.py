@@ -6,7 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 import requests
-from stix2 import URL, Indicator
+from stix2 import URL, Indicator, StringConstant
 
 from helpers.utils import (
     NAMESPACE_UUID,
@@ -86,7 +86,7 @@ def create_stix_objects(urls, threatview_identity, threatview_marking, script_ru
             valid_from=script_run_time,
             indicator_types=["malicious-activity"],
             name=indicator_name,
-            pattern=f"[url:value='{url}']",
+            pattern=f"[url:value = {StringConstant(url)}]",
             pattern_type="stix",
             object_marking_refs=[
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
