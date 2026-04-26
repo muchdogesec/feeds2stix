@@ -20,6 +20,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -31,6 +32,7 @@ THREATVIEW_BITCOIN_FEED_URL = (
     "https://threatview.io/Downloads/MALICIOUS-BITCOIN_FEED.txt"
 )
 BASE_OUTPUT_DIR = "outputs/threatview_bitcoin"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["threatview_bitcoin"]
 
 
 def create_threatview_identity():

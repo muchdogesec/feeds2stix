@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 import os
 from ransomware2stix import __main__ as ransomware2stix_main
 
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 from helpers.utils import (
     save_bundle_to_file,
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 BASE_OUTPUT_DIR = "outputs/ransomware_live"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["ransomware_live"]
 
 REQUIRED_ENV_VARS = [
     "CTIBUTLER_BASE_URL",

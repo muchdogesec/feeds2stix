@@ -19,6 +19,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 OASIS_NAMESPACE_UUID = "00abedb4-aa42-466c-9c01-fed23315a9b7"
 VXVAULT_FEED_URL = "http://vxvault.net/URL_List.php"
 BASE_OUTPUT_DIR = "outputs/vxvault"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["vxvault"]
 
 
 def create_vxvault_identity():

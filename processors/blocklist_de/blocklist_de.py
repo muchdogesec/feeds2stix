@@ -20,6 +20,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 BLOCKLIST_DE_FEED_URL = "https://lists.blocklist.de/lists/all.txt"
 BASE_OUTPUT_DIR = "outputs/blocklist_de"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["blocklist_de"]
 
 
 def create_blocklist_de_identity():

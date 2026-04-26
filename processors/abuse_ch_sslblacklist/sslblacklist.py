@@ -25,6 +25,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -33,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 CSV_URL = "https://sslbl.abuse.ch/blacklist/sslblacklist.csv"
 BASE_OUTPUT_DIR = "outputs/abuse_ch_sslblacklist"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["abuse_ch_sslblacklist"]
 
 
 def create_abuse_ch_identity():
