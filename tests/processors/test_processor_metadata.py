@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from processors.metadata import (
+    ALLOWED_CLASSIFICATIONS,
     MAX_LONG_DESCRIPTION_LENGTH,
     MAX_SHORT_DESCRIPTION_LENGTH,
     PROCESSOR_METADATA_BY_PROCESSOR,
@@ -33,6 +34,9 @@ def test_all_processor_metadata_entries_are_within_length_limits():
         assert metadata["title"]
         assert len(metadata["short_description"]) <= MAX_SHORT_DESCRIPTION_LENGTH
         assert len(metadata["long_description"]) <= MAX_LONG_DESCRIPTION_LENGTH
+        assert metadata["classifications"]
+        assert set(metadata["classifications"]).issubset(ALLOWED_CLASSIFICATIONS)
+        assert metadata["tags"]
 
 
 def test_all_processors_expose_metadata():
