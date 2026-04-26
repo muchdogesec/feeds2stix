@@ -25,6 +25,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 GITHUB_REPO_URL = "https://github.com/openphish/public_feed"
 FEED_FILE_PATH = "feed.txt"
 BASE_OUTPUT_DIR = "outputs/openphish"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["openphish"]
 
 
 def create_openphish_identity():

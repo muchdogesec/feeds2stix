@@ -32,10 +32,12 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 # Constants
 URLHAUS_URL = "https://urlhaus.abuse.ch/downloads/csv_recent/"
 OUTPUT_DIR = "outputs/abuse_ch_urlhaus"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["abuse_ch_urlhaus"]
 
 # Set up logging
 logging.basicConfig(

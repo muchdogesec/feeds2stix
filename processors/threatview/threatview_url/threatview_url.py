@@ -19,6 +19,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 OASIS_NAMESPACE_UUID = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 THREATVIEW_URL_FEED_URL = "https://threatview.io/Downloads/URL-High-Confidence-Feed.txt"
 BASE_OUTPUT_DIR = "outputs/threatview_url"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["threatview_url"]
 
 
 def create_threatview_identity():

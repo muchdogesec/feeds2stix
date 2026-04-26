@@ -18,6 +18,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 CINSSCORE_FEED_URL = "https://cinsscore.com/list/ci-badguys.txt"
 BASE_OUTPUT_DIR = "outputs/cinsscore"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["cinsscore"]
 
 
 def create_cinsscore_identity():

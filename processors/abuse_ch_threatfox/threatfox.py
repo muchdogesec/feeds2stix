@@ -40,9 +40,11 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 THREATFOX_URL = "https://threatfox.abuse.ch/export/csv/full/"
 OUTPUT_DIR = "outputs/abuse_ch_threatfox"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["abuse_ch_threatfox"]
 AS_MATCH_RE = re.compile(r"ASN*(\d+)", re.IGNORECASE)
 
 logging.basicConfig(

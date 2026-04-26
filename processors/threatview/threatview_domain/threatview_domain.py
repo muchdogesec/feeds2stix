@@ -19,6 +19,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -30,6 +31,7 @@ THREATVIEW_DOMAIN_FEED_URL = (
     "https://threatview.io/Downloads/DOMAIN-High-Confidence-Feed.txt"
 )
 BASE_OUTPUT_DIR = "outputs/threatview_domain"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["threatview_domain"]
 
 
 def create_threatview_identity():
