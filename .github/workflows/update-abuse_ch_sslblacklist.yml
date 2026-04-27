@@ -45,12 +45,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Get modified time for latest malware processed in feed
+      - name: Get modified time for latest indicator processed in feed
         id: last_run
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-        run: python helpers/latest_timestamp.py "${{ vars.SSLBLACKLIST_FEED_ID }}" --object-type malware
+        run: python helpers/latest_timestamp.py "${{ vars.SSLBLACKLIST_FEED_ID }}" --object-type indicator
       
       - name: Process SSL Blacklist feed and create STIX bundles
         id: process
