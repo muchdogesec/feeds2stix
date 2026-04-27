@@ -182,8 +182,7 @@ def _gh_headers(token: str) -> dict:
         "X-GitHub-Api-Version": "2022-11-28",
     }
 
-
-def download_artifact(
+def download_dupedb(
     artifact_name: str,
     repo: str,
     token: str,
@@ -195,6 +194,37 @@ def download_artifact(
 
     Returns ``True`` on success, ``False`` when the artifact does not exist or
     the download fails (callers should then start with a fresh database).
+    """
+    # First download and extract the entire archive to a temp dir
+    with tempfile.TemporaryDirectory() as temp_dir:
+        if not download_latest_artifact_with_name(artifact_name, repo, token, temp_dir):
+            return False
+        
+        # Now find and extract just the DB file from the extracted contents
+        temp_path = Path(temp_dir)
+        db_entry = next((f for f in temp_path.rglob("*") if f.name == _DB_FILENAME), None)
+        if db_entry is None:
+            logger.warning("Extracted archive does not contain %s", _DB_FILENAME)
+            return False
+        
+        dest = Path(dest_path)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(db_entry, dest)
+        logger.info("Dedupe DB extracted to %s", dest_path)
+        return True
+
+
+def download_latest_artifact_with_name(
+    artifact_name: str,
+    repo: str,
+    token: str,
+    dest_dir: str | os.PathLike,
+) -> bool:
+    """Download the most-recent GitHub Actions artifact named *artifact_name*
+    from *repo* (``"owner/repo"``) and extract all files to *dest_dir*.
+
+    Returns ``True`` on success, ``False`` when the artifact does not exist or
+    the download fails.
     """
     list_url = f"{_GH_API_BASE}/repos/{repo}/actions/artifacts"
     params = {"name": artifact_name, "per_page": 1}
@@ -233,18 +263,11 @@ def download_artifact(
         return False
 
     try:
+        dest = Path(dest_dir)
+        dest.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(io.BytesIO(dl_resp.content)) as zf:
-            # The zip may contain the DB directly or nested; find it by name.
-            names = zf.namelist()
-            db_entry = next((n for n in names if n.endswith(_DB_FILENAME)), None)
-            if db_entry is None:
-                logger.warning(
-                    "Artifact zip does not contain %s (contents: %s)", _DB_FILENAME, names
-                )
-                return False
-            with zf.open(db_entry) as src, open(str(dest_path), "wb") as dst:
-                shutil.copyfileobj(src, dst)
-        logger.info("Artifact DB extracted to %s", dest_path)
+            zf.extractall(dest)
+        logger.info("Artifact extracted to %s", dest_dir)
         return True
     except Exception as exc:
         logger.warning("Failed to extract artifact %r: %s", artifact_name, exc)
