@@ -200,7 +200,7 @@ def test_download_artifact_success(monkeypatch, tmp_path):
     )
 
     dest = tmp_path / "downloaded.db"
-    result = hashmanager.download_artifact("test-artifact", "owner/repo", "token", dest)
+    result = hashmanager.download_dupedb("test-artifact", "owner/repo", "token", dest)
     assert result is True
     assert dest.exists()
     assert dest.read_bytes() == b"fake-db-content"
@@ -213,7 +213,7 @@ def test_download_artifact_no_artifacts(monkeypatch, tmp_path):
         lambda *a, **k: test_utils.FakeJSONResponse({"artifacts": []}),
     )
     dest = tmp_path / "downloaded.db"
-    result = hashmanager.download_artifact("test-artifact", "owner/repo", "token", dest)
+    result = hashmanager.download_dupedb("test-artifact", "owner/repo", "token", dest)
     assert result is False
 
 
@@ -223,7 +223,7 @@ def test_download_artifact_list_fails(monkeypatch, tmp_path):
 
     monkeypatch.setattr(hashmanager.requests, "get", raise_error)
     dest = tmp_path / "downloaded.db"
-    result = hashmanager.download_artifact("test-artifact", "owner/repo", "token", dest)
+    result = hashmanager.download_dupedb("test-artifact", "owner/repo", "token", dest)
     assert result is False
 
 
@@ -253,7 +253,7 @@ def test_download_artifact_no_db_in_zip(monkeypatch, tmp_path):
     )
 
     dest = tmp_path / "downloaded.db"
-    result = hashmanager.download_artifact("test-artifact", "owner/repo", "token", dest)
+    result = hashmanager.download_dupedb("test-artifact", "owner/repo", "token", dest)
     assert result is False
 
 
@@ -317,3 +317,102 @@ def test_cleanup_old_artifacts_handles_errors(monkeypatch):
     monkeypatch.setattr(hashmanager.requests, "get", raise_error)
     # Should not crash
     hashmanager.cleanup_old_artifacts("test-artifact", "owner/repo", "token")
+
+
+# ── download_latest_artifact_with_name tests ─────────────────────────────
+
+
+def test_download_latest_artifact_with_name_extracts_all(monkeypatch, tmp_path):
+    import zipfile
+    import io
+
+    # Create a zip with multiple files
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w") as zf:
+        zf.writestr("file1.txt", b"content1")
+        zf.writestr("subdir/file2.txt", b"content2")
+    zip_buffer.seek(0)
+
+    list_resp = test_utils.FakeJSONResponse(
+        {
+            "artifacts": [
+                {"id": 123, "archive_download_url": "https://example.com/download"}
+            ]
+        }
+    )
+    dl_resp = MagicMock()
+    dl_resp.raise_for_status = MagicMock()
+    dl_resp.content = zip_buffer.read()
+
+    responses = iter([list_resp, dl_resp])
+    monkeypatch.setattr(
+        hashmanager.requests, "get", lambda *a, **k: next(responses)
+    )
+
+    dest = tmp_path / "extracted"
+    result = hashmanager.download_latest_artifact_with_name(
+        "test-artifact", "owner/repo", "token", dest
+    )
+    assert result is True
+    assert (dest / "file1.txt").exists()
+    assert (dest / "subdir" / "file2.txt").exists()
+
+
+def test_download_latest_artifact_with_name_no_artifacts(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        hashmanager.requests,
+        "get",
+        lambda *a, **k: test_utils.FakeJSONResponse({"artifacts": []}),
+    )
+    dest = tmp_path / "extracted"
+    result = hashmanager.download_latest_artifact_with_name(
+        "test-artifact", "owner/repo", "token", dest
+    )
+    assert result is False
+
+
+def test_download_latest_artifact_with_name_handles_download_error(monkeypatch, tmp_path):
+    list_resp = test_utils.FakeJSONResponse(
+        {
+            "artifacts": [
+                {"id": 123, "archive_download_url": "https://example.com/download"}
+            ]
+        }
+    )
+    dl_resp = MagicMock()
+    dl_resp.raise_for_status = MagicMock(side_effect=Exception("Download failed"))
+
+    responses = iter([list_resp, dl_resp])
+    monkeypatch.setattr(
+        hashmanager.requests, "get", lambda *a, **k: next(responses)
+    )
+
+    dest = tmp_path / "extracted"
+    result = hashmanager.download_latest_artifact_with_name(
+        "test-artifact", "owner/repo", "token", dest
+    )
+    assert result is False
+
+
+def test_download_latest_artifact_with_name_handles_extract_error(monkeypatch, tmp_path):
+    list_resp = test_utils.FakeJSONResponse(
+        {
+            "artifacts": [
+                {"id": 123, "archive_download_url": "https://example.com/download"}
+            ]
+        }
+    )
+    dl_resp = MagicMock()
+    dl_resp.raise_for_status = MagicMock()
+    dl_resp.content = b"invalid-zip-content"
+
+    responses = iter([list_resp, dl_resp])
+    monkeypatch.setattr(
+        hashmanager.requests, "get", lambda *a, **k: next(responses)
+    )
+
+    dest = tmp_path / "extracted"
+    result = hashmanager.download_latest_artifact_with_name(
+        "test-artifact", "owner/repo", "token", dest
+    )
+    assert result is False

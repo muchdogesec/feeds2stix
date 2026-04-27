@@ -3,9 +3,11 @@ import copy
 import json
 import logging
 import os
+import re
 import sys
 import time
 from pathlib import Path
+import shutil
 
 import requests
 from split_jsons import split_stix_bundle
@@ -278,6 +280,7 @@ def write_github_summary(results):
             failed_objects = sum(len(r.get("failed_objects", [])) for r in results)
 
             f.write(f"- **Bundles Processed:** {successful}/{total_bundles}\n")
+            f.write(f"- **Successful Bundles:** {successful}\n")
             f.write(f"- **Total Objects:** {total_objects}\n")
             f.write(f"- **Submitted Objects:** {submitted_objects}\n")
             f.write(f"- **Failed Objects:** {failed_objects}\n")
@@ -295,8 +298,6 @@ def save_artifacts(result, artifacts_base_dir, bundle_name, bundle_file):
 
     # Copy original bundle file to artifacts directory
     if bundle_file and os.path.exists(bundle_file):
-        import shutil
-
         bundle_copy_path = os.path.join(bundle_artifacts_dir, Path(bundle_file).name)
         try:
             shutil.copy2(bundle_file, bundle_copy_path)
@@ -340,7 +341,6 @@ def save_artifacts(result, artifacts_base_dir, bundle_name, bundle_file):
                         logger.debug(f"Saved response to {response_file}")
                     except Exception as e:
                         logger.error(f"Failed to save response: {e}")
-
     if result.get("failed_objects"):
         failed_objects_file = os.path.join(bundle_artifacts_dir, "failed_objects.json")
         try:
@@ -351,9 +351,48 @@ def save_artifacts(result, artifacts_base_dir, bundle_name, bundle_file):
             )
         except Exception as e:
             logger.error(f"Failed to save failed objects: {e}")
-
     return bundle_artifacts_dir
 
+RUN_ID_RE = re.compile(r"run-(\d+)_failed-(\d+)")
+MAX_RETRIES = 3
+def move_failed_bundle(bundle_file, current_run_id, failed_bundles_dir):
+    if not bundle_file or not os.path.exists(bundle_file):
+        return None
+    bundle_stem = Path(bundle_file).stem
+    run_id_match = RUN_ID_RE.search(bundle_stem)
+    retry_count = 0
+    run_id = current_run_id
+    if run_id_match:
+        run_id = run_id_match.group(1)
+        retry_count = int(run_id_match.group(2)) + 1
+        bundle_stem = bundle_stem.rsplit("--run-", 1)[0]
+
+    if retry_count > MAX_RETRIES:
+        logger.warning(f"Bundle {bundle_file} has already been retried {retry_count} times, will not be retried next step")
+        return None
+
+    failed_file_name = f"{bundle_stem}--run-{run_id}_failed-{retry_count}.json"
+    failed_path = os.path.join(failed_bundles_dir, failed_file_name)
+
+    try:
+        shutil.copy2(bundle_file, failed_path)
+        logger.info(f"Moved failed bundle to {failed_path}")
+        return failed_path
+    except Exception as e:
+        logger.error(f"Failed to move failed bundle: {e}")
+        return None
+
+
+def save_failed_bundles(results: list[dict], current_run_id: int, failed_artifact_directory: Path) -> int:
+    """ returns number of bundles that failed to upload """
+    failed_artifact_directory.mkdir(exist_ok=True, parents=True)
+    failed_artifact_directory.joinpath(".gitkeep").touch(exist_ok=True)  # Ensure directory is tracked by Git
+    fail_count = 0
+    for result in results:
+        if not result.get("success") and result.get("bundle_file"):
+            move_failed_bundle(result["bundle_file"], current_run_id, failed_artifact_directory)
+            fail_count += 1
+    return fail_count
 
 def main(
     bundle_files,
@@ -363,7 +402,44 @@ def main(
     max_size_kb=10_000,
     hash_db_path=None,
     use_artifacts=True,
+    upload_artifact_path=None,
 ):
+    bundle_files = list(bundle_files)
+    
+    artifacts_dir = Path(upload_artifact_path or "upload_artifacts")
+    artifacts_dir.mkdir(exist_ok=True)
+
+    # ── Hash-manager setup ──────────────────────────────────────────────
+    _hash_db_path = hash_db_path or artifacts_dir/ "stix_hashes.db"
+    current_session_failed_bundles_dir = artifacts_dir / "failed_bundles"
+    previous_session_failed_bundles_dir = artifacts_dir / "outstanding_failed_bundles"
+
+    prefix = os.getenv("ARTIFACT_PREFIX", "")
+    _artifact_name = "feed_" + feed_id.replace('-', '')
+    if prefix:
+        _artifact_name = f"{prefix}_{dupedb_artifact_name}"
+
+    dupedb_artifact_name = _artifact_name + "_dupedb"
+    failed_artifact_name = _artifact_name + "_failed"
+
+    # Get GitHub credentials (validation already done in argument parsing)
+    gh_repo = os.getenv("GITHUB_REPOSITORY")
+    gh_token = os.getenv("GITHUB_TOKEN")
+
+    if use_artifacts:
+        logger.info("Downloading hash DB artifact %r …", dupedb_artifact_name)
+        hashmanager.download_dupedb(
+            dupedb_artifact_name, gh_repo, gh_token, _hash_db_path
+        )
+        hashmanager.cleanup_old_artifacts(dupedb_artifact_name, gh_repo, gh_token)
+        if hashmanager.download_latest_artifact_with_name(
+            failed_artifact_name, gh_repo, gh_token, previous_session_failed_bundles_dir
+        ):
+            hashmanager.cleanup_old_artifacts(failed_artifact_name, gh_repo, gh_token)
+            bundle_files.insert(0, str(previous_session_failed_bundles_dir))  # Add failed bundles directory to processing list
+    hash_conn = hashmanager.load_db(_hash_db_path)
+    # ───────────────────────────────────────────────────────────────────
+
     try:
         # Expand directories to individual files
         all_bundle_files = []
@@ -404,29 +480,6 @@ def main(
         print("::endgroup::")
 
         results = []
-
-        artifacts_dir = "upload_artifacts"
-        os.makedirs(artifacts_dir, exist_ok=True)
-
-        # ── Hash-manager setup ──────────────────────────────────────────────
-        _hash_db_path = hash_db_path or os.path.join(artifacts_dir, "stix_hashes.db")
-        prefix = os.getenv("ARTIFACT_PREFIX", "")
-        _artifact_name = f"feed_{feed_id.replace('-', '')}_dupedb"
-        if prefix:
-            _artifact_name = f"{prefix}_{_artifact_name}"
-
-        # Get GitHub credentials (validation already done in argument parsing)
-        gh_repo = os.getenv("GITHUB_REPOSITORY")
-        gh_token = os.getenv("GITHUB_TOKEN")
-
-        if use_artifacts:
-            logger.info("Downloading hash DB artifact %r …", _artifact_name)
-            hashmanager.download_artifact(
-                _artifact_name, gh_repo, gh_token, _hash_db_path
-            )
-            hashmanager.cleanup_old_artifacts(_artifact_name, gh_repo, gh_token)
-        hash_conn = hashmanager.load_db(_hash_db_path)
-        # ───────────────────────────────────────────────────────────────────
 
         logger.info("=" * 120)
         logger.info("=" * 120)
@@ -532,11 +585,17 @@ def main(
         print("::endgroup::")
 
         write_github_summary(results)
+        failed_bundles_count = save_failed_bundles(results, os.getenv("GITHUB_RUN_ID", "unknown"), current_session_failed_bundles_dir)
+
+
+        # ── Determine success/failure status ─────────────────────────────
+        has_success = any(r.get("success") for r in results)
+        has_failures = failed_bundles_count > 0
+
 
         # ── Persist hash DB ──────────────────────────────────────────────
         hashmanager.save_db(hash_conn, _hash_db_path)
         logger.info("Hash DB saved to %s", _hash_db_path)
-        # ────────────────────────────────────────────────────────────────
 
         logger.info("=" * 120)
         total_bundles = len(results)
@@ -555,27 +614,25 @@ def main(
 
         github_output = os.getenv("GITHUB_OUTPUT")
         if github_output:
-            try:
-                with open(github_output, "a", encoding="utf-8") as f:
-                    all_successful = all(r.get("success") for r in results)
-                    f.write(f"success={str(all_successful).lower()}\n")
-                    f.write(f"bundles_processed={len(results)}\n")
-                    f.write(f"artifacts_dir={artifacts_dir}\n")
-                    if use_artifacts:
-                        f.write(f"dedupe_artifact_name={_artifact_name}\n")
-                        f.write(f"dedupe_path={_hash_db_path}\n")
-                    if len(results) == 1:
-                        result = results[0]
-                        f.write(f"job_id={result.get('job_id', '')}\n")
-                        f.write(f"total_objects={result.get('total_objects', 0)}\n")
-                        f.write(
-                            f"submitted_objects={result.get('submitted_objects', 0)}\n"
-                        )
-                        f.write(
-                            f"failed_objects={len(result.get('failed_objects', []))}\n"
-                        )
-            except Exception as e:
-                logger.error(f"Failed to write GitHub output: {e}")
+            with open(github_output, "a", encoding="utf-8") as f:
+                f.write(f"has_success={str(has_success).lower()}\n")
+                f.write(f"has_failures={str(has_failures).lower()}\n")
+                f.write(f"bundles_processed={len(results)}\n")
+                f.write(f"artifacts_dir={artifacts_dir}\n")
+                if use_artifacts:
+                    f.write(f"dedupe_artifact_name={dupedb_artifact_name}\n")
+                    f.write(f"failed_artifact_name={failed_artifact_name}\n")
+                    f.write(f"dedupe_path={_hash_db_path}\n")
+                if len(results) == 1:
+                    result = results[0]
+                    f.write(f"job_id={result.get('job_id', '')}\n")
+                    f.write(f"total_objects={result.get('total_objects', 0)}\n")
+                    f.write(
+                        f"submitted_objects={result.get('submitted_objects', 0)}\n"
+                    )
+                    f.write(
+                        f"failed_objects={len(result.get('failed_objects', []))}\n"
+                    )
 
         if not all(r.get("success") for r in results):
             sys.exit(1)

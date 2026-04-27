@@ -336,9 +336,21 @@ def test_main_success_path(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+    # Mock hashmanager
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
 
     with pytest.raises(SystemExit) as exc:
-        upload.main([str(bundle_file)], "https://ctx", "key", "feed")
+        upload.main([str(bundle_file)], "https://ctx", "key", "feed", use_artifacts=False)
     assert exc.value.code == 0
 
 
@@ -369,7 +381,8 @@ def test_main_success_writes_github_output(monkeypatch, tmp_path):
     monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
     # Mock hashmanager
-    monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", lambda *a, **k: False)
     monkeypatch.setattr(
         upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None
     )
@@ -434,7 +447,7 @@ def test_main_catches_bundleuploadfailed(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
     # Mock hashmanager
-    monkeypatch.setattr(upload.hashmanager, "download_artifact", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
     monkeypatch.setattr(
         upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None
     )
@@ -484,3 +497,296 @@ def test_main_exits_nonzero_when_bundle_load_fails(monkeypatch, tmp_path):
     with pytest.raises(SystemExit) as exc:
         upload.main([str(bad_bundle)], "https://ctx", "key", "feed")
     assert exc.value.code == 1
+
+
+# ── Failed bundle tests ─────────────────────────────────────────────────
+
+
+def test_move_failed_bundle_basic(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    bundle_file = tmp_path / "bundle.json"
+    bundle_file.write_text('{"objects": []}')
+
+    result = upload.move_failed_bundle(str(bundle_file), "123", failed_dir)
+
+    assert result is not None
+    assert Path(result).exists()
+    # Should have incremented retry count
+    assert Path(result).name == "bundle--run-123_failed-0.json"
+
+
+def test_move_failed_bundle_increments_retry(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    # Simulate a bundle that was already retried once
+    bundle_file = tmp_path / "bundle--run-456_failed-1.json"
+    bundle_file.write_text('{"objects": []}')
+
+    result = upload.move_failed_bundle(str(bundle_file), "789", failed_dir)
+
+    assert result is not None
+    # Should have incremented to failed-2
+    assert Path(result).name == "bundle--run-456_failed-2.json"
+
+
+def test_move_failed_bundle_exceeds_max_retries(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    # Bundle already at max retries
+    bundle_file = tmp_path / "bundle--run-123_failed-3.json"
+    bundle_file.write_text('{"objects": []}')
+
+    result = upload.move_failed_bundle(str(bundle_file), "123", failed_dir)
+
+    # Should return None since max retries exceeded
+    assert result is None
+    # No new file should be created
+    assert len(list(failed_dir.glob("*.json"))) == 0
+
+
+def test_move_failed_bundle_nonexistent_file(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    result = upload.move_failed_bundle(str(tmp_path / "nonexistent.json"), "123", failed_dir)
+
+    assert result is None
+
+
+def test_save_failed_bundles_returns_count(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    results = [
+        {
+            "success": True,
+            "bundle_file": str(tmp_path / "a.json"),
+        },
+        {
+            "success": False,
+            "bundle_file": str(tmp_path / "b.json"),
+        },
+        {
+            "success": False,
+            "bundle_file": str(tmp_path / "c.json"),
+        },
+    ]
+
+    # Create the bundle files
+    for r in results:
+        if r.get("bundle_file"):
+            Path(r["bundle_file"]).write_text("{}")
+
+    count = upload.save_failed_bundles(results, "999", failed_dir)
+
+    assert count == 2
+    # Check that .gitkeep was created
+    assert (failed_dir / ".gitkeep").exists()
+
+
+def test_save_failed_bundles_skips_successful(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    results = [
+        {
+            "success": True,
+            "bundle_file": str(tmp_path / "a.json"),
+        },
+    ]
+
+    count = upload.save_failed_bundles(results, "999", failed_dir)
+
+    assert count == 0
+
+
+def test_save_failed_bundles_handles_missing_bundle_file(tmp_path):
+    failed_dir = tmp_path / "failed"
+    failed_dir.mkdir()
+
+    results = [
+        {
+            "success": False,
+            "bundle_file": None,
+        },
+    ]
+
+    count = upload.save_failed_bundles(results, "999", failed_dir)
+
+    assert count == 0
+
+
+# ── Previous session failed bundle retry tests ─────────────────────────
+
+
+def test_main_retry_previous_session_failed_bundles(monkeypatch, tmp_path):
+    """Test that previous session failed bundles are included in processing."""
+    # Create a previous session failed bundles directory
+    prev_failed_dir = tmp_path / "outstanding_failed_bundles"
+    prev_failed_dir.mkdir()
+
+    prev_failed_file = prev_failed_dir / "old--run-100_failed-2.json"
+    prev_failed_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--old"}]}))
+
+    # Create current session bundle
+    current_bundle = tmp_path / "current.json"
+    current_bundle.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--new"}]}))
+
+    upload_results = []
+
+    def mock_upload_bundle(bundle, *a, **k):
+        # Track which bundles were uploaded
+        obj_count = len(bundle.get("objects", []))
+        upload_results.append(bundle)
+        return {
+            "success": True,
+            "job_id": f"job-{len(upload_results)}",
+            "total_objects": obj_count,
+            "submitted_objects": obj_count,
+            "failed_objects": [],
+            "job_state": "completed",
+        }
+
+    monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
+    monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
+    monkeypatch.setattr(upload, "upload_bundle", mock_upload_bundle)
+    monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+
+    # Mock hashmanager to not filter anything
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", lambda *a, **k: True)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
+
+    # Set environment for artifacts
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "fake-token")
+
+    with pytest.raises(SystemExit) as exc:
+        upload.main(
+            [str(current_bundle)],
+            "https://ctx",
+            "key",
+            "feed",
+            use_artifacts=True,
+            upload_artifact_path=str(tmp_path),
+        )
+    assert exc.value.code == 0
+
+    # Verify that previous session failed bundle was included in uploads
+    # The previous session failed bundle should be processed first (inserted at index 0)
+    assert len(upload_results) >= 2
+    # First upload should be from previous failed bundles
+    first_objs = upload_results[0].get("objects", [])
+    assert any(obj.get("id") == "indicator--old" for obj in first_objs)
+
+
+def test_main_github_output_has_success_and_failures(monkeypatch, tmp_path):
+    """Test that has_success and has_failures are written to GitHub output."""
+    bundle_file = tmp_path / "one.json"
+    bundle_file.write_text(
+        json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]})
+    )
+    gh = tmp_path / "gh.out"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(gh))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "fake-token")
+
+    monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
+    monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
+    monkeypatch.setattr(
+        upload,
+        "upload_bundle",
+        lambda *a, **k: {
+            "success": True,
+            "job_id": "job-x",
+            "total_objects": 3,
+            "submitted_objects": 3,
+            "failed_objects": [],
+            "job_state": "completed",
+        },
+    )
+    monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+
+    # Mock hashmanager
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
+
+    with pytest.raises(SystemExit) as exc:
+        upload.main([str(bundle_file)], "https://ctx", "key", "feed")
+    assert exc.value.code == 0
+    text = gh.read_text()
+    assert "has_success=true" in text
+    assert "has_failures=false" in text
+
+
+def test_main_github_output_has_failures_when_bundles_fail(monkeypatch, tmp_path):
+    """Test that has_failures=true when bundles fail to upload."""
+    bundle_file = tmp_path / "one.json"
+    bundle_file.write_text(
+        json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]})
+    )
+    gh = tmp_path / "gh.out"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(gh))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "fake-token")
+
+    monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
+    monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
+    monkeypatch.setattr(
+        upload,
+        "upload_bundle",
+        lambda *a, **k: {
+            "success": False,
+            "job_id": "job-fail",
+            "total_objects": 3,
+            "submitted_objects": 0,
+            "failed_objects": [{"id": "indicator--1"}],
+            "job_state": "failed",
+            "error": "Upload failed",
+        },
+    )
+    monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+
+    # Mock hashmanager
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", lambda *a, **k: False)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
+
+    with pytest.raises(SystemExit) as exc:
+        upload.main([str(bundle_file)], "https://ctx", "key", "feed")
+    assert exc.value.code == 1
+    text = gh.read_text()
+    assert "has_success=false" in text
+    assert "has_failures=true" in text
