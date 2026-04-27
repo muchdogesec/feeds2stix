@@ -157,3 +157,18 @@ Each bundle contains:
 * Indicator objects with patterns matching the IPs
 * Relationships linking Indicators to IPv4 addresses
 * Identity and Marking Definition objects
+
+## GitHub Action
+
+The processor is linked to a GitHub action that downloads data from the feed daily at 04:00 UTC.
+
+### Setup
+
+Configure the following in your GitHub repository:
+
+**Secrets** (Settings → Secrets and variables → Actions):
+* `CTX_BASE_URL`: The base URL for your CTX instance (e.g., `https://api.cyberthreatexchange.com`)
+* `CTX_API_KEY`: Your CTX API key for authentication
+
+**Variables**:
+* `GREENSNOW_FEED_ID`: The CTX feed ID where Greensnow data should be uploaded
