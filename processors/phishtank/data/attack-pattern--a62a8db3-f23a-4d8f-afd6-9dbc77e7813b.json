@@ -1,0 +1,99 @@
+{
+  "type": "attack-pattern",
+  "id": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+  "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+  "created": "2020-03-02T18:45:07.892Z",
+  "modified": "2025-10-24T17:49:11.351Z",
+  "name": "Phishing",
+  "description": "Adversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing. In spearphishing, a specific individual, company, or industry will be targeted by the adversary. More generally, adversaries can conduct non-targeted phishing, such as in mass malware spam campaigns.\n\nAdversaries may send victims emails containing malicious attachments or links, typically to execute malicious code on victim systems. Phishing may also be conducted via third-party services, like social media platforms. Phishing may also involve social engineering techniques, such as posing as a trusted source, as well as evasive techniques such as removing or manipulating emails or metadata/headers from compromised accounts being abused to send messages (e.g., [Email Hiding Rules](https://attack.mitre.org/techniques/T1564/008)).(Citation: Microsoft OAuth Spam 2022)(Citation: Palo Alto Unit 42 VBA Infostealer 2014) Another way to accomplish this is by [Email Spoofing](https://attack.mitre.org/techniques/T1672)(Citation: Proofpoint-spoof) the identity of the sender, which can be used to fool both the human recipient as well as automated security tools,(Citation: cyberproof-double-bounce) or by including the intended target as a party to an existing email thread that includes malicious files or links (i.e., \"thread hijacking\").(Citation: phishing-krebs)\n\nVictims may also receive phishing messages that instruct them to call a phone number where they are directed to visit a malicious URL, download malware,(Citation: sygnia Luna Month)(Citation: CISA Remote Monitoring and Management Software) or install adversary-accessible remote management tools onto their computer (i.e., [User Execution](https://attack.mitre.org/techniques/T1204)).(Citation: Unit42 Luna Moth)",
+  "kill_chain_phases": [
+    {
+      "kill_chain_name": "mitre-attack",
+      "phase_name": "initial-access"
+    }
+  ],
+  "external_references": [
+    {
+      "source_name": "mitre-attack",
+      "url": "https://attack.mitre.org/techniques/T1566",
+      "external_id": "T1566"
+    },
+    {
+      "source_name": "ACSC Email Spoofing",
+      "description": "Australian Cyber Security Centre. (2012, December). Mitigating Spoofed Emails Using Sender Policy Framework. Retrieved November 17, 2024.",
+      "url": "https://web.archive.org/web/20210708014107/https://www.cyber.gov.au/sites/default/files/2019-03/spoof_email_sender_policy_framework.pdf"
+    },
+    {
+      "source_name": "phishing-krebs",
+      "description": "Brian Krebs. (2024, March 28). Thread Hijacking: Phishes That Prey on Your Curiosity. Retrieved September 27, 2024.",
+      "url": "https://krebsonsecurity.com/2024/03/thread-hijacking-phishes-that-prey-on-your-curiosity/"
+    },
+    {
+      "source_name": "CISA Remote Monitoring and Management Software",
+      "description": "CISA. (n.d.). Protecting Against Malicious Use of Remote Monitoring and Management Software. Retrieved February 2, 2023.",
+      "url": "https://www.cisa.gov/uscert/ncas/alerts/aa23-025a"
+    },
+    {
+      "source_name": "cyberproof-double-bounce",
+      "description": "Itkin, Liora. (2022, September 1). Double-bounced attacks with email spoofing . Retrieved February 24, 2023.",
+      "url": "https://blog.cyberproof.com/blog/double-bounced-attacks-with-email-spoofing-2022-trends"
+    },
+    {
+      "source_name": "Unit42 Luna Moth",
+      "description": "Kristopher Russo. (n.d.). Luna Moth Callback Phishing Campaign. Retrieved February 2, 2023.",
+      "url": "https://unit42.paloaltonetworks.com/luna-moth-callback-phishing/"
+    },
+    {
+      "source_name": "Microsoft Anti Spoofing",
+      "description": "Microsoft. (2020, October 13). Anti-spoofing protection in EOP. Retrieved October 19, 2020.",
+      "url": "https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spoofing-protection?view=o365-worldwide"
+    },
+    {
+      "source_name": "Microsoft OAuth Spam 2022",
+      "description": "Microsoft. (2023, September 22). Malicious OAuth applications abuse cloud email services to spread spam. Retrieved March 13, 2023.",
+      "url": "https://www.microsoft.com/en-us/security/blog/2022/09/22/malicious-oauth-applications-used-to-compromise-email-servers-and-spread-spam/"
+    },
+    {
+      "source_name": "sygnia Luna Month",
+      "description": "Oren Biderman, Tomer Lahiyani, Noam Lifshitz, Ori Porag. (n.d.). LUNA MOTH: THE THREAT ACTORS BEHIND RECENT FALSE SUBSCRIPTION SCAMS. Retrieved February 2, 2023.",
+      "url": "https://blog.sygnia.co/luna-moth-false-subscription-scams"
+    },
+    {
+      "source_name": "Proofpoint-spoof",
+      "description": "Proofpoint. (n.d.). What Is Email Spoofing?. Retrieved February 24, 2023.",
+      "url": "https://www.proofpoint.com/us/threat-reference/email-spoofing"
+    },
+    {
+      "source_name": "Palo Alto Unit 42 VBA Infostealer 2014",
+      "description": "Vicky Ray and Rob Downs. (2014, October 29). Examining a VBA-Initiated Infostealer Campaign. Retrieved March 13, 2023.",
+      "url": "https://unit42.paloaltonetworks.com/examining-vba-initiated-infostealer-campaign/"
+    }
+  ],
+  "object_marking_refs": [
+    "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+  ],
+  "x_mitre_attack_spec_version": "3.2.0",
+  "x_mitre_contributors": [
+    "Philip Winther",
+    "Ohad Zaidenberg, @ohad_mz",
+    "Liora Itkin",
+    "Liran Ravich, CardinalOps",
+    "Scott Cook, Capital One"
+  ],
+  "x_mitre_deprecated": false,
+  "x_mitre_detection": "",
+  "x_mitre_domains": [
+    "enterprise-attack"
+  ],
+  "x_mitre_is_subtechnique": false,
+  "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+  "x_mitre_platforms": [
+    "Identity Provider",
+    "Linux",
+    "macOS",
+    "Office Suite",
+    "SaaS",
+    "Windows"
+  ],
+  "x_mitre_version": "2.7"
+}

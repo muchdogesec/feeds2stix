@@ -118,7 +118,7 @@ def create_bundle_with_metadata(
         source_marking,
     ] + stix_objects
 
-    bundle = Bundle(objects=all_objects)
+    bundle = Bundle(objects=all_objects, allow_custom=True)
     return bundle
 
 
