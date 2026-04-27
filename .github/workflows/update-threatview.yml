@@ -108,13 +108,21 @@ jobs:
           python helpers/upload.py "$BUNDLE_PATH" --feed_id "$FEED_ID"
       
       - name: Upload dedupe database
-        if: steps.upload.outputs.dedupe_artifact_name
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.upload.outputs.dedupe_artifact_name }}
           path: ${{ steps.upload.outputs.dedupe_path }}
           retention-days: 90
-      
+
+      - name: Upload failed bundles
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v7
