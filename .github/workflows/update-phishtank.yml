@@ -50,46 +50,8 @@ jobs:
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-          PHISHTANK_FEED_ID: ${{ vars.PHISHTANK_FEED_ID }}
-        with:
-          script: |
-            const ctxBaseUrl = process.env.CTX_BASE_URL;
-            const ctxApiKey = process.env.CTX_API_KEY;
-            const phishtankFeedId = process.env.PHISHTANK_FEED_ID;
-
-            if (!phishtankFeedId) {
-              console.log('Error: PHISHTANK_FEED_ID variable is not set');
-              process.exit(1);
-            }
-
-            try {
-              const response = await fetch(`${ctxBaseUrl}/v1/search/?feed_ids=${phishtankFeedId}&page_size=1&sort=modified_descending&types=indicator`, {
-                method: 'GET',
-                headers: {
-                  'accept': 'application/json',
-                  'API-KEY': ctxApiKey
-                }
-              });
-
-              if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
-              }
-
-              const data = await response.json();
-              const timestamp = data?.data?.objects?.[0]?.modified;
-
-              if (timestamp) {
-                console.log(`Latest indicator timestamp: ${timestamp}`);
-                core.setOutput('latest_timestamp', timestamp);
-              } else {
-                console.log('No previous indicators found in feed, will process all entries');
-                core.setOutput('latest_timestamp', '');
-              }
-            } catch (error) {
-              console.log(`Warning: Could not fetch latest timestamp: ${error.message}`);
-              console.log('Will use default filtering');
-              core.setOutput('latest_timestamp', '');
-            }
+        run: python helpers/latest_timestamp.py "${{ vars.PHISHTANK_FEED_ID }}" --object-type indicator --delta 10
+          
 
       - name: Process PhishTank feed and create STIX bundles
         id: process
