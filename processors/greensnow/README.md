@@ -1,13 +1,27 @@
-## Greensnow
+# Greensnow
 
-https://greensnow.co/
+## Overview
 
-GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with SpamHaus.org for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed.
+GreenSnow is a group of security specialists that harvests malicious IPv4 addresses from distributed sources around the world. The Greensnow blocklist is comparable to SpamHaus for non-spam attack vectors and is updated automatically.
 
+**Feed URL:** https://blocklist.greensnow.co/greensnow.txt
+**Update Schedule:** Continuous updates
+**Format:** One IPv4 address per line (plain text)
 
-### Feed URL
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `ipv4-addr`
+- `indicator`
 
-https://blocklist.greensnow.co/greensnow.txt
+**Relationships:**
+- `indicator` → `ipv4-addr` (`indicates`)
+
+## Data generation
+
+### Data in feed
+
+One line is one entry.
 
 ### Mapping
 
@@ -17,7 +31,7 @@ https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/
 
 #### Identity
 
-An identity is hardcoded for the feed 
+An identity is hardcoded for the feed:
 
 ```json
 {
@@ -27,10 +41,10 @@ An identity is hardcoded for the feed
 	"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
 	"created": "2020-01-01T00:00:00.000Z",
 	"modified": "2020-01-01T00:00:00.000Z",
-	"name": "CINS",
-	"description": "Collective Intelligence Network Security (CINS, pronounced “sins,” get it?) is our effort to use this information to significantly improve the security of our customers’ networks. We also provide this vital information to the InfoSec community free of charge.",
+	"name": "Greensnow",
+	"description": "GreenSnow is a team consisting of security specialists who collect a large number of IP addresses from computers located around the world. Their blocklist is updated automatically and IPs may be withdrawn when removed from the source.",
 	"identity_class": "system",
-	"contact_information": "https://cinsarmy.com/",
+	"contact_information": "https://greensnow.co/",
 	"object_marking_refs": [
 		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
 		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
@@ -124,3 +138,22 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
 ```
 
 Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
+
+## Usage
+
+```bash
+python processors/greensnow/greensnow.py
+```
+
+No command-line options are available. The script downloads the live feed and creates a single STIX bundle.
+
+### Output
+
+The script creates a single STIX bundle file:
+* `bundles/greensnow/bundles/greensnow.json`
+
+Each bundle contains:
+* IPv4 address objects for each IP in the feed
+* Indicator objects with patterns matching the IPs
+* Relationships linking Indicators to IPv4 addresses
+* Identity and Marking Definition objects

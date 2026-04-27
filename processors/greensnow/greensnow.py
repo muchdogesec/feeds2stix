@@ -18,6 +18,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.cinsscore import cinsscore
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -62,62 +63,6 @@ def fetch_greensnow_feed():
     logger.info(f"Found {len(ip_addresses)} IP addresses in Greensnow feed")
     return ip_addresses
 
-
-def create_stix_objects(
-    ip_addresses, greensnow_identity, greensnow_marking, script_run_time
-):
-    """Create STIX objects for IP addresses"""
-    stix_objects = []
-
-    greensnow_marking_id = greensnow_marking["id"]
-    greensnow_identity_id = greensnow_identity["id"]
-
-    logger.info(f"Processing {len(ip_addresses)} IP addresses...")
-
-    for idx, ip in enumerate(ip_addresses):
-        if (idx + 1) % 1000 == 0:
-            logger.info(f"Processed {idx + 1}/{len(ip_addresses)} IP addresses...")
-
-        ipv4_obj = IPv4Address(value=ip)
-
-        indicator_name = f"IPv4: {ip}"
-        indicator_id = generate_uuid5(indicator_name, namespace=greensnow_marking_id)
-        indicator_id_full = f"indicator--{indicator_id}"
-
-        indicator = Indicator(
-            id=indicator_id_full,
-            created_by_ref=greensnow_identity_id,
-            created=script_run_time,
-            modified=script_run_time,
-            valid_from=script_run_time,
-            indicator_types=["malicious-activity"],
-            name=indicator_name,
-            pattern=f"[ipv4-addr:value = {StringConstant(ip)} ]",
-            pattern_type="stix",
-            object_marking_refs=[
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                greensnow_marking_id,
-            ],
-        )
-
-        stix_objects.append(ipv4_obj)
-        stix_objects.append(indicator)
-        relationship = make_relationship(
-            source_ref=indicator["id"],
-            target_ref=ipv4_obj["id"],
-            relationship_type="indicates",
-            created_by_ref=greensnow_identity["id"],
-            marking_refs=indicator["object_marking_refs"],
-            created=script_run_time,
-            modified=script_run_time,
-        )
-        stix_objects.append(relationship)
-
-    logger.info(f"Created {len(stix_objects)} STIX objects")
-    return stix_objects
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Convert Greensnow threat intelligence feed to STIX 2.1 format"
@@ -138,7 +83,7 @@ def main():
         ip_addresses = fetch_greensnow_feed()
 
         logger.info("Creating STIX objects...")
-        stix_objects = create_stix_objects(
+        stix_objects = cinsscore.create_stix_objects(
             ip_addresses, greensnow_identity, greensnow_marking, script_run_time
         )
 
