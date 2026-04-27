@@ -28,6 +28,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -37,6 +38,7 @@ logger = logging.getLogger(__name__)
 FEED_URL = "http://data.phishtank.com/data/online-valid.json.gz"
 API_FEED_URL = "http://data.phishtank.com/data/API_KEY/online-valid.json.gz"
 OUTPUT_DIR = "outputs/phishtank"
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["phishtank"]
 ATTACK_PATTERN_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
 OBJECT_MARKING_REFS_BASE = [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
