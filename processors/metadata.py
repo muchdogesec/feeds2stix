@@ -60,6 +60,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "url-intelligence"],
     ),
+    "phishtank": build_processor_metadata(
+        "PhishTank",
+        "Community-verified phishing URL intelligence from PhishTank.",
+        "PhishTank is a free community site operated by Cisco Talos where users submit, verify, track, and share phishing data. This processor publishes online, validated phishing URLs from the PhishTank feed to support phishing detection, blocking, enrichment, and investigation workflows.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "community-verified", "malicious-urls", "url-intelligence"],
+    ),
     "abuse_ch_malwarebazaar": build_processor_metadata(
         "abuse.ch MalwareBazaar",
         "Community-shared malware samples and metadata from abuse.ch and Spamhaus.",
