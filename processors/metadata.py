@@ -67,6 +67,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "community-verified", "malicious-urls", "url-intelligence"],
     ),
+    "greensnow": build_processor_metadata(
+        "GreenSnow",
+        "IP blocklist of hosts observed attacking internet-facing services.",
+        "GreenSnow maintains an automatically updated IP blocklist built from attacks observed across servers around the world, including services such as SSH, FTP, POP3, IMAP, SMTP, cPanel, and web applications. This processor publishes GreenSnow IP indicators to support blocking, enrichment, and monitoring of abusive infrastructure.",
+        ["indicator_of_compromise", "cyber_crime"],
+        ["abusive-ips", "blocklist", "brute-force", "network-attacks"],
+    ),
     "abuse_ch_malwarebazaar": build_processor_metadata(
         "abuse.ch MalwareBazaar",
         "Community-shared malware samples and metadata from abuse.ch and Spamhaus.",
