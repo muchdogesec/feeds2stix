@@ -403,6 +403,66 @@ def test_main_success_writes_github_output(monkeypatch, tmp_path):
     assert "bundles_processed=1" in text
 
 
+def test_main_uses_artifact_prefix_for_artifact_names(monkeypatch, tmp_path):
+    bundle_file = tmp_path / "prefixed.json"
+    bundle_file.write_text(json.dumps({"type": "bundle", "objects": [{"id": "indicator--1"}]}))
+
+    gh = tmp_path / "gh.out"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(gh))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "fake-token")
+    monkeypatch.setenv("ARTIFACT_PREFIX", "myprefix")
+
+    downloaded_names = []
+
+    def fake_download_dupedb(name, repo, token, path):
+        downloaded_names.append(name)
+        return False
+
+    def fake_download_latest(name, repo, token, path):
+        downloaded_names.append(name)
+        return False
+
+    monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 1)
+    monkeypatch.setattr(upload, "split_stix_bundle", lambda *a, **k: [])
+    monkeypatch.setattr(
+        upload,
+        "upload_bundle",
+        lambda *a, **k: {
+            "success": True,
+            "job_id": "job-x",
+            "total_objects": 1,
+            "submitted_objects": 1,
+            "failed_objects": [],
+            "job_state": "completed",
+        },
+    )
+    monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+
+    monkeypatch.setattr(upload.hashmanager, "download_dupedb", fake_download_dupedb)
+    monkeypatch.setattr(upload.hashmanager, "download_latest_artifact_with_name", fake_download_latest)
+    monkeypatch.setattr(upload.hashmanager, "cleanup_old_artifacts", lambda *a, **k: None)
+    monkeypatch.setattr(upload.hashmanager, "load_db", lambda *a, **k: None)
+    monkeypatch.setattr(
+        upload.hashmanager, "filter_new_objects", lambda objs, conn: (objs, 0)
+    )
+    monkeypatch.setattr(
+        upload.hashmanager, "record_uploaded_objects", lambda *a, **k: None
+    )
+    monkeypatch.setattr(upload.hashmanager, "save_db", lambda *a, **k: None)
+
+    with pytest.raises(SystemExit) as exc:
+        upload.main([str(bundle_file)], "https://ctx", "key", "feed", use_artifacts=True)
+    assert exc.value.code == 0
+
+    assert any(n.startswith("myprefix_feed_feed_dupedb") for n in downloaded_names)
+    assert any(n.startswith("myprefix_feed_feed_failed") for n in downloaded_names)
+    text = gh.read_text()
+    assert "dedupe_artifact_name=myprefix_feed_feed_dupedb" in text
+    assert "failed_artifact_name=myprefix_feed_feed_failed" in text
+
+
 def test_main_directory_and_split_flow(monkeypatch, tmp_path):
     in_dir = tmp_path / "in"
     in_dir.mkdir()

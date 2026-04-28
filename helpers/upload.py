@@ -417,7 +417,7 @@ def main(
     prefix = os.getenv("ARTIFACT_PREFIX", "")
     _artifact_name = "feed_" + feed_id.replace('-', '')
     if prefix:
-        _artifact_name = f"{prefix}_{dupedb_artifact_name}"
+        _artifact_name = f"{prefix}_{_artifact_name}"
 
     dupedb_artifact_name = _artifact_name + "_dupedb"
     failed_artifact_name = _artifact_name + "_failed"
