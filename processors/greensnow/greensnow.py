@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 GREENSNOW_FEED_URL = "https://blocklist.greensnow.co/greensnow.txt"
 BASE_OUTPUT_DIR = "outputs/greensnow"
-# PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["greensnow"]
+PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["greensnow"]
 
 
 def create_greensnow_identity():
