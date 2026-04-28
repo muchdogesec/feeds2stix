@@ -46,7 +46,6 @@ jobs:
 
       - name: Get latest indicator timestamp
         id: get_timestamp
-        uses: actions/github-script@v7
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
