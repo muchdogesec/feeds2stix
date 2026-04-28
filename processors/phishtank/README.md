@@ -208,8 +208,8 @@ With relationship to IPv4:
 	"spec_version": "2.1",
 	"id": "relationship--<UUID V5>",
 	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<submission_time>",
-	"modified": "<verification_time>",
+	"created": "2020-01-01",
+	"modified": "2020-01-01",
 	"relationship_type": "related-to",
 	"source_ref": "ipv4-addr--<UUID>",
 	"target_ref": "autonomous-system--<UUID>",
@@ -220,6 +220,7 @@ With relationship to IPv4:
 	]
 }
 ```
+Both `created` and `modified` are set to `2020-01-01` since the relationship between an IP address and its autonomous system is independent of when the IP is used for malicious purposes.
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
 

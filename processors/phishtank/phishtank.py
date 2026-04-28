@@ -44,6 +44,7 @@ OBJECT_MARKING_REFS_BASE = [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
 ]
+STATIC_DATE = datetime(2020, 1, 1)
 
 
 def create_phishtank_identity():
@@ -242,8 +243,8 @@ def create_stix_objects_for_phish(entry, identity_id, marking_id):
                     target_ref=asn_obj.id,
                     relationship_type="related-to",
                     created_by_ref=identity_id,
-                    created=submission_time,
-                    modified=verification_time,
+                    created=STATIC_DATE,
+                    modified=STATIC_DATE,
                     marking_refs=object_marking_refs,
                 )
             )
