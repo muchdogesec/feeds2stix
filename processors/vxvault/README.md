@@ -60,7 +60,7 @@ Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` a
 {
     "type": "marking-definition",
     "spec_version": "2.1",
-    "id": "marking-definition--edc6fa46-17ed-5b5a-91d8-6307f8f486d6",
+    "id": "marking-definition--<UUIDV5>",
     "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
     "created": "2020-01-01T00:00:00.000Z",
     "definition_type": "statement",
