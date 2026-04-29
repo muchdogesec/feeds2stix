@@ -1,3 +1,4 @@
+name: Clean up artifacts
 run-name: "Clean Hashmanager Artifacts: ${{inputs.description}}"
 
 on:
