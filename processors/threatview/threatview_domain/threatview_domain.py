@@ -4,6 +4,7 @@ import logging
 import os
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 
 import requests
 from stix2 import DomainName, Indicator, StringConstant
@@ -49,12 +50,15 @@ def create_threatview_marking_definition():
     return create_marking_definition_object(f"Origin: {THREATVIEW_DOMAIN_FEED_URL}")
 
 
-def fetch_threatview_feed():
-    """Fetch domains from ThreatView feed"""
+def fetch_threatview_feed(data_dir: Path):
+    """Fetch domains from ThreatView feed and save raw feed."""
     logger.info(f"Fetching ThreatView Domain feed from: {THREATVIEW_DOMAIN_FEED_URL}")
 
     response = requests.get(THREATVIEW_DOMAIN_FEED_URL)
     response.raise_for_status()
+
+    raw_path = data_dir / "threatview_domain_feed.txt"
+    raw_path.write_bytes(response.content)
 
     domains = [
         line.strip()
@@ -62,6 +66,7 @@ def fetch_threatview_feed():
         if line.strip() and not line.startswith("#")
     ]
 
+    logger.info(f"Saved raw feed to {raw_path}")
     logger.info(f"Found {len(domains)} domains in ThreatView feed")
     return domains
 
@@ -128,7 +133,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -137,7 +142,7 @@ def main():
         threatview_identity = create_threatview_identity()
         threatview_marking = create_threatview_marking_definition()
 
-        domains = fetch_threatview_feed()
+        domains = fetch_threatview_feed(data_dir)
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(

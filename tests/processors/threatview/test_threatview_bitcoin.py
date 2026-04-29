@@ -49,18 +49,19 @@ def test_create_threatview_marking_definition():
     }
 
 
-def test_fetch_threatview_feed():
+def test_fetch_threatview_feed(tmp_path):
     content = b"#comment\n1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\n\n1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2\n"
     with patch(
         "processors.threatview.threatview_bitcoin.threatview_bitcoin.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        items = threatview_bitcoin.fetch_threatview_feed()
+        items = threatview_bitcoin.fetch_threatview_feed(tmp_path)
 
     assert items == [
         "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
         "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
     ]
+    assert (tmp_path / "threatview_bitcoin_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

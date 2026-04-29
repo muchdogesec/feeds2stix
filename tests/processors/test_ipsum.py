@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -47,15 +48,16 @@ def test_create_ipsum_marking_definition():
     }
 
 
-def test_fetch_ipsum_feed():
+def test_fetch_ipsum_feed(tmp_path):
     content = b"#comment\n1.2.3.4\n\n5.6.7.8\n"
     with patch(
         "processors.ipsum.ipsum.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        ips = ipsum.fetch_ipsum_feed(level=8)
+        ips = ipsum.fetch_ipsum_feed(level=8, data_dir=tmp_path)
 
     assert ips == ["1.2.3.4", "5.6.7.8"]
+    assert (tmp_path / "ipsum_level_8.txt").read_bytes() == content
 
 
 def test_create_stix_objects():
@@ -155,7 +157,7 @@ def test_create_stix_objects():
     ]
 
 
-def test_fetch_all_levels():
+def test_fetch_all_levels(tmpdir):
     content_level_8 = b"1.2.3.4\n5.6.7.8\n"
     content_level_7 = b"1.2.3.4\n9.10.11.12\n"
     content_level_5 = b"13.14.15.16\n"
@@ -169,16 +171,24 @@ def test_fetch_all_levels():
             return test_utils.FakeResponse(content=b"")
         elif "levels/5.txt" in url:
             return test_utils.FakeResponse(content=content_level_5)
+        elif "levels/4.txt" in url:
+            return test_utils.FakeResponse(content=content_level_5)
         return test_utils.FakeResponse(content=b"")
 
     with patch("processors.ipsum.ipsum.requests.get", side_effect=mock_get):
-        result = ipsum.fetch_all_levels(min_level=5)
+        result = ipsum.fetch_all_levels(min_level=5, data_dir=Path(tmpdir))
 
     assert result == {
         8: ["1.2.3.4", "5.6.7.8"],
         7: ["9.10.11.12"],
         5: ["13.14.15.16"],
     }
+    assert {
+        "ipsum_level_5.txt",
+        "ipsum_level_6.txt",
+        "ipsum_level_7.txt",
+        "ipsum_level_8.txt",
+    } == set(os.listdir(tmpdir))
 
 
 def test_main_success_writes_output(monkeypatch, tmp_path):

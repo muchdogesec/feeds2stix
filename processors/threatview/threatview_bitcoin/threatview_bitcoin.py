@@ -4,6 +4,7 @@ import logging
 import os
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 
 import requests
 from stix2 import Indicator, StringConstant
@@ -50,12 +51,15 @@ def create_threatview_marking_definition():
     return create_marking_definition_object(f"Origin: {THREATVIEW_BITCOIN_FEED_URL}")
 
 
-def fetch_threatview_feed():
-    """Fetch Bitcoin wallet addresses from ThreatView feed"""
+def fetch_threatview_feed(data_dir: Path):
+    """Fetch Bitcoin wallet addresses from ThreatView feed and save raw feed."""
     logger.info(f"Fetching ThreatView Bitcoin feed from: {THREATVIEW_BITCOIN_FEED_URL}")
 
     response = requests.get(THREATVIEW_BITCOIN_FEED_URL)
     response.raise_for_status()
+
+    raw_path = data_dir / "threatview_bitcoin_feed.txt"
+    raw_path.write_bytes(response.content)
 
     wallets = [
         line.strip()
@@ -63,6 +67,7 @@ def fetch_threatview_feed():
         if line.strip() and not line.startswith("#")
     ]
 
+    logger.info(f"Saved raw feed to {raw_path}")
     logger.info(f"Found {len(wallets)} Bitcoin wallets in ThreatView feed")
     return wallets
 
@@ -129,7 +134,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -138,7 +143,7 @@ def main():
         threatview_identity = create_threatview_identity()
         threatview_marking = create_threatview_marking_definition()
 
-        wallets = fetch_threatview_feed()
+        wallets = fetch_threatview_feed(data_dir)
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(

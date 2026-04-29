@@ -47,7 +47,7 @@ def test_create_vxvault_marking_definition():
     }
 
 
-def test_fetch_vxvault_feed():
+def test_fetch_vxvault_feed(tmp_path):
     content = (
         b"#comment\nhttp://example.com/malware.exe\n\nhttps://evil.com/bad\nnotaurl\n"
     )
@@ -55,9 +55,10 @@ def test_fetch_vxvault_feed():
         "processors.vxvault.vxvault.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        urls = vxvault.fetch_vxvault_feed()
+        urls = vxvault.fetch_vxvault_feed(tmp_path)
 
     assert urls == ["http://example.com/malware.exe", "https://evil.com/bad"]
+    assert (tmp_path / "vxvault_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

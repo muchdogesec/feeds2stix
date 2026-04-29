@@ -5,7 +5,7 @@ import os
 import sys
 import uuid
 from datetime import UTC, datetime
-
+from pathlib import Path
 import requests
 from stix2 import Indicator, IPv4Address, StringConstant
 
@@ -48,12 +48,15 @@ def create_blocklist_de_marking_definition():
     return create_marking_definition_object(f"Origin: {BLOCKLIST_DE_FEED_URL}")
 
 
-def fetch_blocklist_de_feed():
-    """Fetch IP addresses from blocklist.de feed"""
+def fetch_blocklist_de_feed(data_dir: Path):
+    """Fetch IP addresses from blocklist.de feed and save raw feed."""
     logger.info(f"Fetching blocklist.de feed from: {BLOCKLIST_DE_FEED_URL}")
 
     response = requests.get(BLOCKLIST_DE_FEED_URL)
     response.raise_for_status()
+
+    raw_path = data_dir / "blocklist_de_feed.txt"
+    raw_path.write_bytes(response.content)
 
     ip_addresses = [
         line.strip()
@@ -61,6 +64,7 @@ def fetch_blocklist_de_feed():
         if line.strip() and not line.startswith("#")
     ]
 
+    logger.info(f"Saved raw feed to {raw_path}")
     logger.info(f"Found {len(ip_addresses)} IP addresses in blocklist.de feed")
     return ip_addresses
 
@@ -126,7 +130,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -135,7 +139,7 @@ def main():
         blocklist_de_identity = create_blocklist_de_identity()
         blocklist_de_marking = create_blocklist_de_marking_definition()
 
-        ip_addresses = fetch_blocklist_de_feed()
+        ip_addresses = fetch_blocklist_de_feed(data_dir)
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(

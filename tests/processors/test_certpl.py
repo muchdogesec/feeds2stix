@@ -50,15 +50,16 @@ def test_create_certpl_marking_definition():
     }
 
 
-def test_fetch_certpl_feed():
+def test_fetch_certpl_feed(tmp_path):
     content = b"#comment\nexample.com\n\nbad.example\n"
     with patch(
         "processors.certpl.certpl.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        domains = certpl.fetch_certpl_feed()
+        domains = certpl.fetch_certpl_feed(tmp_path)
 
     assert domains == ["example.com", "bad.example"]
+    assert (tmp_path / "certpl_domains.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

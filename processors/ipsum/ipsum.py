@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
 import requests
 from stix2 import Bundle, Indicator, IPv4Address, StringConstant
@@ -48,13 +49,16 @@ def create_ipsum_marking_definition():
     return create_marking_definition_object("Origin: https://github.com/stamparm/ipsum")
 
 
-def fetch_ipsum_feed(level):
-    """Fetch IP addresses from IPSum feed"""
+def fetch_ipsum_feed(level, data_dir: Path):
+    """Fetch IP addresses from IPSum feed and save raw feed."""
     url = IPSUM_FEED_URL_TEMPLATE.format(level=level)
     logger.info(f"Fetching IPSum feed from: {url}")
 
     response = requests.get(url)
     response.raise_for_status()
+
+    raw_path = data_dir / f"ipsum_level_{level}.txt"
+    raw_path.write_bytes(response.content)
 
     ip_addresses = [
         line.strip()
@@ -62,6 +66,7 @@ def fetch_ipsum_feed(level):
         if line.strip() and not line.startswith("#")
     ]
 
+    logger.info(f"Saved raw feed to {raw_path}")
     logger.info(f"Found {len(ip_addresses)} IP addresses in level {level} feed")
     return ip_addresses
 
@@ -134,7 +139,7 @@ def create_stix_objects(
     return stix_objects
 
 
-def fetch_all_levels(min_level):
+def fetch_all_levels(min_level, data_dir: Path):
     """Fetch IP addresses from all levels, starting from level 8 down to min_level"""
     logger.info(f"Fetching IPSum feeds from level 8 down to level {min_level}...")
 
@@ -142,7 +147,7 @@ def fetch_all_levels(min_level):
     ip_addresses_by_level = {}
 
     for level in range(8, min_level - 1, -1):
-        ip_addresses = fetch_ipsum_feed(level)
+        ip_addresses = fetch_ipsum_feed(level, data_dir)
         new_ips = []
 
         for ip in ip_addresses:
@@ -177,7 +182,7 @@ def main():
     min_level = args.min_level
 
     try:
-        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -186,7 +191,7 @@ def main():
         ipsum_identity = create_ipsum_identity()
         ipsum_marking = create_ipsum_marking_definition()
 
-        ip_addresses_by_level = fetch_all_levels(min_level)
+        ip_addresses_by_level = fetch_all_levels(min_level, data_dir)
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(

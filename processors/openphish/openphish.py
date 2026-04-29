@@ -68,6 +68,7 @@ def clone_or_update_repo(repo_path, repo_url):
         logger.info(f"Cloning repository from {repo_url}...")
         repo = Repo.clone_from(repo_url, repo_path)
     logger.info("Repository ready")
+    logger.info("HEAD commit id: %s", repo.head.commit.hexsha)
     return repo
 
 

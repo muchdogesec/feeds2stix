@@ -64,7 +64,7 @@ def create_phishtank_marking_definition():
     return create_marking_definition_object(f"Origin: {FEED_URL}")
 
 
-def fetch_phishtank_data():
+def fetch_phishtank_data(data_dir: Path):
     headers = {"User-Agent": "feeds2stix/1.0"}
     url = FEED_URL
     if os.getenv("PHISHTANK_API_KEY"):
@@ -72,9 +72,14 @@ def fetch_phishtank_data():
     logger.info(f"Fetching PhishTank data from {url}")
     response = requests.get(url, headers=headers, timeout=120)
     response.raise_for_status()
+
+    raw_path = data_dir / "phishtank_online-valid.json.gz"
+    raw_path.write_bytes(response.content)
+
     gzip_content = response.content
     gzip_file = gzip.GzipFile(fileobj=io.BytesIO(gzip_content))
     data = json.load(gzip_file)
+    logger.info(f"Saved raw feed to {raw_path}")
     return data
 
 
@@ -308,7 +313,7 @@ def main():
 
     since_date = args.since_date and args.since_date.replace(tzinfo=UTC)
 
-    bundles_dir, _data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
+    bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
 
     identity = create_phishtank_identity()
     marking = create_phishtank_marking_definition()
@@ -317,7 +322,7 @@ def main():
         fetch_attack_pattern()
     )  # cache this to avoid repeated CTI Butler calls
 
-    data = fetch_phishtank_data()
+    data = fetch_phishtank_data(data_dir)
     logger.info(f"Fetched {len(data)} entries from PhishTank")
 
     data = list(filter_entries_by_date(data, since_date))
