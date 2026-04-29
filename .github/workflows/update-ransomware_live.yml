@@ -141,6 +141,6 @@ jobs:
         with:
           name: ransomware-live-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

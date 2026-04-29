@@ -49,15 +49,16 @@ def test_create_cinsscore_marking_definition():
     }
 
 
-def test_fetch_cinsscore_feed():
+def test_fetch_cinsscore_feed(tmp_path):
     content = b"#comment\n1.2.3.4\n\n5.6.7.8\n"
     with patch(
         "processors.cinsscore.cinsscore.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        ips = cinsscore.fetch_cinsscore_feed()
+        ips = cinsscore.fetch_cinsscore_feed(tmp_path)
 
     assert ips == ["1.2.3.4", "5.6.7.8"]
+    assert (tmp_path / "cinsscore_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

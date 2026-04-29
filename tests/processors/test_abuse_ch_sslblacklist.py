@@ -66,7 +66,7 @@ def test_clean_listing_reason(subtests):
         assert sslblacklist.split_listing_reason("something else") == ("Unknown", None)
 
 
-def test_fetch_sslbl_feed():
+def test_fetch_sslbl_feed(tmp_path):
     content = (
         b"#comment\n"
         b"2026-01-01 12:00:00,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,MyFamily C&C\n"
@@ -76,7 +76,7 @@ def test_fetch_sslbl_feed():
         "processors.abuse_ch_sslblacklist.sslblacklist.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        records = sslblacklist.fetch_sslbl_feed()
+        records = sslblacklist.fetch_sslbl_feed(tmp_path)
 
     assert records == {
         "MyFamily": [
@@ -87,6 +87,7 @@ def test_fetch_sslbl_feed():
             }
         ]
     }
+    assert (tmp_path / "sslblacklist.csv").read_bytes() == content
 
 
 def test_format_fingerprint():

@@ -4,6 +4,7 @@ import argparse
 import csv
 import logging
 import os
+from pathlib import Path
 import re
 import sys
 from collections import defaultdict
@@ -70,12 +71,15 @@ def split_listing_reason(reason):
         return "Unknown", None
 
 
-def fetch_sslbl_feed():
-    """Download and parse the CSV data"""
+def fetch_sslbl_feed(data_dir: Path):
+    """Download and parse the CSV data and save raw feed."""
     logger.info(f"Fetching SSLBL feed from: {CSV_URL}")
 
     response = requests.get(CSV_URL)
     response.raise_for_status()
+
+    raw_path = data_dir / "sslblacklist.csv"
+    raw_path.write_bytes(response.content)
 
     lines = response.text.splitlines()
     retval = defaultdict(list)
@@ -327,7 +331,7 @@ def main():
     start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
-    bundle_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+    bundle_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
     # Create identity and marking definition objects
     abuse_ch_identity = create_abuse_ch_identity()
@@ -337,7 +341,7 @@ def main():
     feeds2stix_marking = fetch_external_objects()
 
     # Fetch and parse CSV data
-    malware_mapping = fetch_sslbl_feed()
+    malware_mapping = fetch_sslbl_feed(data_dir)
     bundle_path = bundle_dir
 
     objects_by_malwares = create_all_stix_objects(
