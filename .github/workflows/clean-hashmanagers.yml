@@ -76,7 +76,7 @@ jobs:
           # Add option to clean failed bundles' artifacts
 
           if ${{ inputs.clean_dupe_db }}; then
-            CMD="$CMD --dupe"
+            CMD="$CMD --dupedb"
           fi
 
           # Add feeds filter if specified
