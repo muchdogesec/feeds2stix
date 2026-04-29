@@ -16,15 +16,15 @@ on:
         required: false
         type: boolean
         default: true
+      clean_dupe_db:
+        description: 'Clean dupedb artifacts'
+        required: true
+        default: true
+        type: boolean
       clean_failure_bundles:
         description: 'Whether or not to also clean artifacts representing failed uploads'
         required: true
         default: false
-        type: boolean
-      clean_dupe_db:
-        description: 'Whether or not to also clean artifacts representing failed uploads'
-        required: true
-        default: true
         type: boolean
 
 permissions:
