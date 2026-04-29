@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt https://github.com/muchdogesec/ransomware2stix/archive/refs/heads/main.zip
 
       - name: Get time for latest victim processed in feed
         id: last_run

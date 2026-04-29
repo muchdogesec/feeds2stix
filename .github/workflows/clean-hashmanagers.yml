@@ -1,8 +1,11 @@
-name: Clean Hashmanager Artifacts
-
+name: Clean up artifacts
+run-name: "${{ inputs.dry_run && '🚧 DRY RUN — ' || '' }}Clean up Artifacts: ${{ inputs.description }}"
 on:
   workflow_dispatch:
     inputs:
+      description:
+        description: description of task being done, i.e name of the feeds being removed.
+        required: true
       name_contains:
         description: 'Filter artifacts by substring in name (e.g., staging, production, ipsum). Leave empty for all.'
         required: false
@@ -16,6 +19,16 @@ on:
         required: false
         type: boolean
         default: true
+      clean_dupe_db:
+        description: 'Clean dupedb artifacts'
+        required: true
+        default: true
+        type: boolean
+      clean_failure_bundles:
+        description: 'Whether or not to also clean artifacts representing failed uploads'
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   actions: write
@@ -56,7 +69,19 @@ jobs:
           if [ -n "${{ inputs.name_contains }}" ]; then
             CMD="$CMD --name-contains '${{ inputs.name_contains }}'"
           fi
+
+          # Add option to clean failed bundles' artifacts
+
+          if ${{ inputs.clean_failure_bundles }}; then
+            CMD="$CMD --failed"
+          fi
           
+          # Add option to clean failed bundles' artifacts
+
+          if ${{ inputs.clean_dupe_db }}; then
+            CMD="$CMD --dupedb"
+          fi
+
           # Add feeds filter if specified
           if [ -n "${{ inputs.feeds }}" ]; then
             CMD="$CMD --feeds ${{ inputs.feeds }}"

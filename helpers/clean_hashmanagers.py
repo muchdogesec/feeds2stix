@@ -7,8 +7,8 @@ GitHub Actions, with optional filtering by artifact name.
 
 Usage:
     python helpers/clean_hashmanagers.py
-    python helpers/clean_hashmanagers.py --name-contains staging
-    python helpers/clean_hashmanagers.py --name-contains ipsum --dry-run
+    python helpers/clean_hashmanagers.py --name-contains staging --dupe
+    python helpers/clean_hashmanagers.py --name-contains ipsum --dry-run --failed --dupe
 
 Examples:
     # Delete all hashmanager artifacts
@@ -70,11 +70,12 @@ def list_all_artifacts(token: str) -> list[dict]:
 
 
 def filter_hashmanager_artifacts(
+    ends: list[str],
     artifacts: list[dict], 
     name_contains: Optional[str] = None,
     feeds: Optional[list[str]] = None
 ) -> list[dict]:
-    """Filter artifacts to only include hashmanager artifacts ending with _dupedb.
+    """Filter artifacts to only include hashmanager artifacts ending with one of ends.
     
     Args:
         artifacts: List of all artifacts
@@ -89,7 +90,10 @@ def filter_hashmanager_artifacts(
     for artifact in artifacts:
         name = artifact.get("name", "")
         
-        if not name.endswith("_dupedb"):
+        for end in ends:
+            if name.endswith(end):
+                break
+        else:
             continue
         
         if name_contains and name_contains not in name:
@@ -281,6 +285,16 @@ def main():
         action="store_true",
         help="Enable verbose logging",
     )
+    parser.add_argument(
+        '--failed',
+        action='store_true',
+        help="Also remove bundles that end in `_failed`"
+    )
+    parser.add_argument(
+        '--dupedb',
+        action='store_true',
+        help="Also remove bundles that end in `_dupedb`"
+    )
     
     args = parser.parse_args()
     
@@ -290,6 +304,20 @@ def main():
         format="%(asctime)s [%(levelname)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+
+    ends = []
+    if args.failed:
+        ends.append('_failed')
+    if args.dupedb:
+        ends.append('_dupedb')
+
+    if not ends:
+        print("User must pass --failed and/or --dupedb")
+        parser.print_help()
+        print("User must pass --failed and/or --dupedb")
+        sys.exit(10)
+    
     
     gh_token = os.getenv("GITHUB_TOKEN")
     if not gh_token:
@@ -314,8 +342,9 @@ def main():
         logger.info("Filter: ALL hashmanager artifacts")
     logger.info(f"Dry run: {args.dry_run}")
     logger.info(f"{'='*80}\n")
-    
+
     filter_desc, hashmanager_artifacts = filter_hashmanager_artifacts(
+        ends,
         all_artifacts, name_contains=args.name_contains, feeds=args.feeds
     )
     
