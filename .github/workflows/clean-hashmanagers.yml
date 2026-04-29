@@ -1,8 +1,11 @@
-name: Clean Hashmanager Artifacts
+run-name: "Clean Hashmanager Artifacts: ${{inputs.description}}"
 
 on:
   workflow_dispatch:
     inputs:
+      description:
+        description: description of task being done, i.e name of the feeds being removed.
+        required: true
       name_contains:
         description: 'Filter artifacts by substring in name (e.g., staging, production, ipsum). Leave empty for all.'
         required: false
