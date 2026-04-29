@@ -1,6 +1,5 @@
 name: Clean up artifacts
-run-name: "Clean Hashmanager Artifacts: ${{inputs.description}}"
-
+run-name: "${{ inputs.dry_run && '🚧 DRY RUN — ' || '' }}Clean up Artifacts: ${{ inputs.description }}"
 on:
   workflow_dispatch:
     inputs:
