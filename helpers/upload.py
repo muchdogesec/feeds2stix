@@ -360,14 +360,14 @@ def move_failed_bundle(bundle_file, current_run_id, failed_bundles_dir):
         return None
     bundle_stem = Path(bundle_file).stem
     run_id_match = RUN_ID_RE.search(bundle_stem)
-    retry_count = 0
+    retry_count = 1
     run_id = current_run_id
     if run_id_match:
         run_id = run_id_match.group(1)
         retry_count = int(run_id_match.group(2)) + 1
         bundle_stem = bundle_stem.rsplit("--run-", 1)[0]
 
-    if retry_count > MAX_RETRIES:
+    if retry_count >= MAX_RETRIES + 1:
         logger.warning(f"Bundle {bundle_file} has already been retried {retry_count} times, will not be retried next step")
         return None
 
