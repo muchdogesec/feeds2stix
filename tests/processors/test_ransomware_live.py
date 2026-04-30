@@ -153,7 +153,7 @@ def test_main_no_args_passes_none_dates_and_empty_groups(monkeypatch, tmp_path):
     args = captured[0]
     assert args.min_discovered is None
     assert args.max_discovered is None
-    assert args.groups == []
+    assert args.groups == None
 
 
 def test_main_no_github_output_env_does_not_fail(monkeypatch, tmp_path):

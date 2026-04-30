@@ -67,11 +67,14 @@ def main():
         )
 
     # Parse since_date if provided
+    process_all_ransomnotes = datetime.now(UTC).hour == 12
+    # process_all_ransomnotes if it's the day's first run
 
     args = ransomware2stix_main.Args(
         min_discovered=parsed_args.since_date,
         max_discovered=parsed_args.until_date,
-        groups=parsed_args.groups or [],
+        groups=parsed_args.groups or None,
+        process_all_ransomnotes=process_all_ransomnotes,
     )
 
     # Setup output directory
