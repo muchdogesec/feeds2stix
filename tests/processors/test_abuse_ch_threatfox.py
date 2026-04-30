@@ -272,7 +272,7 @@ def test_create_indicator_object_for_ip_port_uses_observables():
     ]
 
 
-def test_process_records_creates_malware_indicator_and_relationships():
+def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_marking):
     records = [
         {
             "first_seen_utc": datetime(2024, 7, 16, 6, 45, 19, tzinfo=UTC),
@@ -310,19 +310,6 @@ def test_process_records_creates_malware_indicator_and_relationships():
 
     source_identity = threatfox.create_threatfox_identity()
     source_marking = threatfox.create_threatfox_marking_definition()
-    feeds2stix_marking = {
-        "type": "marking-definition",
-        "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        "spec_version": "2.1",
-        "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-        "created": "2020-01-01T00:00:00.000Z",
-        "definition_type": "statement",
-        "definition": {"statement": "feeds2stix"},
-        "object_marking_refs": [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-        ],
-    }
 
     with patch(
         "processors.abuse_ch_threatfox.threatfox.OUTPUT_DIR", "outputs/test_threatfox"
@@ -398,6 +385,49 @@ def test_process_records_creates_malware_indicator_and_relationships():
             "malware--a05524fe-e18a-5e3f-accd-e472771a32be",
         ),
     }
+
+
+def test_process_records_returns_empty_list_when_all_records_filtered_by_start_date(feeds2stix_marking):
+    """Test that process_records returns empty list when all records are before start_date."""
+    # Records with timestamps in July 2024
+    records = [
+        {
+            "first_seen_utc": datetime(2024, 7, 16, 6, 45, 19, tzinfo=UTC),
+            "ioc_id": "1",
+            "ioc_value": "http://bad.test/a",
+            "ioc_type": "url",
+            "threat_type": "botnet_cc",
+            "fk_malware": "win.lokipws",
+            "malware_alias": "Loki",
+            "malware_printable": "Loki Password Stealer (PWS)",
+            "last_seen_utc": datetime(2024, 7, 16, 8, 11, 39, tzinfo=UTC),
+            "confidence_level": 75,
+            "reference": "https://ref.test/1",
+            "tags": "lokibot",
+            "anonymous": "0",
+            "reporter": "abuse_ch",
+        },
+    ]
+
+    source_identity = threatfox.create_threatfox_identity()
+    source_marking = threatfox.create_threatfox_marking_definition()
+
+    # Use a start_date after all records (January 2025)
+    start_date = datetime(2025, 1, 1, tzinfo=UTC)
+
+    with patch(
+        "processors.abuse_ch_threatfox.threatfox.OUTPUT_DIR", "outputs/test_threatfox"
+    ):
+        bundle_paths = threatfox.process_records(
+            "Loki Password Stealer (PWS)",
+            records,
+            source_identity,
+            source_marking,
+            feeds2stix_marking,
+            start_date=start_date,
+        )
+
+    assert bundle_paths == []
 
 
 def test_main_writes_outputs(monkeypatch, tmp_path):

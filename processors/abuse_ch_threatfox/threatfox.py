@@ -431,10 +431,10 @@ def process_records(
     processed_records = 0
     for record in records:
         try:
-            processed_records += 1
             if start_date and record["first_seen_utc"] < start_date:
                 continue
             flush_bundle()
+            processed_records += 1
 
             observables = create_observables_for_record(record)
             if not observables:
