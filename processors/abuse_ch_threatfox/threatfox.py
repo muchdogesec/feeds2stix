@@ -408,6 +408,9 @@ def process_records(
             return
         if not force and len(all_stix_objects) < 10000:
             return
+        
+        if not all_stix_objects:
+            return
 
         bundle = create_bundle_with_metadata(
             all_stix_objects,
@@ -468,7 +471,7 @@ def process_records(
             msg = f"Error processing record on line {record.get('line_number')}: {record['raw']}"
             raise BadRecordException(msg) from e
 
-    if malware_name != "Unknown":
+    if processed_records and malware_name != "Unknown":
         for obj in create_malware_objects(
             malware_name,
             records,
