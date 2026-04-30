@@ -562,7 +562,7 @@ def test_main_exits_nonzero_when_bundle_load_fails(monkeypatch, tmp_path):
 # ── Failed bundle tests ─────────────────────────────────────────────────
 
 
-def test_move_failed_bundle_basic(tmp_path):
+def test_move_failed_bundle__starts_at_1(tmp_path):
     failed_dir = tmp_path / "failed"
     failed_dir.mkdir()
 
@@ -574,7 +574,7 @@ def test_move_failed_bundle_basic(tmp_path):
     assert result is not None
     assert Path(result).exists()
     # Should have incremented retry count
-    assert Path(result).name == "bundle--run-123_failed-0.json"
+    assert Path(result).name == "bundle--run-123_failed-1.json"
 
 
 def test_move_failed_bundle_increments_retry(tmp_path):
@@ -592,7 +592,7 @@ def test_move_failed_bundle_increments_retry(tmp_path):
     assert Path(result).name == "bundle--run-456_failed-2.json"
 
 
-def test_move_failed_bundle_exceeds_max_retries(tmp_path):
+def test_move_failed_bundle_stops_at_3(tmp_path):
     failed_dir = tmp_path / "failed"
     failed_dir.mkdir()
 
