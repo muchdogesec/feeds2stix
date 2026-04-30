@@ -73,7 +73,7 @@ def main():
     args = ransomware2stix_main.Args(
         min_discovered=parsed_args.since_date,
         max_discovered=parsed_args.until_date,
-        groups=parsed_args.groups or [],
+        groups=parsed_args.groups or None,
         process_all_ransomnotes=process_all_ransomnotes,
     )
 
