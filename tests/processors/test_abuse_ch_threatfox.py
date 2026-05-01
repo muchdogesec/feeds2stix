@@ -319,7 +319,7 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
             "last_seen_utc": datetime(2024, 7, 16, 8, 11, 39, tzinfo=UTC),
             "confidence_level": 75,
             "reference": "https://ref.test/1",
-            "tags": "lokibot",
+            "tags": "lokibot,AS1019",
             "anonymous": "0",
             "reporter": "abuse_ch",
         },
@@ -335,7 +335,7 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
             "last_seen_utc": datetime(2024, 7, 16, 5, 25, 36, tzinfo=UTC),
             "confidence_level": 100,
             "reference": None,
-            "tags": "lokibot,stealer",
+            "tags": "lokibot,stealer,AS1149",
             "anonymous": "0",
             "reporter": "abuse_ch",
         },
@@ -362,8 +362,9 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
     rels = {
         o["id"]: (o["source_ref"], o["relationship_type"], o["target_ref"])
         for o in objects
-        if o["type"] == "relationship"
+        if o["type"] == "relationship" and not o['source_ref'].startswith('autonomous-')
     }
+
     malware = [obj for obj in objects if obj["type"] == "malware"][0]
     assert malware == {
         "type": "malware",
@@ -421,6 +422,12 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
             "malware--a05524fe-e18a-5e3f-accd-e472771a32be",
         ),
     }
+    for o in objects:
+        if not (o["type"] == "relationship" and o['source_ref'].startswith('autonomous-')):
+            continue
+        assert o['created'] == malware['created'], "autonomous-system relationships must carry the same created time as malware"
+        assert o['modified'] == malware['modified'], "autonomous-system relationships must carry the same modified time as malware"
+
 
 
 def test_process_records_returns_empty_list_when_all_records_filtered_by_start_date(feeds2stix_marking):
