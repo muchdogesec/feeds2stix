@@ -20,6 +20,10 @@ on:
         required: false
         type: string
         default: 'auto'
+      until_date:
+        description: 'End date for filtering certificates (YYYY-MM-DD[T[HH:MM[:SS]]]). Leave empty to process all records until now.'
+        required: false
+        type: string
 
 jobs:
   process-and-upload:
@@ -72,6 +76,9 @@ jobs:
             fi
           elif [ -n "$start_date" ]; then
             CMD="$CMD --start-date '$start_date'"
+          fi
+          if [ -n "${{ inputs.until_date }}" ]; then
+            CMD="$CMD --until-date '${{ inputs.until_date }}'"
           fi
           
           echo "Running: $CMD"

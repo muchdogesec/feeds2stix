@@ -39,6 +39,8 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -386,6 +388,7 @@ def process_records(
     source_marking: object,
     feeds2stix_marking: dict,
     start_date: datetime = None,
+    until_date: datetime = None,
 ) -> List[str]:
     """Process records for a single malware name and create one or more bundles."""
     logger.info(f"Processing malware_printable: {malware_name} with {len(records)} records")
@@ -430,15 +433,19 @@ def process_records(
 
     processed_records = 0
     for record in records:
+        modified_time = record['last_seen_utc'] or record['first_seen_utc']
+        record['modified_time'] = modified_time
         try:
-            if start_date and record["first_seen_utc"] < start_date:
+            if start_date and modified_time < start_date:
+                continue
+            if until_date and modified_time > until_date:
                 continue
             flush_bundle()
-            processed_records += 1
 
             observables = create_observables_for_record(record)
             if not observables:
                 continue
+            processed_records += 1
 
             indicator = create_indicator_object(
                 record,
@@ -503,12 +510,17 @@ def main():
     parser.add_argument(
         "--start-date",
         "--start_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only include records with first_seen_utc after this date (YYYY-MM-DD[T[HH:MM[:SS]]])",
+    )
+    parser.add_argument(
+        "--until-date",
+        "--until_date",
+        type=parse_until_date,
+        help="Only include records with first_seen_utc on or before this date (YYYY-MM-DD[T[HH:MM[:SS]]])",
     )
 
     args = parser.parse_args()
-    args.start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
     target_malware = args.malware_printable or args.signature
 
     bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
@@ -531,6 +543,7 @@ def main():
             source_marking,
             feeds2stix_marking,
             start_date=args.start_date,
+            until_date=args.until_date,
         )
 
     logger.info("Processing complete")

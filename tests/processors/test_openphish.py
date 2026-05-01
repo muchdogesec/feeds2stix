@@ -340,6 +340,27 @@ def test_get_lines_since_date_filters_by_date(tmp_git_repo):
     }
 
 
+def test_get_lines_since_date_filters_by_until_date(tmp_git_repo):
+    repo, file_path = tmp_git_repo
+
+    # Test until_date = Jan 15 should include only URLs added on or before Jan 15
+    until_date = openphish.parse_until_date("2026-01-15").replace(tzinfo=UTC)
+    result_filtered = openphish.get_lines_since_date(repo, file_path, until_date=until_date)
+    assert len(result_filtered) == 7
+    assert "http://url10.example.com" not in result_filtered
+    assert "http://url7.example.com" in result_filtered
+
+    # Test since_date and until_date range filter
+    since_date = datetime(2026, 1, 5, tzinfo=UTC)
+    result_range = openphish.get_lines_since_date(
+        repo, file_path, since_date=since_date, until_date=until_date
+    )
+    assert "http://url3.example.com" in result_range
+    assert "http://url10.example.com" not in result_range
+    for url, (_, date) in result_range.items():
+        assert since_date <= date <= until_date
+
+
 def test_main_success_writes_output(monkeypatch, tmp_path):
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))

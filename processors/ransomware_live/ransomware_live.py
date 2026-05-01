@@ -11,6 +11,8 @@ from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date
 )
 
 logging.basicConfig(
@@ -40,13 +42,13 @@ def main():
     parser.add_argument(
         "--since-date",
         "--since_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only process URLs added since this date (YYYY-MM-DD format)",
     )
     parser.add_argument(
         "--until-date",
         "--until_date",
-        type=datetime.fromisoformat,
+        type=parse_until_date,
         help="Only process URLs added until this date (YYYY-MM-DD format)",
     )
     parser.add_argument(

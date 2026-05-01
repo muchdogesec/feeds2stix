@@ -275,6 +275,39 @@ def test_create_indicator_object_for_ip_port_uses_observables():
 def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_marking):
     records = [
         {
+            "first_seen_utc": datetime(2024, 6, 16, 6, 45, 19, tzinfo=UTC),
+            "ioc_id": "1",
+            "ioc_value": "http://bad.test/a",
+            "ioc_type": "url",
+            "threat_type": "botnet_cc",
+            "fk_malware": "win.lokipws",
+            "malware_alias": "Burkina,Loki",
+            "malware_printable": "Loki Password Stealer (PWS)",
+            "last_seen_utc": datetime(2024, 6, 16, 8, 11, 39, tzinfo=UTC),
+            "confidence_level": 75,
+            "reference": "https://ref.test/1",
+            "tags": "lokibot",
+            "anonymous": "0",
+            "reporter": "abuse_ch",
+        }, # skipped because of start_date
+
+        {
+            "first_seen_utc": datetime(2024, 7, 16, 6, 45, 19, tzinfo=UTC),
+            "ioc_id": "1",
+            "ioc_value": "http://bad.test/a",
+            "ioc_type": "url",
+            "threat_type": "botnet_cc",
+            "fk_malware": "win.lokipws",
+            "malware_alias": "Burkina,Loki",
+            "malware_printable": "Loki Password Stealer (PWS)",
+            "last_seen_utc": datetime(2025, 7, 16, 8, 11, 39, tzinfo=UTC),
+            "confidence_level": 75,
+            "reference": "https://ref.test/1",
+            "tags": "lokibot",
+            "anonymous": "0",
+            "reporter": "abuse_ch",
+        }, # skipped by until_date
+        {
             "first_seen_utc": datetime(2024, 7, 16, 6, 45, 19, tzinfo=UTC),
             "ioc_id": "1",
             "ioc_value": "http://bad.test/a",
@@ -320,6 +353,8 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
             source_identity,
             source_marking,
             feeds2stix_marking,
+            start_date=datetime(2024, 7, 16, 5, 11, 39, tzinfo=UTC),
+            until_date=datetime(2025, 6, 16, 8, 11, 39, tzinfo=UTC)
         )
 
     assert len(bundle_paths) == 1
@@ -335,8 +370,8 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
         "spec_version": "2.1",
         "id": "malware--a05524fe-e18a-5e3f-accd-e472771a32be",
         "created_by_ref": "identity--0619d6fb-5e76-5b35-87b9-a637bc2a0d95",
-        "created": "2024-07-16T05:25:36.000Z",
-        "modified": "2024-07-16T08:11:39.000Z",
+        "created": "2024-06-16T06:45:19.000Z", # time is used even still
+        "modified": "2025-07-16T08:11:39.000Z", # time is used even though record itself is skipped
         "name": "Loki Password Stealer (PWS)",
         "malware_types": ["unknown"],
         "is_family": True,
@@ -353,6 +388,7 @@ def test_process_records_creates_malware_indicator_and_relationships(feeds2stix_
             "marking-definition--da914f6d-2b1b-5713-bac0-b7e55284e9ed",
         ],
     }
+    print(rels)
     assert rels == {
         "relationship--cac27e27-f9f5-5afe-8667-a1bdac64445d": (
             "indicator--92a9b7fd-e65b-50f4-9097-852ef5082727",

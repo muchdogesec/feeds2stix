@@ -90,6 +90,39 @@ def test_filter_entries_by_date():
     assert "modified_time" in filtered[0]
 
 
+def test_filter_entries_by_since_and_until_date():
+    from datetime import datetime, UTC
+
+    entries = [
+        {
+            "submission_time": "2026-01-01T00:00:00+00:00",
+            "verification_time": "2026-01-02T00:00:00+00:00",
+            "details": [{"detail_time": "2026-01-03T00:00:00+00:00"}],
+        },
+        {
+            "submission_time": "2026-01-09T00:00:00+00:00",
+            "verification_time": "2026-01-10T00:00:00+00:00",
+            "details": [],
+        },
+        {
+            "submission_time": "2025-12-31T23:59:59+00:00",
+        },
+        {
+            "submission_time": "2025-12-31T23:59:59+00:00",
+            "verification_time": "2026-01-10T00:00:00+00:00",
+            "details": [{"detail_time": "2027-01-03T00:00:00+00:00"}], # skipped because detail_time is higher
+        },
+    ]
+    since_date = datetime(2026, 1, 1, tzinfo=UTC)
+    until_date = datetime(2026, 1, 10, tzinfo=UTC)
+
+    filtered = list(phishtank.filter_entries_by_date(entries, since_date, until_date))
+    assert len(filtered) == 2
+    assert all(since_date <= entry["modified_time"] <= until_date for entry in filtered)
+    assert filtered[0]["submission_time"] == "2026-01-01T00:00:00+00:00"
+    assert filtered[1]["submission_time"] == "2026-01-09T00:00:00+00:00"
+
+
 def test_create_stix_objects_for_phish_verified():
     entry = {
         "phish_id": 12345,

@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 import json
 import os
 from pathlib import Path
@@ -107,3 +108,14 @@ def test_make_relationship():
     )
     assert rel.type == "relationship"
     assert rel.relationship_type == "indicates"
+
+
+def test_parse_until_date():
+    """Test parse_until_date expands date-only to end of day."""
+    # Date only should expand to 23:59:59.999999
+    result = h.parse_until_date("2026-01-15")
+    assert result == datetime(2026, 1, 15, 23, 59, 59, 999999, tzinfo=UTC)
+    
+    # With time should preserve exact time
+    result = h.parse_until_date("2026-01-15 12:30:45")
+    assert result == datetime(2026, 1, 15, 12, 30, 45, tzinfo=UTC)
