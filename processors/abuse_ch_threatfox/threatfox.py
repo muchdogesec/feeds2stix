@@ -23,7 +23,7 @@ from stix2 import (
     Malware,
     NetworkTraffic,
     URL,
-    AutonomousSystem
+    AutonomousSystem,
 )
 from stix2.patterns import StringConstant
 
@@ -53,6 +53,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class BadRecordException(Exception):
     pass
@@ -122,7 +123,9 @@ def mapper(value):
     return value.strip()
 
 
-def parse_csv_data(csv_path: Path) -> Tuple[datetime, Dict[str, List[Dict[str, object]]]]:
+def parse_csv_data(
+    csv_path: Path,
+) -> Tuple[datetime, Dict[str, List[Dict[str, object]]]]:
     """Parse CSV data and group records by malware_printable."""
     by_malware = defaultdict(list)
     latest_timestamp = None
@@ -153,11 +156,19 @@ def parse_csv_data(csv_path: Path) -> Tuple[datetime, Dict[str, List[Dict[str, o
             first_seen = parse_timestamp(record["first_seen_utc"])
 
             record["first_seen_utc"] = first_seen
-            record["last_seen_utc"] = parse_timestamp(record["last_seen_utc"]) if record.get("last_seen_utc") else first_seen
-            record["confidence_level"] = int(record["confidence_level"]) if record.get("confidence_level") else None
+            record["last_seen_utc"] = (
+                parse_timestamp(record["last_seen_utc"])
+                if record.get("last_seen_utc")
+                else first_seen
+            )
+            record["confidence_level"] = (
+                int(record["confidence_level"])
+                if record.get("confidence_level")
+                else None
+            )
             record["malware_printable"] = record.get("malware_printable") or "Unknown"
-            record['raw'] = line_raw
-            record['line_number'] = line_number
+            record["raw"] = line_raw
+            record["line_number"] = line_number
 
             by_malware[record["malware_printable"]].append(record)
             total_records += 1
@@ -190,21 +201,17 @@ def _network_protocols(dst_port: int) -> List[str]:
     return ["tcp"]
 
 
-
 def create_observables_for_record(record: Dict[str, object]) -> List[object]:
     ioc_type = record["ioc_type"]
     ioc_value = record["ioc_value"]
 
     tags = _split_csv_list(record.get("tags"))
-    
-            
+
     objects = []
     for tag in tags:
         if AS_MATCH_RE.match(tag):
             asn = AS_MATCH_RE.match(tag).group(1)
-            objects.append(
-                AutonomousSystem(number=int(asn), name=f"AS{asn}")
-            )
+            objects.append(AutonomousSystem(number=int(asn), name=f"AS{asn}"))
     match ioc_type:
         case "url":
             objects.append(URL(value=ioc_value))
@@ -232,15 +239,17 @@ def create_observables_for_record(record: Dict[str, object]) -> List[object]:
 
 
 def _build_indicator_pattern(observables: List[object]) -> str:
-    ipv4_values = {ipaddr.id: ipaddr.value for ipaddr in observables if isinstance(ipaddr, (IPv4Address, IPv6Address))}
+    ipv4_values = {
+        ipaddr.id: ipaddr.value
+        for ipaddr in observables
+        if isinstance(ipaddr, (IPv4Address, IPv6Address))
+    }
     patterns = []
 
     for observable in observables:
         match observable.type:
             case "url":
-                patterns.append(
-                    f"url:value = {StringConstant(observable.value)}"
-                )
+                patterns.append(f"url:value = {StringConstant(observable.value)}")
             case "domain-name":
                 patterns.append(
                     f"domain-name:value = {StringConstant(observable.value)}"
@@ -252,12 +261,11 @@ def _build_indicator_pattern(observables: List[object]) -> str:
                     )
             case "network-traffic":
                 ipvalue = ipv4_values.get(observable.dst_ref)
-                ip_pattern = f'network-traffic:dst_port = {observable.dst_port}'
+                ip_pattern = f"network-traffic:dst_port = {observable.dst_port}"
                 if ipvalue:
-                    ip_pattern += f' AND network-traffic:dst_ref.value = {StringConstant(ipvalue)}'
+                    ip_pattern += f" AND network-traffic:dst_ref.value = {StringConstant(ipvalue)}"
                     ip_pattern = f"( {ip_pattern} )"
                 patterns.append(ip_pattern)
-
 
     if not patterns:
         raise ValueError("Unable to build indicator pattern from observables")
@@ -327,21 +335,34 @@ def create_malware_objects(
 
     created = min(record["first_seen_utc"] for record in records)
     modified = max(record["last_seen_utc"] for record in records)
-    fk_malware = None
+    fk_malware = set()
     aliases = set()
 
     for record in records:
         created = min(created, record["first_seen_utc"])
         modified = max(modified, record["last_seen_utc"])
-        fk_malware = fk_malware or record.get("fk_malware")
+        if record.get("fk_malware"):
+            fk_malware.add(record["fk_malware"])
         aliases.update(_split_csv_list(record.get("malware_alias")))
 
     aliases.discard(malware_name)
     aliases = sorted(aliases)
 
-    malware_types = sorted({guess_malware_type(malware_name) for malware_name in aliases + [malware_name]})
+    malware_types = sorted(
+        {guess_malware_type(malware_name) for malware_name in aliases + [malware_name]}
+    )
     if len(malware_types) > 1:
         malware_types.remove("unknown")
+
+    external_refs = []
+
+    for fk in fk_malware:
+        external_refs.append(
+            {
+                "source_name": "malpedia",
+                "external_id": f"https://malpedia.caad.fkie.fraunhofer.de/details/{fk}",
+            }
+        )
 
     malware = Malware(
         id="malware--" + generate_uuid5(malware_name, namespace=source_marking_id),
@@ -352,16 +373,7 @@ def create_malware_objects(
         malware_types=malware_types,
         aliases=aliases or None,
         is_family=True,
-        external_references=(
-            [
-                {
-                    "source_name": "malpedia",
-                    "external_id": f"https://malpedia.caad.fkie.fraunhofer.de/details/{fk_malware}",
-                }
-            ]
-            if fk_malware
-            else None
-        ),
+        external_references=external_refs,
         object_marking_refs=object_marking_refs,
     )
 
@@ -371,15 +383,18 @@ def create_malware_objects(
             reltype = "indicates"
         else:
             reltype = "related-to"
+        if obj_id.startswith("autonomous-system"):
+            created, modified = malware.created, malware.modified
         yield make_relationship(
-                source_ref=obj_id,
-                target_ref=malware.id,
-                relationship_type=reltype,
-                created_by_ref=source_identity_id,
-                marking_refs=object_marking_refs,
-                created=created,
-                modified=modified,
-            )
+            source_ref=obj_id,
+            target_ref=malware.id,
+            relationship_type=reltype,
+            created_by_ref=source_identity_id,
+            marking_refs=object_marking_refs,
+            created=created,
+            modified=modified,
+        )
+
 
 def process_records(
     malware_name: str,
@@ -391,7 +406,9 @@ def process_records(
     until_date: datetime = None,
 ) -> List[str]:
     """Process records for a single malware name and create one or more bundles."""
-    logger.info(f"Processing malware_printable: {malware_name} with {len(records)} records")
+    logger.info(
+        f"Processing malware_printable: {malware_name} with {len(records)} records"
+    )
 
     object_marking_refs = [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -411,7 +428,7 @@ def process_records(
             return
         if not force and len(all_stix_objects) < 10000:
             return
-        
+
         if not all_stix_objects:
             return
 
@@ -433,8 +450,8 @@ def process_records(
 
     processed_records = 0
     for record in records:
-        modified_time = record['last_seen_utc'] or record['first_seen_utc']
-        record['modified_time'] = modified_time
+        modified_time = record["last_seen_utc"] or record["first_seen_utc"]
+        record["modified_time"] = modified_time
         try:
             if start_date and modified_time < start_date:
                 continue
@@ -459,8 +476,10 @@ def process_records(
 
             for observable in observables:
                 all_stix_objects.append(observable)
-                indicator_ids.append((observable.id, indicator.created, indicator.modified))
-                if observable.type != 'autonomous-system':
+                indicator_ids.append(
+                    (observable.id, indicator.created, indicator.modified)
+                )
+                if observable.type != "autonomous-system":
                     all_stix_objects.append(
                         make_relationship(
                             source_ref=indicator.id,
