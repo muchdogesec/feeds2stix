@@ -128,7 +128,7 @@ def test_main_passes_date_and_group_args_to_run(monkeypatch, tmp_path):
     args = captured[0]
     assert args.groups == ["clop", "akira"]
     assert args.min_discovered == datetime(2026, 1, 1, tzinfo=UTC)
-    assert args.max_discovered == datetime(2026, 4, 1, tzinfo=UTC)
+    assert args.max_discovered == datetime(2026, 4, 1, 23, 59, 59, 999999, tzinfo=UTC)
 
 
 def test_main_no_args_passes_none_dates_and_empty_groups(monkeypatch, tmp_path):
