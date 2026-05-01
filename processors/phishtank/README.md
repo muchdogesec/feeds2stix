@@ -8,7 +8,7 @@ PhishTank is a collaborative clearing house for data and information about phish
 **Update Schedule:** Hourly (on the hour)  
 **Format:** JSON with phishing URL details
 
-**Note:** Users can pass `--since-date` time to filter results after a specified date. This filters based on the latest modification time (max of submission_time, verification_time, and detail_time). Entries are grouped into bundles of up to 500 entries each for processing efficiency.
+**Note:** Users can pass `--since-date` and `--until-date` time filters to constrain results to a date range. This filters based on the latest modification time (max of submission_time, verification_time, and detail_time). Entries are grouped into bundles of up to 500 entries each for processing efficiency.
 
 **STIX Objects Created:**
 - `identity`

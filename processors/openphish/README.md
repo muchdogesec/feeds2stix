@@ -159,6 +159,7 @@ python processors/openphish/openphish.py [OPTIONS]
 ### Options
 
 * `--since-date <date>`: Only process URLs added since this date (YYYY-MM-DD format). The script will analyze Git history and include only URLs whose first commit was on or after this date.
+* `--until-date <date>`: Only process URLs added on or before this date (YYYY-MM-DD format).
 
 ### Examples
 

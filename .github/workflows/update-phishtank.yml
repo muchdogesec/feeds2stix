@@ -19,6 +19,10 @@ on:
         description: 'Process entries with modification time on or after this date (ISO format). Leave empty to process all.'
         required: false
         type: string
+      until_date:
+        description: 'Process entries with modification time on or before this date (ISO format). Leave empty to process all.'
+        required: false
+        type: string
 
 jobs:
   process-and-upload:
@@ -58,6 +62,7 @@ jobs:
           set -e
 
           since_date="${{ inputs.since_date }}"
+          until_date="${{ inputs.until_date }}"
           latest_timestamp="${{ steps.get_timestamp.outputs.latest_timestamp }}"
           
           CMD="python processors/phishtank/phishtank.py"
@@ -71,6 +76,11 @@ jobs:
             echo "Using custom since_date: $since_date"
           else
             echo "Processing all entries (no timestamp available)"
+          fi
+
+          if [ -n "$until_date" ]; then
+            CMD="$CMD --until-date '$until_date'"
+            echo "Using until_date: $until_date"
           fi
           
           echo "Running: $CMD"

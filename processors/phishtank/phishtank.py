@@ -27,6 +27,8 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -281,7 +283,7 @@ def process_entries_for_date(
     return all_stix_objects
 
 
-def filter_entries_by_date(entries, since_date):
+def filter_entries_by_date(entries, since_date, until_date=None):
     retval = []
     for entry in entries:
         times = [parse_time(entry["submission_time"])]
@@ -293,6 +295,8 @@ def filter_entries_by_date(entries, since_date):
         modified_time = max(times)
         entry["modified_time"] = modified_time
         if since_date and modified_time < since_date:
+            continue
+        if until_date and modified_time > until_date:
             continue
         retval.append(entry)
     retval.sort(key=lambda x: x["modified_time"])
@@ -306,12 +310,19 @@ def main():
     parser.add_argument(
         "--since-date",
         "--since_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only process entries with submission_time on or after this date (ISO format)",
+    )
+    parser.add_argument(
+        "--until-date",
+        "--until_date",
+        type=parse_until_date,
+        help="Only process entries with modification time on or before this date (ISO format)",
     )
     args = parser.parse_args()
 
-    since_date = args.since_date and args.since_date.replace(tzinfo=UTC)
+    since_date = args.since_date
+    until_date = args.until_date
 
     bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
 
@@ -325,9 +336,9 @@ def main():
     data = fetch_phishtank_data(data_dir)
     logger.info(f"Fetched {len(data)} entries from PhishTank")
 
-    data = list(filter_entries_by_date(data, since_date))
+    data = list(filter_entries_by_date(data, since_date, until_date))
     logger.info(
-        f"{len(data)} entries remain after filtering by since_date={since_date}"
+        f"{len(data)} entries remain after filtering by since_date={since_date} until_date={until_date}"
     )
     N = 500
     grouped = group_entries_to_max_N_elements(data, N)

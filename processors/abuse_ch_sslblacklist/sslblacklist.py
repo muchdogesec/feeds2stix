@@ -25,6 +25,8 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -193,7 +195,7 @@ def guess_malware_type(malware_name):
 
 
 def create_stix_objects_for_malware(
-    malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None
+    malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date=None, until_date=None
 ):
     """Create STIX objects for a single malware family"""
     stix_objects = []
@@ -215,6 +217,11 @@ def create_stix_objects_for_malware(
             f"Skipping '{malware_name}' - all files listed before {start_date}"
         )
         return []
+    if until_date and earliest_date > until_date:
+        logger.warning(
+            f"Skipping '{malware_name}' - all files listed after {until_date}"
+        )
+        return []
 
     logger.info(f"Processing '{malware_name}' with {len(files_data)} files...")
 
@@ -222,7 +229,9 @@ def create_stix_objects_for_malware(
     infrastructure_cert_rels = defaultdict(list)
     for file_data in files_data:
         file_obj = X509Certificate(hashes={"SHA-1": file_data["sha1_hash"]})
-        if file_data["timestamp"] <= start_date:
+        if file_data["timestamp"] < start_date:
+            continue
+        if until_date and file_data["timestamp"] > until_date:
             continue
         stix_objects.append(file_obj)
         indicator_name = "Certificate: " + format_fingerprint(file_data["sha1_hash"])
@@ -288,7 +297,7 @@ def create_stix_objects_for_malware(
 
 
 def create_all_stix_objects(
-    malware_mapping, abuse_ch_identity, sslbl_marking, start_date=None
+    malware_mapping, abuse_ch_identity, sslbl_marking, start_date=None, until_date=None
 ):
     """Create STIX objects for all malware families in a single bundle"""
     total_files = sum(len(data) for data in malware_mapping.values())
@@ -300,7 +309,12 @@ def create_all_stix_objects(
     # Process each malware family
     for malware_name, files_data in malware_mapping.items():
         stix_objects = create_stix_objects_for_malware(
-            malware_name, files_data, abuse_ch_identity, sslbl_marking, start_date
+            malware_name,
+            files_data,
+            abuse_ch_identity,
+            sslbl_marking,
+            start_date,
+            until_date,
         )
         if stix_objects:
             objects_by_malwares[malware_name].extend(stix_objects)
@@ -316,8 +330,13 @@ def main():
     )
     parser.add_argument(
         "--start-date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only process records older than this date (YYYY-MM-DDTHH:MM:SS format)",
+    )
+    parser.add_argument(
+        "--until-date",
+        type=parse_until_date,
+        help="Only process records on or before this date (YYYY-MM-DDTHH:MM:SS format)",
     )
     parser.add_argument(
         "--no-split-bundle",
@@ -328,7 +347,6 @@ def main():
     args = parser.parse_args()
 
     # Parse start_date if provided
-    start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
     bundle_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
@@ -345,7 +363,11 @@ def main():
     bundle_path = bundle_dir
 
     objects_by_malwares = create_all_stix_objects(
-        malware_mapping, abuse_ch_identity, sslbl_marking, start_date=start_date
+        malware_mapping,
+        abuse_ch_identity,
+        sslbl_marking,
+        start_date=args.start_date,
+        until_date=args.until_date,
     )
     if args.no_split_bundle:
         stix_objects = []

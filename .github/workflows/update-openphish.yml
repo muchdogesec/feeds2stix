@@ -19,6 +19,10 @@ on:
         description: 'Process URLs added since this date (YYYY-MM-DD). Leave empty to use 12 hours ago.'
         required: false
         type: string
+      until_date:
+        description: 'Process URLs added on or before this date (YYYY-MM-DD). Leave empty to process up to now.'
+        required: false
+        type: string
 
 jobs:
   process-and-upload:
@@ -61,6 +65,12 @@ jobs:
             SINCE_DATE=$(date -u -d '12 hours ago' '+%Y-%m-%d')
             echo "Processing URLs added since (12 hours ago): $SINCE_DATE"
             CMD="$CMD --since-date '$SINCE_DATE'"
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.until_date }}" ]; then
+            UNTIL_DATE="${{ inputs.until_date }}"
+            echo "Processing URLs added on or before: $UNTIL_DATE"
+            CMD="$CMD --until-date '$UNTIL_DATE'"
           fi
           
           echo "Running: $CMD"

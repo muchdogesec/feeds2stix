@@ -250,6 +250,110 @@ def test_create_stix_objects_for_malware_all_before_start_date():
     assert objects == []
 
 
+def test_create_stix_objects_for_malware_all_before_until_date():
+    """Test that records after until_date are excluded."""
+    files_data = [
+        {
+            "timestamp": datetime(2026, 2, 1, 10, 0, tzinfo=UTC),
+            "sha1_hash": "a" * 40,
+            "infrastructure_type": "command-and-control",
+        }
+    ]
+    objects = sslblacklist.create_stix_objects_for_malware(
+        "FamilyA",
+        files_data,
+        {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
+        until_date=datetime(2026, 1, 31, tzinfo=UTC),
+    )
+    assert objects == []
+
+
+def test_create_stix_objects_for_malware_with_until_date_inclusive():
+    """Test that records on until_date are included."""
+    files_data = [
+        {
+            "timestamp": datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
+            "sha1_hash": "a" * 40,
+            "infrastructure_type": "command-and-control",
+        }
+    ]
+    objects = sslblacklist.create_stix_objects_for_malware(
+        "FamilyA",
+        files_data,
+        {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
+        until_date=datetime(2026, 1, 1, 23, 59, 59, 999999, tzinfo=UTC),
+    )
+    # Should include the record since it's on the until_date
+    assert len(objects) > 0
+    assert any(obj["type"] == "malware" for obj in stix_as_dict(objects))
+
+
+def test_create_stix_objects_for_malware_with_start_and_until_date():
+    """Test filtering with both start_date and until_date."""
+    files_data = [
+        {
+            "timestamp": datetime(2026, 1, 1, 5, 0, tzinfo=UTC),
+            "sha1_hash": "a" * 40,
+            "infrastructure_type": "command-and-control",
+        },
+        {
+            "timestamp": datetime(2026, 1, 15, 10, 0, tzinfo=UTC),
+            "sha1_hash": "b" * 40,
+            "infrastructure_type": "command-and-control",
+        },
+        {
+            "timestamp": datetime(2026, 2, 1, 10, 0, tzinfo=UTC),
+            "sha1_hash": "c" * 40,
+            "infrastructure_type": "command-and-control",
+        },
+    ]
+    objects = sslblacklist.create_stix_objects_for_malware(
+        "FamilyA",
+        files_data,
+        {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
+        start_date=datetime(2026, 1, 10, tzinfo=UTC),
+        until_date=datetime(2026, 1, 31, tzinfo=UTC),
+    )
+    # Should only include the record from 2026-01-15
+    # Count certificates (each file becomes a certificate)
+    certs = [obj for obj in objects if obj["type"] == "x509-certificate"]
+    assert len(certs) == 1
+    assert certs[0]["hashes"]["SHA-1"] == "b" * 40
+
+
+def test_create_all_stix_objects_with_until_date():
+    """Test create_all_stix_objects with until_date filtering."""
+    mapping = {
+        "FamilyA": [
+            {
+                "timestamp": datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
+                "sha1_hash": "a" * 40,
+                "infrastructure_type": "command-and-control",
+            }
+        ],
+        "FamilyB": [
+            {
+                "timestamp": datetime(2026, 2, 1, 10, 0, tzinfo=UTC),
+                "sha1_hash": "b" * 40,
+                "infrastructure_type": "command-and-control",
+            }
+        ],
+    }
+    grouped = sslblacklist.create_all_stix_objects(
+        mapping,
+        {"id": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"},
+        {"id": "marking-definition--77164cc6-e945-50ab-96fb-574d72e8f216"},
+        until_date=datetime(2026, 1, 31, tzinfo=UTC),
+    )
+    # Only FamilyA should have objects (FamilyB is after until_date)
+    assert "FamilyA" in grouped
+    assert len(grouped["FamilyA"]) > 0
+    assert "FamilyB" not in grouped or len(grouped.get("FamilyB", [])) == 0
+
+
 def test_create_all_stix_objects():
     mapping = {
         "FamilyA": [

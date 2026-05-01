@@ -115,6 +115,29 @@ def test_parse_csv_data(tmp_path, subtests):
         assert len(records) == 1
         assert records[0]["dateadded"] == datetime(2026, 1, 2, 1, 8, tzinfo=UTC)
 
+    with subtests.test("filters by until_date"):
+        latest, records = urlhaus.parse_csv_data(
+            csv_file, until_date=datetime(2024, 6, 1, tzinfo=UTC)
+        )
+        assert len(records) == 1
+        assert records[0]["dateadded"] == datetime(2024, 1, 2, 0, 0, tzinfo=UTC)
+
+    with subtests.test("filters by until_date inclusive"):
+        latest, records = urlhaus.parse_csv_data(
+            csv_file, until_date=datetime(2024, 1, 2, 23, 59, 59, 999999, tzinfo=UTC)
+        )
+        assert len(records) == 1
+        assert records[0]["dateadded"] == datetime(2024, 1, 2, 0, 0, tzinfo=UTC)
+
+    with subtests.test("filters by start and until date range"):
+        latest, records = urlhaus.parse_csv_data(
+            csv_file,
+            start_date=datetime(2024, 1, 1, tzinfo=UTC),
+            until_date=datetime(2024, 6, 30, tzinfo=UTC),
+        )
+        assert len(records) == 1
+        assert records[0]["dateadded"] == datetime(2024, 1, 2, 0, 0, tzinfo=UTC)
+
 
 def test_process_records():
     record = {

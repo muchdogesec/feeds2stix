@@ -24,6 +24,8 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -72,14 +74,15 @@ def clone_or_update_repo(repo_path, repo_url):
     return repo
 
 
-def get_lines_since_date(repo, file_path, since_date=None):
+def get_lines_since_date(repo, file_path, since_date=None, until_date=None):
     """
     Get all lines from the file along with their first seen commit times.
 
     Args:
         repo: Git repository object
         file_path: Path to the file within the repository
-        since_date: Optional datetime to filter commits (only process commits after this date)
+        since_date: Optional datetime to filter commits (only process commits on or after this date)
+        until_date: Optional datetime to filter commits (only process commits on or before this date)
 
     Returns:
         dict: Mapping of line_content -> (commit_hash, commit_date)
@@ -119,13 +122,17 @@ def get_lines_since_date(repo, file_path, since_date=None):
         previous_lines = current_lines
 
     logger.info(f"Found {len(line_first_seen)} unique URLs with commit times")
-    if since_date:
+    if since_date or until_date:
         line_first_seen = {
             line: (sha, date)
             for line, (sha, date) in line_first_seen.items()
-            if date >= since_date
+            if (not since_date or date >= since_date)
+            and (not until_date or date <= until_date)
         }
-        logger.info(f"{len(line_first_seen)} URLs added since {since_date}")
+        if since_date:
+            logger.info(f"{len(line_first_seen)} URLs added on or after {since_date}")
+        if until_date:
+            logger.info(f"{len(line_first_seen)} URLs added on or before {until_date}")
     return line_first_seen
 
 
@@ -208,14 +215,21 @@ def main():
     parser.add_argument(
         "--since-date",
         "--since_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only process URLs added since this date (YYYY-MM-DD format)",
+    )
+    parser.add_argument(
+        "--until-date",
+        "--until_date",
+        type=parse_until_date,
+        help="Only process URLs added on or before this date (YYYY-MM-DD format)",
     )
 
     args = parser.parse_args()
 
-    # Parse since_date if provided
+    # Parse date filters if provided
     since_date = args.since_date and args.since_date.replace(tzinfo=UTC)
+    until_date = args.until_date and args.until_date.replace(tzinfo=UTC)
 
     # Setup output directory
     bundles_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
@@ -234,7 +248,7 @@ def main():
     repo = clone_or_update_repo(repo_clone_path, GITHUB_REPO_URL)
 
     # Get URLs with their commit times
-    url_data = get_lines_since_date(repo, FEED_FILE_PATH, since_date)
+    url_data = get_lines_since_date(repo, FEED_FILE_PATH, since_date, until_date)
 
     # Group URLs by date first (memory efficient - just references)
 
@@ -290,6 +304,13 @@ def process_urls_for_date(
     )
 
     return bundle
+
+
+def parse_until_date(value):
+    dt = datetime.fromisoformat(value)
+    if len(value) == 10 and dt.time() == datetime.min.time():
+        dt = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
+    return dt
 
 
 def group_urls_by_date(url_data):
