@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import shutil
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 
 import requests
 import stix2extensions
@@ -207,7 +207,7 @@ def make_relationship(
     return relationship
 
 def make_aware_time(d: datetime|date) -> datetime:
-    if isinstance(d, date):
+    if type(d) == date:
         d = datetime(d.year, d.month, d.day)
     if not d.tzinfo:
         d = d.replace(tzinfo=UTC)
@@ -216,7 +216,7 @@ def make_aware_time(d: datetime|date) -> datetime:
 
 def parse_until_date(value: str) -> datetime:
     dt = datetime.fromisoformat(value)
-    if len(value) == 10 and dt.time() == datetime.min.time():
+    if len(value) == 10 and dt.time() == time():
         dt = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
     return make_aware_time(dt)
 

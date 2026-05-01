@@ -115,7 +115,7 @@ def test_parse_until_date():
     # Date only should expand to 23:59:59.999999
     result = h.parse_until_date("2026-01-15")
     assert result == datetime(2026, 1, 15, 23, 59, 59, 999999, tzinfo=UTC)
-    
+
     # With time should preserve exact time
     result = h.parse_until_date("2026-01-15 12:30:45")
     assert result == datetime(2026, 1, 15, 12, 30, 45, tzinfo=UTC)
