@@ -1,4 +1,10 @@
 name: "[Update CTX] OpenPhish"
+run-name: |
+  [Update CTX] OpenPhish
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:

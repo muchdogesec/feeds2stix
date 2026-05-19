@@ -1,4 +1,10 @@
 name: "[Update CTX] Abuse.ch URLhaus"
+run-name: |
+  [Update CTX] Abuse.ch URLhaus
+  ${{ github.event_name == 'workflow_dispatch' && inputs.start_date != ''
+      && format(' @from:{0}', inputs.start_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:
