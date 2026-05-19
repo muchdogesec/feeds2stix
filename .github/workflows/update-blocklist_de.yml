@@ -15,6 +15,12 @@ on:
           - production
         default: all
 
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+
 jobs:
   process-and-upload:
     runs-on: ubuntu-latest
