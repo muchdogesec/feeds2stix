@@ -1,6 +1,7 @@
 import builtins
 import json
 from pathlib import Path
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -468,18 +469,21 @@ def test_main_directory_and_split_flow(monkeypatch, tmp_path):
     in_dir.mkdir()
     src1 = in_dir / "a.json"
     src2 = in_dir / "b.json"
-    src1.write_text("{}")
-    src2.write_text("{}")
+    a_bundle = {
+        "type": "bundle",
+        "objects": [{"id": "indicator--1"}],
+        "objects": [{"id": "indicator--1"}],
+    }
+    b_bundle = {
+        "type": "bundle",
+        "objects": [{"id": "indicator--2"}],
+    }
+    src1.write_text(json.dumps(a_bundle))
+    src2.write_text(json.dumps(b_bundle))
 
-    split1 = tmp_path / "split1.json"
-    split2 = tmp_path / "split2.json"
-    split1.write_text(json.dumps({"type": "bundle", "objects": []}))
-    split2.write_text(json.dumps({"type": "bundle", "objects": []}))
+
 
     monkeypatch.setattr(upload.os.path, "getsize", lambda *_: 100000)
-    monkeypatch.setattr(
-        upload, "split_stix_bundle", lambda *a, **k: [str(split1), str(split2)]
-    )
     monkeypatch.setattr(
         upload,
         "upload_bundle",
@@ -494,9 +498,14 @@ def test_main_directory_and_split_flow(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(upload, "save_artifacts", lambda *a, **k: None)
     monkeypatch.setattr(upload, "write_github_summary", lambda *a, **k: None)
+    mock_dedup = MagicMock(side_effect=upload.deduplicate_bundle_in_place)
+    monkeypatch.setattr(upload, "deduplicate_bundle_in_place", mock_dedup)
 
     with pytest.raises(SystemExit) as exc:
         upload.main([str(in_dir)], "https://ctx", "key", "feed", max_size_kb=1)
+    mock_dedup.assert_called()
+    print(mock_dedup.call_args_list)
+    assert mock_dedup.call_args_list == [call(str(src1)), call(str(src2))]
     assert exc.value.code == 0
 
 
@@ -850,3 +859,37 @@ def test_main_github_output_has_failures_when_bundles_fail(monkeypatch, tmp_path
     text = gh.read_text()
     assert "has_success=false" in text
     assert "has_failures=true" in text
+
+
+def test_remove_duplicates__no_duplicates(tmp_path):
+    bundle = {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }
+    f = tmp_path / "f1.json"
+    f.write_text(json.dumps(bundle))
+    assert upload.deduplicate_bundle_in_place(f) == 0
+    assert json.loads(f.read_text()) == bundle
+
+def test_remove_duplicates_with_duplicates(tmp_path):
+    bundle = {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }
+    f = tmp_path / "f1.json"
+    f.write_text(json.dumps(bundle))
+    assert upload.deduplicate_bundle_in_place(f) == 1
+    assert json.loads(f.read_text()) == {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }

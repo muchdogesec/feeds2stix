@@ -394,6 +394,25 @@ def save_failed_bundles(results: list[dict], current_run_id: int, failed_artifac
             fail_count += 1
     return fail_count
 
+def deduplicate_bundle_in_place(file: Path):
+    file = Path(file)
+    objects = []
+    seen = set()
+    duplicates = 0
+    bundle = json.loads(file.read_text())
+    for obj in bundle["objects"]:
+        if obj["id"] not in seen:
+            seen.add(obj["id"])
+            objects.append(obj)
+        else:
+            duplicates += 1
+    if not duplicates:
+        return 0
+    bundle["objects"] = objects
+    logger.info(f"Removed {duplicates} duplicate objects from {file}")
+    file.write_text(json.dumps(bundle, indent=2))
+    return duplicates
+
 def main(
     bundle_files,
     api_base_url,
@@ -464,6 +483,7 @@ def main(
             logger.info(
                 f"Checking bundle {i+1} of {len(all_bundle_files)}: {bundle_file}"
             )
+            deduplicate_bundle_in_place(bundle_file)
             bundle_size = os.path.getsize(bundle_file) / 1024
             if bundle_size > max_size_kb:
                 logger.info(
