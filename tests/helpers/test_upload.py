@@ -850,3 +850,37 @@ def test_main_github_output_has_failures_when_bundles_fail(monkeypatch, tmp_path
     text = gh.read_text()
     assert "has_success=false" in text
     assert "has_failures=true" in text
+
+
+def test_remove_duplicates__no_duplicates(tmp_path):
+    bundle = {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }
+    f = tmp_path / "f1.json"
+    f.write_text(json.dumps(bundle))
+    assert upload.deduplicate_bundle_in_place(f) == 0
+    assert json.loads(f.read_text()) == bundle
+
+def test_remove_duplicates_with_duplicates(tmp_path):
+    bundle = {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }
+    f = tmp_path / "f1.json"
+    f.write_text(json.dumps(bundle))
+    assert upload.deduplicate_bundle_in_place(f) == 1
+    assert json.loads(f.read_text()) == {
+        "objects": [
+            {"id": "obj1"},
+            {"id": "obj2"},
+            {"id": "obj3"},
+        ]
+    }
