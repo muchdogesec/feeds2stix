@@ -395,6 +395,7 @@ def save_failed_bundles(results: list[dict], current_run_id: int, failed_artifac
     return fail_count
 
 def deduplicate_bundle_in_place(file: Path):
+    file = Path(file)
     objects = []
     seen = set()
     duplicates = 0
