@@ -49,15 +49,16 @@ def test_create_threatview_marking_definition():
     }
 
 
-def test_fetch_threatview_feed():
-    content = b"#comment\nhttps://example.com/malware\n\nhttp://badsite.org\n"
+def test_fetch_threatview_feed(tmp_path):
+    content = b"#comment\nhttp://example.com/malware\n\nhttps://evil.com\n"
     with patch(
         "processors.threatview.threatview_url.threatview_url.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        items = threatview_url.fetch_threatview_feed()
+        items = threatview_url.fetch_threatview_feed(tmp_path)
 
-    assert items == ["https://example.com/malware", "http://badsite.org"]
+    assert items == ["http://example.com/malware", "https://evil.com"]
+    assert (tmp_path / "threatview_url_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

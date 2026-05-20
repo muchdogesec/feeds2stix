@@ -49,18 +49,19 @@ def test_create_threatview_marking_definition():
     }
 
 
-def test_fetch_threatview_feed():
+def test_fetch_threatview_feed(tmp_path):
     content = b"#comment\nd41d8cd98f00b204e9800998ecf8427e\n\n5d41402abc4b2a76b9719d911017c592\n"
     with patch(
         "processors.threatview.threatview_md5.threatview_md5.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        items = threatview_md5.fetch_threatview_feed()
+        items = threatview_md5.fetch_threatview_feed(tmp_path)
 
     assert items == [
         "d41d8cd98f00b204e9800998ecf8427e",
         "5d41402abc4b2a76b9719d911017c592",
     ]
+    assert (tmp_path / "threatview_md5_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

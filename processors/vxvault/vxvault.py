@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
 import requests
 from stix2 import URL, Bundle, Indicator, StringConstant
@@ -47,12 +48,15 @@ def create_vxvault_marking_definition():
     return create_marking_definition_object(f"Origin: {VXVAULT_FEED_URL}")
 
 
-def fetch_vxvault_feed():
-    """Fetch URLs from VXVault feed"""
+def fetch_vxvault_feed(data_dir: Path):
+    """Fetch URLs from VXVault feed and save raw feed."""
     logger.info(f"Fetching VXVault feed from: {VXVAULT_FEED_URL}")
 
     response = requests.get(VXVAULT_FEED_URL)
     response.raise_for_status()
+
+    raw_path = data_dir / "vxvault_feed.txt"
+    raw_path.write_bytes(response.content)
 
     urls = [
         line.strip()
@@ -60,6 +64,7 @@ def fetch_vxvault_feed():
         if line.strip() and not line.startswith("#") and line.strip().startswith("http")
     ]
 
+    logger.info(f"Saved raw feed to {raw_path}")
     logger.info(f"Found {len(urls)} URLs in VXVault feed")
     return urls
 
@@ -124,7 +129,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        output_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
 
         script_run_time = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -133,7 +138,7 @@ def main():
         vxvault_identity = create_vxvault_identity()
         vxvault_marking = create_vxvault_marking_definition()
 
-        urls = fetch_vxvault_feed()
+        urls = fetch_vxvault_feed(data_dir)
 
         logger.info("Creating STIX objects...")
         stix_objects = create_stix_objects(

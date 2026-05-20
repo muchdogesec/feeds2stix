@@ -31,6 +31,8 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -87,7 +89,7 @@ def parse_timestamp(timestamp_str: str) -> datetime:
 
 
 def parse_csv_data(
-    csv_path: Path, start_date: Optional[datetime] = None
+    csv_path: Path, start_date: Optional[datetime] = None, until_date: Optional[datetime] = None
 ) -> tuple[datetime, List[Dict[str, str]]]:
     """Parse CSV data, skipping header comments and empty lines."""
     records = []
@@ -117,6 +119,8 @@ def parse_csv_data(
                 "reporter": row[8],
             }
             if start_date and record["dateadded"] < start_date:
+                continue
+            if until_date and record["dateadded"] > until_date:
                 continue
 
             records.append(record)
@@ -239,12 +243,17 @@ def main():
     parser.add_argument(
         "--start-date",
         "--start_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only include records with dateadded after this date (YYYY-MM-DD[T[HH:MM[:SS]]])",
+    )
+    parser.add_argument(
+        "--until-date",
+        "--until_date",
+        type=parse_until_date,
+        help="Only include records with dateadded on or before this date (YYYY-MM-DD[T[HH:MM[:SS]]])",
     )
 
     args = parser.parse_args()
-    args.start_date = args.start_date and args.start_date.replace(tzinfo=timezone.utc)
 
     # Setup output directory
     bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
@@ -259,7 +268,11 @@ def main():
     # Download data
     csv_path = download_urlhaus_data(data_dir)
     # Parse CSV
-    latest_timestamp, records = parse_csv_data(csv_path, start_date=args.start_date)
+    latest_timestamp, records = parse_csv_data(
+        csv_path,
+        start_date=args.start_date,
+        until_date=args.until_date,
+    )
 
     # Process records
     all_stix_objects = process_records(

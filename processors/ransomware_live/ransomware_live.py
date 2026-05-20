@@ -11,6 +11,8 @@ from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
+    parse_since_date,
+    parse_until_date
 )
 
 logging.basicConfig(
@@ -40,13 +42,13 @@ def main():
     parser.add_argument(
         "--since-date",
         "--since_date",
-        type=datetime.fromisoformat,
+        type=parse_since_date,
         help="Only process URLs added since this date (YYYY-MM-DD format)",
     )
     parser.add_argument(
         "--until-date",
         "--until_date",
-        type=datetime.fromisoformat,
+        type=parse_until_date,
         help="Only process URLs added until this date (YYYY-MM-DD format)",
     )
     parser.add_argument(
@@ -67,11 +69,14 @@ def main():
         )
 
     # Parse since_date if provided
+    process_all_ransomnotes = datetime.now(UTC).hour == 12
+    # process_all_ransomnotes if it's the day's first run
 
     args = ransomware2stix_main.Args(
         min_discovered=parsed_args.since_date,
         max_discovered=parsed_args.until_date,
-        groups=parsed_args.groups or [],
+        groups=parsed_args.groups or None,
+        process_all_ransomnotes=process_all_ransomnotes,
     )
 
     # Setup output directory

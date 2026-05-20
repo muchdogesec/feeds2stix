@@ -1,4 +1,10 @@
 name: "[Update CTX] Abuse.ch SSL Blacklist"
+run-name: |
+  [Update CTX] Abuse.ch SSL Blacklist
+  ${{ github.event_name == 'workflow_dispatch' && inputs.start_date != ''
+      && format(' @from:{0}', inputs.start_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:
@@ -20,6 +26,15 @@ on:
         required: false
         type: string
         default: 'auto'
+      until_date:
+        description: 'End date for filtering certificates (YYYY-MM-DD[T[HH:MM[:SS]]]). Leave empty to process all records until now.'
+        required: false
+        type: string
+
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   process-and-upload:
@@ -73,6 +88,9 @@ jobs:
           elif [ -n "$start_date" ]; then
             CMD="$CMD --start-date '$start_date'"
           fi
+          if [ -n "${{ inputs.until_date }}" ]; then
+            CMD="$CMD --until-date '${{ inputs.until_date }}'"
+          fi
           
           echo "Running: $CMD"
           eval $CMD
@@ -124,6 +142,6 @@ jobs:
         with:
           name: sslblacklist-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

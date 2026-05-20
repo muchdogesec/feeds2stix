@@ -1,4 +1,10 @@
 name: "[Update CTX] OpenPhish"
+run-name: |
+  [Update CTX] OpenPhish
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:
@@ -19,6 +25,16 @@ on:
         description: 'Process URLs added since this date (YYYY-MM-DD). Leave empty to use 12 hours ago.'
         required: false
         type: string
+      until_date:
+        description: 'Process URLs added on or before this date (YYYY-MM-DD). Leave empty to process up to now.'
+        required: false
+        type: string
+
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 
 jobs:
   process-and-upload:
@@ -61,6 +77,12 @@ jobs:
             SINCE_DATE=$(date -u -d '12 hours ago' '+%Y-%m-%d')
             echo "Processing URLs added since (12 hours ago): $SINCE_DATE"
             CMD="$CMD --since-date '$SINCE_DATE'"
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.until_date }}" ]; then
+            UNTIL_DATE="${{ inputs.until_date }}"
+            echo "Processing URLs added on or before: $UNTIL_DATE"
+            CMD="$CMD --until-date '$UNTIL_DATE'"
           fi
           
           echo "Running: $CMD"
@@ -108,6 +130,6 @@ jobs:
         with:
           name: openphish-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

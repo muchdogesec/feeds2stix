@@ -22,6 +22,12 @@ on:
         options: [ip, domain, url, md5, sha1, bitcoin, all]
         default: all
 
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
@@ -129,6 +135,6 @@ jobs:
         with:
           name: upload-artifacts-${{ matrix.feed.name }}-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

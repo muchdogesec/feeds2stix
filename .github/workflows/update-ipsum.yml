@@ -30,6 +30,12 @@ on:
           - '8'
         default: '4'
 
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+
 jobs:
   process-and-upload:
     runs-on: ubuntu-latest
@@ -111,6 +117,6 @@ jobs:
         with:
           name: ipsum-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

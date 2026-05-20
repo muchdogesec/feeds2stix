@@ -16,6 +16,12 @@ on:
           - production
         default: all
 
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+
 jobs:
   process-and-upload:
     runs-on: ubuntu-latest
@@ -89,6 +95,6 @@ jobs:
         with:
           name: cinsscore-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7

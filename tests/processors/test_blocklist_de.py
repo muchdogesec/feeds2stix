@@ -47,15 +47,16 @@ def test_create_blocklist_de_marking_definition():
     }
 
 
-def test_fetch_blocklist_de_feed():
+def test_fetch_blocklist_de_feed(tmp_path):
     content = b"#comment\n1.2.3.4\n\n5.6.7.8\n"
     with patch(
         "processors.blocklist_de.blocklist_de.requests.get",
         return_value=test_utils.FakeResponse(content=content),
     ):
-        ips = blocklist_de.fetch_blocklist_de_feed()
+        ips = blocklist_de.fetch_blocklist_de_feed(tmp_path)
 
     assert ips == ["1.2.3.4", "5.6.7.8"]
+    assert (tmp_path / "blocklist_de_feed.txt").read_bytes() == content
 
 
 def test_create_stix_objects():

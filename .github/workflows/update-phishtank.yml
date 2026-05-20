@@ -1,4 +1,10 @@
 name: "[Update CTX] PhishTank"
+run-name: |
+  [Update CTX] PhishTank
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:
@@ -19,6 +25,16 @@ on:
         description: 'Process entries with modification time on or after this date (ISO format). Leave empty to process all.'
         required: false
         type: string
+      until_date:
+        description: 'Process entries with modification time on or before this date (ISO format). Leave empty to process all.'
+        required: false
+        type: string
+
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 
 jobs:
   process-and-upload:
@@ -58,6 +74,7 @@ jobs:
           set -e
 
           since_date="${{ inputs.since_date }}"
+          until_date="${{ inputs.until_date }}"
           latest_timestamp="${{ steps.get_timestamp.outputs.latest_timestamp }}"
           
           CMD="python processors/phishtank/phishtank.py"
@@ -71,6 +88,11 @@ jobs:
             echo "Using custom since_date: $since_date"
           else
             echo "Processing all entries (no timestamp available)"
+          fi
+
+          if [ -n "$until_date" ]; then
+            CMD="$CMD --until-date '$until_date'"
+            echo "Using until_date: $until_date"
           fi
           
           echo "Running: $CMD"
@@ -118,6 +140,6 @@ jobs:
         with:
           name: phishtank-upload-artifacts-${{ matrix.target_env }}
           path: |
-            ${{ steps.process.outputs.bundle_path }}
+            outputs/
             upload_artifacts/
           retention-days: 7
