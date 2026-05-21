@@ -1,4 +1,5 @@
 name: "[Update CTX] PhishTank"
+
 run-name: |
   [Update CTX] PhishTank
   ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
@@ -10,6 +11,7 @@ on:
   schedule:
     # Run at 15 minutes past every hour (feed updates hourly at the top of the hour)
     - cron: '15 * * * *'
+
   workflow_dispatch:
     inputs:
       target_environment:
@@ -21,29 +23,71 @@ on:
           - staging
           - production
         default: all
+
       since_date:
         description: 'Process entries with modification time on or after this date (ISO format). Leave empty to process all.'
         required: false
         type: string
+
       until_date:
         description: 'Process entries with modification time on or before this date (ISO format). Leave empty to process all.'
         required: false
         type: string
 
-
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
-
 jobs:
-  process-and-upload:
+  download:
+    name: Download PhishTank feed
     runs-on: ubuntu-latest
+
+    env:
+      PYTHONPATH: .
+
+    outputs:
+      artifact_name: ${{ steps.download.outputs.artifact_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Download PhishTank feed
+        id: download
+        run: |
+          python processors/phishtank/phishtank.py download
+          ARTIFACT_NAME="phishtank-feed-${{ github.run_id }}"
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload downloaded feed
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.download.outputs.artifact_name }}
+          path: outputs/
+          retention-days: 1
+
+  process-and-upload:
+    name: Process and Upload @ ${{ matrix.target_env }}
+    needs: download
+    runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
     environment: ${{ matrix.target_env }}
+
     env:
       PYTHONPATH: .
 
@@ -59,6 +103,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+
+      - name: Download feed artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.download.outputs.artifact_name }}
+          path: downloaded-feed
 
       - name: Get latest indicator timestamp
         id: get_timestamp
@@ -76,16 +126,25 @@ jobs:
           since_date="${{ inputs.since_date }}"
           until_date="${{ inputs.until_date }}"
           latest_timestamp="${{ steps.get_timestamp.outputs.latest_timestamp }}"
-          
-          CMD="python processors/phishtank/phishtank.py"
-          
-          # Determine since_date: use latest_timestamp if available, otherwise use custom date or process all
+
+          JSON_FILE=$(find downloaded-feed -name '*.json' | head -n 1)
+
+          if [ -z "$JSON_FILE" ]; then
+            echo "No JSON file found in downloaded artifact"
+            exit 1
+          fi
+
+          CMD="python processors/phishtank/phishtank.py process --file '$JSON_FILE'"
+
+          # Determine since_date
           if [ -n "$latest_timestamp" ]; then
             CMD="$CMD --since-date '$latest_timestamp'"
             echo "Using latest indicator timestamp: $latest_timestamp"
+
           elif [ -n "$since_date" ] && [ "$since_date" != "auto" ]; then
             CMD="$CMD --since-date '$since_date'"
             echo "Using custom since_date: $since_date"
+
           else
             echo "Processing all entries (no timestamp available)"
           fi
@@ -94,8 +153,9 @@ jobs:
             CMD="$CMD --until-date '$until_date'"
             echo "Using until_date: $until_date"
           fi
-          
+
           echo "Running: $CMD"
+
           eval $CMD
 
       - name: Upload bundle to CTX
