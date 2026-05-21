@@ -7,6 +7,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import shutil
 import sys
 from collections import defaultdict
 from datetime import UTC, datetime
@@ -77,12 +78,13 @@ def fetch_phishtank_data(data_dir: Path):
 
     raw_path = data_dir / "phishtank_online-valid.json.gz"
     raw_path.write_bytes(response.content)
+    json_path = data_dir / "phishtank_online-valid.json"
 
     gzip_content = response.content
     gzip_file = gzip.GzipFile(fileobj=io.BytesIO(gzip_content))
-    data = json.load(gzip_file)
+    json_path.write_bytes(gzip_file.read())
     logger.info(f"Saved raw feed to {raw_path}")
-    return data
+    return json_path
 
 
 def _fetch_attack_pattern_from_ctibutler():
@@ -307,24 +309,87 @@ def main():
     parser = argparse.ArgumentParser(
         description="Process PhishTank feed and generate STIX bundles"
     )
-    parser.add_argument(
+
+    subparsers = parser.add_subparsers(
+        dest="mode",
+        required=True,
+    )
+
+    # ------------------------------------------------------------------
+    # download
+    # ------------------------------------------------------------------
+
+    download_parser = subparsers.add_parser(
+        "download",
+        help="Download PhishTank data only",
+    )
+
+    # ------------------------------------------------------------------
+    # process
+    # ------------------------------------------------------------------
+
+    process_parser = subparsers.add_parser(
+        "process",
+        help="Process PhishTank data into JSON bundles",
+    )
+
+    process_parser.add_argument(
+        "--file",
+        type=Path,
+        help="Existing PhishTank JSON file to process",
+    )
+
+    process_parser.add_argument(
         "--since-date",
         "--since_date",
         type=parse_since_date,
         help="Only process entries with submission_time on or after this date (ISO format)",
     )
-    parser.add_argument(
+
+    process_parser.add_argument(
         "--until-date",
         "--until_date",
         type=parse_until_date,
         help="Only process entries with modification time on or before this date (ISO format)",
     )
+
     args = parser.parse_args()
 
-    since_date = args.since_date
-    until_date = args.until_date
-
     bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
+
+    # ------------------------------------------------------------------
+    # download mode
+    # ------------------------------------------------------------------
+
+    if args.mode == "download":
+        json_path = fetch_phishtank_data(data_dir)
+
+        logger.info(f"Downloaded PhishTank data to {json_path}")
+
+        raise SystemExit(0)
+
+    # ------------------------------------------------------------------
+    # process mode
+    # ------------------------------------------------------------------
+
+    if args.file:
+        if not args.file.exists():
+            raise FileNotFoundError(f"File does not exist: {args.file}")
+
+        json_path = data_dir / args.file.name
+
+        shutil.copy2(args.file, json_path)
+
+        logger.info(f"Copied input file to {json_path}")
+    else:
+        json_path = fetch_phishtank_data(data_dir)
+
+        logger.info(f"Downloaded PhishTank data to {json_path}")
+
+    data = json.loads(json_path.read_text())
+
+    logger.info(f"Fetched {len(data)} entries from PhishTank")
+
 
     identity = create_phishtank_identity()
     marking = create_phishtank_marking_definition()
@@ -333,12 +398,9 @@ def main():
         fetch_attack_pattern()
     )  # cache this to avoid repeated CTI Butler calls
 
-    data = fetch_phishtank_data(data_dir)
-    logger.info(f"Fetched {len(data)} entries from PhishTank")
-
-    data = list(filter_entries_by_date(data, since_date, until_date))
+    data = list(filter_entries_by_date(data, args.since_date, args.until_date))
     logger.info(
-        f"{len(data)} entries remain after filtering by since_date={since_date} until_date={until_date}"
+        f"{len(data)} entries remain after filtering by since_date={args.since_date} until_date={args.until_date}"
     )
     N = 500
     grouped = group_entries_to_max_N_elements(data, N)
