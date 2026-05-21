@@ -179,4 +179,11 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "cyber_crime"],
         ["ip-reputation", "high-risk-ips", "network-defence", "attack-sources"],
     ),
+    "viriback": build_processor_metadata(
+        "Viriback",
+        "Open phishing and malware URL intelligence from the Viriback tracker.",
+        "Viriback is a collaborative clearing house for phishing and malware activity on the internet that publishes openly accessible tracker data. This processor publishes malicious URLs, associated IP addresses, and malware-family context from the Viriback feed to support phishing detection, malware delivery monitoring, enrichment, and investigations.",
+        ["indicator_of_compromise", "malware", "campaign", "cyber_crime"],
+        ["phishing", "malicious-urls", "malware-families", "url-intelligence"],
+    ),
 }
