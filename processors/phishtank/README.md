@@ -292,9 +292,126 @@ With relationship to Indicator:
 	]
 }
 ```
+## Usage
+
+```bash
+python processors/phishtank/phishtank.py <command> [OPTIONS]
+```
+
+### Commands
+
+* `download`: Download the latest PhishTank dataset only
+* `process`: Process PhishTank data and generate STIX bundles
+
+### Options
+
+#### `process`
+
+* `--file <path>`: Use an existing downloaded PhishTank JSON file instead of downloading a new one
+* `--since-date <date>`: Only process entries with submission/modification time on or after this date (ISO format)
+* `--until-date <date>`: Only process entries with modification time on or before this date (ISO format)
+
+### Examples
+
+Download the latest PhishTank dataset:
+
+```bash
+python processors/phishtank/phishtank.py download
+```
+
+Process freshly downloaded data:
+
+```bash
+python processors/phishtank/phishtank.py process
+```
+
+Process an existing downloaded file:
+
+```bash
+python processors/phishtank/phishtank.py process --file ./phishtank.json
+```
+
+Process entries after a specific date:
+
+```bash
+python processors/phishtank/phishtank.py process --since-date 2026-05-01
+```
+
+Process entries within a date range:
+
+```bash
+python processors/phishtank/phishtank.py process \
+  --since-date 2026-05-01 \
+  --until-date 2026-05-20
+```
+
+### Output
+
+---
 
 ## GitHub Action
 
-The processor should also be linked to a Github action that downloads data from the feed every 24 hours (after feed update schedule)
+The processor is automated via GitHub Actions at [`update-phishtank.yml`](../../.github/workflows/update-phishtank.yml).
 
-It should only download data and upload data based on `modified_time` (the latest of submission_time, verification_time, and detail_time, which will be compared to the time of last run). Entries are grouped into bundles of up to 500 entries each.
+### Schedule
+
+The workflow runs automatically every hour at 15 minutes past the hour:
+
+```yaml
+schedule:
+  - cron: '15 * * * *'
+```
+
+### How It Works
+
+1. **Download Feed**: Downloads the latest PhishTank dataset once per workflow run
+2. **Share Dataset**: Uploads the downloaded JSON as a workflow artifact to avoid duplicate upstream requests
+3. **Fetch Latest Timestamp**: Retrieves the latest processed indicator timestamp from CTX
+4. **Process Data**: Processes only entries newer than the latest timestamp (with optional date filters)
+5. **Create STIX Bundles**: Generates STIX bundles from the processed phishing indicators
+6. **Upload to CTX**: Uploads generated bundles to CyberThreat eXchange using the configured feed ID
+
+### Manual Dispatch
+
+The workflow can also be triggered manually with custom parameters:
+
+* **`target_environment`**:
+
+  * `all` (default)
+  * `staging`
+  * `production`
+
+* **`since_date`**:
+
+  * Process entries with modification time on or after this date
+  * Leave empty to process all available entries
+  * Automatically overridden by the latest CTX indicator timestamp when available
+
+* **`until_date`**:
+
+  * Process entries with modification time on or before this date
+  * Leave empty to process all available entries
+
+### Configuration
+
+Required secrets and variables:
+
+* **Secrets**:
+
+  * `CTX_BASE_URL`: Base URL for the CTX API
+  * `CTX_API_KEY`: API key for CTX authentication
+  * `GITHUB_TOKEN`: GitHub token used for artifact uploads
+
+* **Variables**:
+
+  * `PHISHTANK_FEED_ID`: The CTX feed ID used for uploads
+  * `MAX_BUNDLE_SIZE_KB`: Maximum bundle size in KB
+
+### Incremental Updates
+
+The workflow supports incremental processing:
+
+* Scheduled runs automatically use the latest CTX indicator timestamp
+* Manual runs also use the latest CTX timestamp when available
+* Custom `since_date` values are only used when no latest timestamp is available
+* This minimizes duplicate processing and reduces unnecessary uploads
