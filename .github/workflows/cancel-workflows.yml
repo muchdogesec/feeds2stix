@@ -27,7 +27,7 @@ jobs:
     
     steps:
       - name: Cancel matching workflows
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const nameFilter = '${{ inputs.name }}'.toLowerCase();
