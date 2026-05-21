@@ -28,6 +28,7 @@ PROCESSOR_FILES = {
     "vxvault": Path("processors/vxvault/vxvault.py"),
     "ipsum": Path("processors/ipsum/ipsum.py"),
     "cinsscore": Path("processors/cinsscore/cinsscore.py"),
+    "viriback": Path("processors/viriback/viriback.py"),
 }
 
 

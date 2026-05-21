@@ -1,0 +1,146 @@
+name: "[Update CTX] Viriback"
+run-name: |
+  [Update CTX] Viriback
+  ${{ github.event_name == 'workflow_dispatch' && inputs.start_date != ''
+      && format(' @from:{0}', inputs.start_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
+on:
+  schedule:
+    # Run at 1AM UTC every day
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+      start_date:
+        description: 'Start date for filtering records (YYYY-MM-DD[T[HH:MM[:SS]]]). Use "auto" to use last run date, or leave empty to process all.'
+        required: false
+        type: string
+        default: 'auto'
+      until_date:
+        description: 'End date for filtering records (YYYY-MM-DD[T[HH:MM[:SS]]]). Leave empty to process all records until now.'
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+    env:
+      PYTHONPATH: .
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get modified time for latest indicator processed in feed
+        id: last_run
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+        run: python helpers/latest_timestamp.py "${{ vars.VIRIBACK_FEED_ID }}" --object-type indicator
+      
+      - name: Process Viriback feed and create STIX bundles
+        id: process
+        run: |
+          set -e
+
+          last_run_date="${{ steps.last_run.outputs.latest_timestamp }}"
+          # Remove quotes from the result
+          last_run_date=$(echo "$last_run_date" | tr -d '"')
+          start_date="${{ inputs.start_date }}"
+          
+          CMD="python processors/viriback/viriback.py"
+          
+          # Determine start_date: use last_run_date for auto/scheduled, or custom date
+          if [ "$start_date" = "auto" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ -n "$last_run_date" ]; then
+              CMD="$CMD --since-date '$last_run_date'"
+              echo "Using last run date: $last_run_date"
+            fi
+          elif [ -n "$start_date" ]; then
+            CMD="$CMD --since-date '$start_date'"
+          fi
+          
+          if [ -n "${{ inputs.until_date }}" ]; then
+            CMD="$CMD --until-date '${{ inputs.until_date }}'"
+          fi
+          
+          echo "Running: $CMD"
+          eval $CMD
+      
+      - name: Upload bundles to CTX
+        id: upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          VIRIBACK_FEED_ID: ${{ vars.VIRIBACK_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+          
+          if [ -z "$BUNDLE_PATH" ] || [ ! -d "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle directory was not created at $BUNDLE_PATH"
+            exit 1
+          fi
+          
+          if [ -z "$VIRIBACK_FEED_ID" ]; then
+            echo "Error: VIRIBACK_FEED_ID variable is not set"
+            exit 1
+          fi
+          
+          echo "Uploading bundles from $BUNDLE_PATH to feed $VIRIBACK_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$VIRIBACK_FEED_ID"
+
+      - name: Upload dedupe database
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload failed bundles
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: malwarebazaar-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            outputs/
+            upload_artifacts/
+          retention-days: 7
