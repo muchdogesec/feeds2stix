@@ -52,7 +52,7 @@ An identity is hardcoded for the feed.
   "name": "TweetFeed",
   "description": "TweetFeed collects Indicators of Compromise (IOCs) shared by the infosec community on Twitter/X.",
   "identity_class": "system",
-  "contact_information": "https://www.viriback.com/",
+  "contact_information": "https://tweetfeed.live/",
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
