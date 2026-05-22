@@ -149,3 +149,30 @@ With relationship to Indicator:
 ```
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+
+#### MITRE ATT&CK
+
+All objects linked to ATT&CK Enterprise T1566 (`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`).
+
+The phishing object only needs importing once (and able to be kept updated), each Indicator
+
+```json
+{
+	"type": "relationship",
+	"spec_version": "2.1",
+	"id": "relationship--<UUID V5>",
+	"created_by_ref": "identity--<UUID OF FEED ID>",
+	"created": "<first_seen>",
+	"modified": "<date>",
+	"relationship_type": "indicates",
+	"source_ref": "indicator--<UUID>",
+	"target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+	"object_marking_refs": [
+		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+		"marking-definition--<UUID OF FEED MARKING DEF>"
+	]
+}
+```
+
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
