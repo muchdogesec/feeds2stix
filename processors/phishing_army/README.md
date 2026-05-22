@@ -1,37 +1,27 @@
-# Phishing.army
+# Phishing Army
 
-https://phishing.army/
+## Overview
 
-A blocklist of phishing domains.
+Phishing Army publishes a curated phishing blocklist derived from public phishing intelligence sources and updated every 6 hours.
 
-https://phishing.army/download/phishing_army_blocklist_extended.txt
+**Feed URL:** https://phishing.army/download/phishing_army_blocklist.txt  
+**Update Schedule:** Every 6 hours  
+**Format:** Plain-text domain blocklist
 
-The data format is a list of domains and subdomains
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `domain-name`
+- `indicator`
 
-```txt
-# 
-# Phishing Army | The Blocklist to filter Phishing 
-# 
-# Last Update: Thu, 21 May 2026 10:00:11 UTC
-# 
-# This is the extended version, also contains domains without subdomains.
-# 
-# Project website: https://phishing.army 
-# Support the project with a donation:: https://www.buymeacoffee.com/andreadraghetti 
-# 
-# This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License. 
-# ======================================================================================================
+**Relationships:**
+- `indicator` → `domain-name` (`indicates`)
 
-0-230-23.rest
-00-202828spas.cfd
-00-coopb144.com
-00000.uno
-00002555-coi2.cfd
-001687489461684165165.iptv-uk-subscriptions.com
-001975421.icu
-```
+## Data source
 
-### Mapping
+The feed is a plain-text blocklist with one domain per line. Comment lines beginning with `#` are ignored.
+
+## Mapping
 
 #### Imported objects
 
@@ -39,140 +29,151 @@ https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/
 
 #### Identity
 
-An identity is hardcoded for the feed:
+An identity is hardcoded for the feed.
 
 ```json
 {
-	"type": "identity",
-	"spec_version": "2.1",
-	"id": "identity--<UUID>",
-	"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-	"created": "2020-01-01T00:00:00.000Z",
-	"modified": "2020-01-01T00:00:00.000Z",
-	"name": "Phishing Army",
-	"description": "Phishing is a critical cyber-attack vector.Let's fight the criminals!",
-	"identity_class": "system",
-	"contact_information": "https://phishing.army/",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-	]
+  "type": "identity",
+  "spec_version": "2.1",
+  "id": "identity--<UUIDV5>",
+  "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+  "created": "2020-01-01T00:00:00.000Z",
+  "modified": "2020-01-01T00:00:00.000Z",
+  "name": "Phishing Army",
+  "description": "Phishing Army maintains a curated phishing blocklist derived from public phishing intelligence sources.",
+  "identity_class": "system",
+  "contact_information": "https://www.phishing.army/",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+  ]
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
+Identity `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
 
-#### Marking definition
+#### Marking Definition
+
+This is hardcoded and never changes.
 
 ```json
 {
-    "type": "marking-definition",
-    "spec_version": "2.1",
-    "id": "marking-definition--<UUIDV5>",
-    "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-    "created": "2020-01-01T00:00:00.000Z",
-    "definition_type": "statement",
-    "definition": {
-        "statement": "Origin: https://phishing.army/download/phishing_army_blocklist_extended.txt"
-    },
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-    ]
+  "type": "marking-definition",
+  "spec_version": "2.1",
+  "id": "marking-definition--<UUIDV5>",
+  "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+  "created": "2020-01-01T00:00:00.000Z",
+  "definition_type": "statement",
+  "definition": {
+    "statement": "Origin: https://phishing.army/download/phishing_army_blocklist.txt"
+  },
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+  ]
 }
 ```
 
-Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+Marking Definition `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
+
+#### Domain Name
+
+For each entry, a `domain-name` SCO is created.
+
+```json
+{
+  "type": "domain-name",
+  "spec_version": "2.1",
+  "id": "domain-name--UUID",
+  "value": "<domain>"
+}
+```
+
+UUID is generated automatically by the STIX2 library.
 
 #### Indicator
 
-```json
-{
-	"type": "indicator",
-	"spec_version": "2.1",
-	"id": "indicator--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUN TIME>",
-	"modified": "<SCRIPT RUN TIME>",
-	"valid_from": "<SCRIPT RUN TIME>",
-	"confidence": "<VALUE>",
-	"indicator_types": [
-		"malicious-activity"
-	],
-	"name": "Domain: <VALUE>",
-	"pattern": "[domain:value='<VALUE>']",
-	"pattern_type": "stix",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
-
-#### Domain
-
-The list only contains domains (one per line)
+For each domain, an Indicator object is created.
 
 ```json
 {
-	"type": "domain",
-	"spec_version": "2.1",
-	"id": "domain--UUID",
-	"value": "<DOMAIN IN LIST>"
+  "type": "indicator",
+  "spec_version": "2.1",
+  "id": "indicator--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<script_run_time>",
+  "modified": "<script_run_time>",
+  "valid_from": "<script_run_time>",
+  "indicator_types": [
+    "malicious-activity"
+  ],
+  "name": "Domain Name: <VALUE>",
+  "pattern": "[domain-name:value = '<VALUE>']",
+  "pattern_type": "stix",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUID generated by STIX2 library
+Indicator `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`.
 
-With relationship to Indicator:
+#### Indicator -> Domain Name Relationship
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<SCRIPT RUN TIME>",
-	"modified": "<SCRIPT RUN TIME>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "domain--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<script_run_time>",
+  "modified": "<script_run_time>",
+  "relationship_type": "indicates",
+  "source_ref": "indicator--<ID>",
+  "target_ref": "domain-name--<ID>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
 
-#### MITRE ATT&CK
+## Usage
 
-All objects linked to ATT&CK Enterprise T1566 (`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`).
-
-The phishing object only needs importing once (and able to be kept updated), each Indicator
-
-```json
-{
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
+```bash
+python processors/phishing_army/phishing_army.py
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+This processor has no date filters. It uses the current snapshot of the blocklist and stamps STIX objects with the script run time.
+
+## Output
+
+The processor creates a single STIX bundle file:
+
+* `outputs/phishing_army/bundles/phishing_army_YYYYMMDD.json`
+
+Each bundle contains:
+
+* `domain-name` objects for the blocklisted domains
+* `indicator` objects with patterns matching the domains
+* `relationship` objects linking indicators to domains
+* identity and marking definition objects
+
+## GitHub Action
+
+The processor is intended to run on a 6-hour schedule and upload the current snapshot bundle to CTX.
+
+### Required Configuration
+
+**Secrets:**
+* `CTX_BASE_URL`
+* `CTX_API_KEY`
+
+**Variables:**
+* `PHISHING_ARMY_FEED_ID`
+* `MAX_BUNDLE_SIZE_KB`
