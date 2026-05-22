@@ -60,6 +60,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "url-intelligence"],
     ),
+    "tweetfeed": build_processor_metadata(
+        "TweetFeed",
+        "Community-sourced IOC intelligence from X/Twitter.",
+        "TweetFeed aggregates indicators of compromise shared by security researchers on X/Twitter and republishes them as STIX objects. This processor publishes URLs, domains, IP addresses, and file hashes from the TweetFeed API to support enrichment, filtering, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "malware", "cyber_crime"],
+        ["twitter", "ioc-feed", "malicious-urls", "file-hashes"],
+    ),
     "phishtank": build_processor_metadata(
         "PhishTank",
         "Community-verified phishing URL intelligence from PhishTank.",

@@ -1,35 +1,61 @@
-# tweetfeed
+# TweetFeed
 
 ## Overview
 
-https://tweetfeed.live/feeds/
+TweetFeed collects indicators of compromise shared by the infosec community on X/Twitter and exposes them through a public API.
 
-The data is all accessible via an API using `since` filter (you can only query a max of one year)
+**Feed URL:** https://tweetfeed.live/feeds/  
+**API Base:** https://api.tweetfeed.live/v1/  
+**Format:** JSON feed of IOC records
 
-https://api.tweetfeed.live/v1/since/2026-05-01T00:00:00Z/
+The API supports a `since`-based query model and only returns up to one year of data at a time.
 
-The data looks like so;
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `user-account`
+- `domain-name`
+- `ipv4-addr`
+- `file`
+- `url`
+- `indicator`
+
+**Relationships:**
+- `indicator` → SCO (`indicates`)
+
+## Data source
+
+The API returns records shaped like this:
 
 ```json
 [
-    {
-        "date": "2026-05-01 02:47:00",
-        "user": "harugasumi",
-        "type": "domain",
-        "value": "nedabaci.z4.web.core.windows.net",
-        "tags": [],
-        "tweet": "https://x.com/harugasumi/status/2050044303926505846"
-    },
-    {
-        "date": "2026-05-01 02:47:00",
-        "user": "harugasumi",
-        "type": "url",
-        "value": "https://nedabaci.z4.web.core.windows.net",
-        "tags": [],
-        "tweet": "https://x.com/harugasumi/status/2050044303926505846"
-    },
-    {
+  {
+    "date": "2026-05-01 02:47:00",
+    "user": "harugasumi",
+    "type": "domain",
+    "value": "nedabaci.z4.web.core.windows.net",
+    "tags": [],
+    "tweet": "https://x.com/harugasumi/status/2050044303926505846"
+  },
+  {
+    "date": "2026-05-01 02:47:00",
+    "user": "harugasumi",
+    "type": "url",
+    "value": "https://nedabaci.z4.web.core.windows.net",
+    "tags": [],
+    "tweet": "https://x.com/harugasumi/status/2050044303926505846"
+  }
+]
 ```
+
+Each record represents one IOC observed in a tweet, with:
+
+- `date`: observation timestamp in `YYYY-MM-DD HH:MM:SS` format
+- `user`: X/Twitter account that posted the IOC
+- `type`: IOC type
+- `value`: IOC value
+- `tags`: feed tags attached to the IOC
+- `tweet`: source tweet URL
 
 ## Mapping
 
@@ -60,7 +86,7 @@ An identity is hardcoded for the feed.
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
+Identity `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
 
 #### Marking Definition
 
@@ -84,24 +110,37 @@ This is hardcoded and never changes.
 }
 ```
 
-Marking Definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
+Marking Definition `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
 
+#### User Account
+
+For each record, a `user-account` SCO is created to represent the posting account.
+
+```json
+{
+  "type": "user-account",
+  "spec_version": "2.1",
+  "id": "user-account--UUID",
+  "account_type": "twitter",
+  "display_name": "<user>"
+}
+```
+
+UUID is generated automatically by the STIX2 library.
 
 #### SCOs
 
-The following `types` originate in each TweetDeck entry:
+The following input `type` values are mapped to SCOs:
 
-* domain -> `domain`
-* ip -> `ipv4-addr`
-* md5 -> `file.hash.md5`
-* sha256 -> `file.hash.sha256`
-* url -> `url`
-
-For each entry, one of the SCOs types is created.
+- `domain` -> `domain-name`
+- `ip` -> `ipv4-addr`
+- `md5` -> `file` with `MD5` hash
+- `sha256` -> `file` with `SHA-256` hash
+- `url` -> `url`
 
 #### Indicator
 
-For each SCO created, an Indicator object is created.
+For each IOC record, an Indicator object is created.
 
 ```json
 {
@@ -119,7 +158,7 @@ For each SCO created, an Indicator object is created.
   "pattern": "[<TYPE>:<KEY> = '<VALUE>']",
   "pattern_type": "stix",
   "labels": [
-      "<TAGS>"
+    "<TAGS>"
   ],
   "external_references": [
     {
@@ -135,9 +174,9 @@ For each SCO created, an Indicator object is created.
 }
 ```
 
-UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and value `<indicator_name>`.
+Indicator `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and value `<indicator_name>`.
 
-#### Indicator → SCO Relationship
+#### Indicator -> SCO Relationship
 
 ```json
 {
@@ -160,18 +199,43 @@ UUIDv5 is generated using namespace `<UUID OF FEED MARKING DEF>` and value `<ind
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
 
-#### User account SCO
+## Usage
 
-For each record a user account to represent the Twitter account is created;
-
-```json
-{
-  "type": "user-account",
-  "spec_version": "2.1",
-  "id": "user-account--UUID",
-  "account_type": "twitter",
-  "display_name": "<user>"
-}
+```bash
+python processors/tweetfeed/tweetfeed.py [--start-date YYYY-MM-DD]
 ```
 
-UUID generated automatically by the STIX2 library.
+When `--start-date` is supplied, the processor queries the TweetFeed API's `since` endpoint with that timestamp so it only pulls records from the requested point forward.
+
+This processor is date-driven and uses the feed record timestamp to set STIX timestamps.
+
+## Output
+
+The processor produces STIX bundles containing:
+
+- a `user-account` object for the posting account
+- an SCO for the IOC value
+- an `indicator` object that matches the IOC
+- a relationship from the `indicator` to the SCO
+- identity and marking definition objects
+
+Bundles are written to `outputs/tweetfeed/bundles/tweetfeed_YYYYMMDD.json`.
+
+## Notes
+
+- The API only exposes a bounded lookback window of one year per query.
+- The feed is best treated as a dated processor because each record includes an explicit `date`.
+
+## GitHub Action
+
+The processor is intended to run on a 15-minute schedule and resume from the last processed indicator timestamp when possible.
+
+### Required Configuration
+
+**Secrets:**
+- `CTX_BASE_URL`
+- `CTX_API_KEY`
+
+**Variables:**
+- `TWEETFEED_FEED_ID`
+- `MAX_BUNDLE_SIZE_KB`
