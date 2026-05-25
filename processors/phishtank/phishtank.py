@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-from functools import lru_cache
 import io
 import json
 import logging
@@ -19,6 +18,7 @@ from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -42,7 +42,7 @@ FEED_URL = "http://data.phishtank.com/data/online-valid.json.gz"
 API_FEED_URL = "http://data.phishtank.com/data/API_KEY/online-valid.json.gz"
 OUTPUT_DIR = "outputs/phishtank"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["phishtank"]
-ATTACK_PATTERN_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
+T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
 OBJECT_MARKING_REFS_BASE = [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -85,49 +85,6 @@ def fetch_phishtank_data(data_dir: Path):
     json_path.write_bytes(gzip_file.read())
     logger.info(f"Saved raw feed to {raw_path}")
     return json_path
-
-
-def _fetch_attack_pattern_from_ctibutler():
-    """Fetch the T1566 Phishing attack-pattern from CTI Butler."""
-    ctibutler_base = os.getenv("CTIBUTLER_BASE_URL", "").rstrip("/")
-    ctibutler_key = os.getenv("CTIBUTLER_API_KEY", "")
-
-    if not ctibutler_base:
-        logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
-        raise Exception("CTIBUTLER_BASE_URL not set")
-
-    url = f"{ctibutler_base}/v1/attack-enterprise/objects/{ATTACK_PATTERN_ID}/"
-    headers = {}
-    if ctibutler_key:
-        headers["API-KEY"] = ctibutler_key
-
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        if "objects" in data:
-            return data["objects"][0]
-        else:
-            return data
-    except Exception as e:
-        logger.warning(f"Failed to fetch attack-pattern from CTI Butler: {e}")
-        raise
-
-
-@lru_cache(maxsize=1)
-def fetch_attack_pattern():
-    try:
-        return _fetch_attack_pattern_from_ctibutler()
-    except Exception:
-        pattern = Path(
-            os.path.join(
-                os.path.dirname(__file__),
-                "data",
-                "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b.json",
-            )
-        ).read_text()
-        logger.info("Using local attack-pattern fallback")
-        return json.loads(pattern)
 
 
 def parse_time(ts_str):
@@ -203,7 +160,7 @@ def create_stix_objects_for_phish(entry, identity_id, marking_id):
     objects.append(
         make_relationship(
             source_ref=indicator_id,
-            target_ref=ATTACK_PATTERN_ID,
+            target_ref=T1566_STIX_ID,
             relationship_type="indicates",
             created_by_ref=identity_id,
             created=submission_time,
@@ -273,7 +230,7 @@ def group_entries_to_max_N_elements(entries, max_per_group=500):
 def process_entries_for_date(
     entries, phishtank_identity, phishtank_marking, feeds2stix_marking
 ):
-    all_stix_objects = [fetch_attack_pattern()]  # already cached by lru_cache
+    all_stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)]
     for entry in entries:
         try:
             objects = create_stix_objects_for_phish(
@@ -394,9 +351,7 @@ def main():
     identity = create_phishtank_identity()
     marking = create_phishtank_marking_definition()
     feeds2stix_marking = fetch_external_objects()
-    attack_pattern = (
-        fetch_attack_pattern()
-    )  # cache this to avoid repeated CTI Butler calls
+    fetch_enterprise_attack_object(T1566_STIX_ID)  # cache this to avoid repeated CTI Butler calls
 
     data = list(filter_entries_by_date(data, args.since_date, args.until_date))
     logger.info(

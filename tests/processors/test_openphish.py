@@ -186,6 +186,23 @@ def test_create_stix_objects():
                 "marking-definition--f7187271-2598-5b00-9b1d-5b538f1e9b9b",
             ],
         },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--397b3edb-f0ea-5469-a8bb-04eab1e02369",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2026-01-01T00:00:00.000Z",
+            "modified": "2026-01-01T00:00:00.000Z",
+            "relationship_type": "indicates",
+            "description": "http://phishing.example.com/fake is known to be used for Phishing (T1566)",
+            "source_ref": "indicator--3916938f-454c-57de-a145-264995f80d34",
+            "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--f7187271-2598-5b00-9b1d-5b538f1e9b9b",
+            ],
+        },
     ]
 
 
@@ -375,11 +392,22 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
             datetime(2026, 1, 1, 10, 0, tzinfo=UTC),
         )
     }
+    feeds2stix_marking = {
+        "type": "marking-definition",
+        "spec_version": "2.1",
+        "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "created": "2020-01-01T00:00:00.000Z",
+        "definition_type": "statement",
+        "definition": {"statement": "feeds2stix"},
+    }
 
     with patch(
         "processors.openphish.openphish.clone_or_update_repo", return_value=mock_repo
     ), patch(
         "processors.openphish.openphish.get_lines_since_date", return_value=url_data
+    ), patch(
+        "processors.openphish.openphish.fetch_external_objects",
+        return_value=feeds2stix_marking,
     ):
         openphish.main()
 
@@ -397,9 +425,11 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",  # feeds2stix marking
         "identity--a42856ab-ed95-54c5-b97f-eb5bf4dd8a6a",  # openphish identity
         "marking-definition--f7187271-2598-5b00-9b1d-5b538f1e9b9b",  # openphish marking
+        "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",  # ATT&CK T1566
         "url--792c59ad-b388-5dcb-bb99-918bd34e4504",  # URL observable
         "indicator--71ac46dc-a164-5bbf-b3c7-2178bc907d22",  # indicator
         "relationship--0e5aa9ef-4f2d-56bb-bf7a-d8ecb9def67a",  # relationship
+        "relationship--bdf89927-a18c-502c-9976-ca5ba5a20201",  # ATT&CK relationship
     }
 
     assert {
@@ -411,5 +441,10 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
             "indicator--71ac46dc-a164-5bbf-b3c7-2178bc907d22",
             "indicates",
             "url--792c59ad-b388-5dcb-bb99-918bd34e4504",
+        ),
+        (
+            "indicator--71ac46dc-a164-5bbf-b3c7-2178bc907d22",
+            "indicates",
+            "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
         ),
     }
