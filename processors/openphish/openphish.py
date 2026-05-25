@@ -15,6 +15,7 @@ from git import Repo
 from stix2 import URL, Bundle, Indicator
 from stix2.patterns import StringConstant
 
+from helpers.attack_patterns import fetch_attack_pattern
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -38,6 +39,11 @@ GITHUB_REPO_URL = "https://github.com/openphish/public_feed"
 FEED_FILE_PATH = "feed.txt"
 BASE_OUTPUT_DIR = "outputs/openphish"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["openphish"]
+T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
+OBJECT_MARKING_REFS_BASE = [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+]
 
 
 def create_openphish_identity():
@@ -168,6 +174,7 @@ def create_stix_objects(url_data_for_date, openphish_identity, openphish_marking
         indicator_name = f"URL: {url_value}"
         indicator_id = generate_uuid5(indicator_name, openphish_marking_id)
         indicator_id_full = f"indicator--{indicator_id}"
+        object_marking_refs = OBJECT_MARKING_REFS_BASE + [openphish_marking_id]
 
         indicator = Indicator(
             id=indicator_id_full,
@@ -179,11 +186,7 @@ def create_stix_objects(url_data_for_date, openphish_identity, openphish_marking
             name=indicator_name,
             pattern=f"[url:value={StringConstant(url_value)}]",
             pattern_type="stix",
-            object_marking_refs=[
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                openphish_marking_id,
-            ],
+            object_marking_refs=object_marking_refs,
         )
 
         # Create relationship between indicator and URL
@@ -194,14 +197,21 @@ def create_stix_objects(url_data_for_date, openphish_identity, openphish_marking
             created_by_ref=openphish_identity_id,
             created=commit_time,
             modified=commit_time,
-            marking_refs=[
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-                openphish_marking_id,
-            ],
+            marking_refs=object_marking_refs,
         )
 
-        stix_objects.extend([url_obj, indicator, relationship])
+        attack_relationship = make_relationship(
+            source_ref=indicator_id_full,
+            target_ref=T1566_STIX_ID,
+            relationship_type="indicates",
+            created_by_ref=openphish_identity_id,
+            created=commit_time,
+            modified=commit_time,
+            marking_refs=object_marking_refs,
+            description=f"{url_value} is known to be used for Phishing (T1566)",
+        )
+
+        stix_objects.extend([url_obj, indicator, relationship, attack_relationship])
 
     logger.info(f"Created {len(stix_objects)} STIX objects")
     return stix_objects
@@ -291,7 +301,7 @@ def process_urls_for_date(
 ):
 
     # Create STIX objects for this date
-    stix_objects = create_stix_objects(
+    stix_objects = [fetch_attack_pattern(T1566_STIX_ID)] + create_stix_objects(
         url_data_for_date, openphish_identity, openphish_marking
     )
 

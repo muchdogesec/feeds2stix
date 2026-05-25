@@ -1,4 +1,8 @@
 name: "[Update CTX] ThreatView"
+run-name: |
+  [Update CTX] ThreatView
+  [${{ github.event_name == 'workflow_dispatch'
+      && inputs.feed_type || 'all' }}]
 
 on:
   schedule:
