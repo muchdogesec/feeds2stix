@@ -146,14 +146,39 @@ def test_create_stix_objects():
                 "marking-definition--fd1a4475-b407-52ab-82e3-9928d37f9c15",
             ],
         },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--073e0412-19e4-5e3b-9e67-90fb75c9ce83",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2026-05-01T02:47:00.000Z",
+            "modified": "2026-05-01T02:47:00.000Z",
+            "relationship_type": "indicates",
+            "description": "example.com is known to be used for Phishing (T1566)",
+            "source_ref": "indicator--bb7c7c20-9308-5e89-b402-1b4debada8e4",
+            "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+                "marking-definition--fd1a4475-b407-52ab-82e3-9928d37f9c15",
+            ],
+        },
     ]
 
 
-def test_main_success_writes_output(monkeypatch, tmp_path, feeds2stix_marking):
+def test_main_success_writes_output(monkeypatch, tmp_path):
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.setattr(sys, "argv", ["phishing_army.py"])
     monkeypatch.setattr(phishing_army, "BASE_OUTPUT_DIR", str(tmp_path / "output"))
+    feeds2stix_marking = {
+        "type": "marking-definition",
+        "spec_version": "2.1",
+        "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "created": "2020-01-01T00:00:00.000Z",
+        "definition_type": "statement",
+        "definition": {"statement": "feeds2stix"},
+    }
 
     with patch(
         "processors.phishing_army.phishing_army.fetch_external_objects",
@@ -176,6 +201,8 @@ def test_main_success_writes_output(monkeypatch, tmp_path, feeds2stix_marking):
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
         "indicator--bb7c7c20-9308-5e89-b402-1b4debada8e4",
         "relationship--36688b0e-b967-5779-b6d2-23a63b91c02d",
+        "relationship--073e0412-19e4-5e3b-9e67-90fb75c9ce83",
+        "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
         "marking-definition--fd1a4475-b407-52ab-82e3-9928d37f9c15",
     }
 
@@ -188,7 +215,12 @@ def test_main_success_writes_output(monkeypatch, tmp_path, feeds2stix_marking):
             "indicator--bb7c7c20-9308-5e89-b402-1b4debada8e4",
             "indicates",
             "domain-name--bedb4899-d24b-5401-bc86-8f6b4cc18ec7",
-        )
+        ),
+        (
+            "indicator--bb7c7c20-9308-5e89-b402-1b4debada8e4",
+            "indicates",
+            "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+        ),
     }
 
 

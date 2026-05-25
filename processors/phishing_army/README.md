@@ -11,11 +11,13 @@ Phishing Army publishes a curated phishing blocklist derived from public phishin
 **STIX Objects Created:**
 - `identity`
 - `marking-definition`
+- `attack-pattern`
 - `domain-name`
 - `indicator`
 
 **Relationships:**
 - `indicator` → `domain-name` (`indicates`)
+- `indicator` → `attack-pattern` (`indicates`)
 
 ## Data source
 
@@ -26,6 +28,12 @@ The feed is a plain-text blocklist with one domain per line. Comment lines begin
 #### Imported objects
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
+
+ATT&CK Enterprise T1566 Phishing:
+
+`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`
+
+The processor fetches the attack-pattern from CTI Butler when configured, otherwise it uses the bundled local fallback.
 
 #### Identity
 
@@ -143,6 +151,32 @@ Indicator `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and val
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
 
+#### Indicator -> ATT&CK Technique Relationship
+
+Each indicator is linked to ATT&CK Enterprise T1566 Phishing.
+
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<script_run_time>",
+  "modified": "<script_run_time>",
+  "relationship_type": "indicates",
+  "description": "<domain> is known to be used for Phishing (T1566)",
+  "source_ref": "indicator--<ID>",
+  "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
+}
+```
+
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
+
 ## Usage
 
 ```bash
@@ -162,6 +196,8 @@ Each bundle contains:
 * `domain-name` objects for the blocklisted domains
 * `indicator` objects with patterns matching the domains
 * `relationship` objects linking indicators to domains
+* `relationship` objects linking indicators to ATT&CK T1566 Phishing
+* ATT&CK T1566 Phishing `attack-pattern`
 * identity and marking definition objects
 
 ## GitHub Action

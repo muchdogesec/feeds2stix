@@ -15,6 +15,7 @@ from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
+from helpers.attack_patterns import fetch_attack_pattern
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -36,6 +37,11 @@ PHISHING_ARMY_FEED_URL = "https://phishing.army/download/phishing_army_blocklist
 BASE_OUTPUT_DIR = "outputs/phishing_army"
 RAW_FEED_FILENAME = "phishing_army_blocklist.txt"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["phishing_army"]
+ATTACK_PATTERN_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
+OBJECT_MARKING_REFS_BASE = [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+]
 
 
 def create_phishing_army_identity():
@@ -102,11 +108,7 @@ def create_indicator_object(
         name=indicator_name,
         pattern=f"[domain-name:value = {StringConstant(domain)}]",
         pattern_type="stix",
-        object_marking_refs=[
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            source_marking_id,
-        ],
+        object_marking_refs=OBJECT_MARKING_REFS_BASE + [source_marking_id],
     )
 
 
@@ -150,6 +152,18 @@ def create_stix_objects(
                 marking_refs=indicator["object_marking_refs"],
             )
         )
+        stix_objects.append(
+            make_relationship(
+                source_ref=indicator["id"],
+                target_ref=ATTACK_PATTERN_ID,
+                relationship_type="indicates",
+                created_by_ref=phishing_army_identity_id,
+                created=script_run_time,
+                modified=script_run_time,
+                marking_refs=indicator["object_marking_refs"],
+                description=f"{domain} is known to be used for Phishing (T1566)",
+            )
+        )
 
     logger.info(f"Created {len(stix_objects)} STIX objects")
     return stix_objects
@@ -173,7 +187,7 @@ def main():
         domains = fetch_phishing_army_feed(data_dir)
 
         logger.info("Creating STIX objects...")
-        stix_objects = create_stix_objects(
+        stix_objects = [fetch_attack_pattern(ATTACK_PATTERN_ID)] + create_stix_objects(
             domains, phishing_army_identity, phishing_army_marking, script_run_time
         )
 
