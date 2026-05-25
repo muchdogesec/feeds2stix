@@ -30,9 +30,6 @@ def ctibutler_session():
 
 def _fetch_attack_pattern_from_ctibutler(stix_id):
     """Fetch an ATT&CK Enterprise attack-pattern object from CTI Butler."""
-    if not ctibutler_base:
-        logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
-        raise Exception("CTIBUTLER_BASE_URL not set")
     session, ctibutler_base = ctibutler_session()
     url = f"{ctibutler_base}/v1/attack-enterprise/objects/{stix_id}/"
     try:
@@ -57,4 +54,33 @@ def fetch_enterprise_attack_object(stix_id):
         ).read_text()
         logger.info("Using local attack-pattern fallback")
         return json.loads(pattern)
-    
+
+
+def get_all_pages(session, url):
+    """Helper function to fetch all pages of a paginated CTI Butler endpoint."""
+    retval = []
+    params = {'page': 1}
+    while url:
+        try:
+            resp = session.get(url, timeout=30, params=params)
+            resp.raise_for_status()
+            data = resp.json()
+            objects = data.get("objects", [])
+            retval.extend(objects)
+            params['page'] += 1
+            if len(objects) < data['page_size'] or len(retval) >= data['total_results_count']:
+                break  # No more pages
+        except Exception as e:
+            raise RemoteFetchError(f"Failed to fetch page at `{url}`: {e}") from e
+    return retval
+
+
+@lru_cache(maxsize=1)
+def fetch_countries():
+    """Fetch the list of country names from CTI Butler. Returns alpha-2 mapped to stix objects."""
+    session, ctibutler_base = ctibutler_session()
+    url = f"{ctibutler_base}/v1/location/objects/?location_type=country&sort=name_ascending"
+    try:
+        return {obj["country"]: obj for obj in get_all_pages(session, url)}
+    except Exception as e:
+        raise RemoteFetchError(f"Failed to fetch countries from CTI Butler: {e}") from e

@@ -1,67 +1,79 @@
 # phishunt
 
-Real time feed of suspicious phishing and scam sites, enriched with contextual details.
+## Overview
 
-https://phishunt.io/api/v1/domains
+phishunt publishes a real-time feed of active suspicious phishing and scam sites enriched with hosting, certificate, country, ASN, targeted brand, and detection-source context.
 
-Data available and filterable using the API
+**Feed URL:** https://phishunt.io/api/v1/domains  
+**Update Schedule:** Detection pipeline hourly; active site re-check every 6 hours  
+**Format:** JSON API response with paginated `results`
 
-https://phishunt.io/api/
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `attack-pattern`
+- `location`
+- `url`
+- `domain-name`
+- `ipv4-addr`
+- `autonomous-system`
+- `x509-certificate`
+- `indicator`
 
-https://phishunt.io/api/v1/domains
+**Relationships:**
+- `indicator` -> `url` (`indicates`)
+- `indicator` -> `domain-name` (`indicates`)
+- `indicator` -> `ipv4-addr` (`indicates`)
+- `indicator` -> `identity` (`indicates`) - targeted brand
+- `indicator` -> `attack-pattern` (`indicates`)
+- `domain-name` -> `ipv4-addr` (`resolves-to`)
+- `ipv4-addr` -> `autonomous-system` (`related-to`)
+- `ipv4-addr` -> `location` (`related-to`)
+- `autonomous-system` -> `location` (`related-to`)
+- `x509-certificate` -> `domain` (`related-to`)
 
+## Data Source
+
+The processor reads `https://phishunt.io/api/v1/domains` and paginates with `limit` and `offset`. Each result contains the suspicious URL, domain, targeted brand slug, first-seen timestamp, last-check timestamp, IP geolocation, ASN, hosting organization, certificate issuer, and boolean verdicts from detection sources.
+
+Example source record:
 
 ```json
 {
-  "count": 883,
-  "offset": 0,
-  "limit": null,
-  "results": [
-    {
-      "url": "https://office365notification.net",
-      "domain": "office365notification.net",
-      "company": "microsoft",
-      "date": "2026-05-21T11:55:53.447121+00:00",
-      "first_seen": "2026-05-21T11:55:53.447121+00:00",
-      "uuid": "6253ce58-2390-4c3e-8eac-500d6a402de0",
-      "ip": "172.174.53.244",
-      "country": "United States",
-      "asn": "8075",
-      "org": "Microsoft Corporation",
-      "cert": "Let's Encrypt",
-      "malicious_google": false,
-      "malicious_openphish": false,
-      "malicious_phishtank": false,
-      "malicious_tweetfeed": false,
-      "malicious_urlscan": true
-    },
-    {
-      "url": "https://office365-service-c38bf0.webflow.io",
-      "domain": "office365-service-c38bf0.webflow.io",
-      "company": "microsoft",
-      "date": "2026-05-21T07:30:04.082856+00:00",
-      "first_seen": "2026-03-26T23:00:32.798044+00:00",
-      "uuid": "54889cb5-146d-484f-8b94-7a0b7385bff7",
-      "ip": "172.64.151.8",
-      "country": "United States",
-      "asn": "13335",
-      "org": "Cloudflare, Inc.",
-      "cert": "WE1",
-      "malicious_google": false,
-      "malicious_openphish": false,
-      "malicious_phishtank": true,
-      "malicious_tweetfeed": false,
-      "malicious_urlscan": false
-    },
+  "url": "https://office365notification.net",
+  "domain": "office365notification.net",
+  "company": "microsoft",
+  "date": "2026-05-21T11:55:53.447121+00:00",
+  "first_seen": "2026-05-21T11:55:53.447121+00:00",
+  "uuid": "6253ce58-2390-4c3e-8eac-500d6a402de0",
+  "ip": "172.174.53.244",
+  "country": "United States",
+  "asn": "8075",
+  "org": "Microsoft Corporation",
+  "cert": "Let's Encrypt",
+  "malicious_google": false,
+  "malicious_openphish": false,
+  "malicious_phishtank": false,
+  "malicious_tweetfeed": false,
+  "malicious_urlscan": true
+}
 ```
 
 ## Mapping
 
-#### Imported objects
+#### Imported Objects
+
+The processor imports the feeds2stix marking definition:
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
 
-#### Identity
+The processor imports ATT&CK Enterprise T1566 Phishing:
+
+`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`
+
+The processor also imports CTI Butler country `location` objects. The source `country` name is converted to an alpha-2 code with `helpers.utils.country_name_as_alpha2()`, then resolved with `helpers.kb_fetch.fetch_countries()[<alpha_2>]`. Each country location object is included only once per output bundle.
+
+#### Source Identity
 
 An identity is hardcoded for the feed.
 
@@ -74,9 +86,9 @@ An identity is hardcoded for the feed.
   "created": "2020-01-01T00:00:00.000Z",
   "modified": "2020-01-01T00:00:00.000Z",
   "name": "phishunt",
-  "description": "Real time feed of suspicious phishing and scam sites, enriched with contextual details.",
+  "description": "Real-time feed of suspicious phishing and scam sites, enriched with IP geolocation, hosting, TLS certificate, and detection verdict data.",
   "identity_class": "system",
-  "contact_information": "https://tweetfeed.live/",
+  "contact_information": "https://phishunt.io/",
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
@@ -84,7 +96,7 @@ An identity is hardcoded for the feed.
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
+Identity `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
 
 #### Marking Definition
 
@@ -99,7 +111,7 @@ This is hardcoded and never changes.
   "created": "2020-01-01T00:00:00.000Z",
   "definition_type": "statement",
   "definition": {
-    "statement": "Origin: https://phishunt.io/api/"
+    "statement": "Origin: https://phishunt.io/api/v1/domains"
   },
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -108,284 +120,289 @@ This is hardcoded and never changes.
 }
 ```
 
-Marking Definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
+Marking Definition `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
 
-#### URL / Domain / IPv4
+#### URL
 
-For each record a URL and domain are created
-
-```json
-{
-	"type": "url",
-	"spec_version": "2.1",
-	"id": "url--UUID",
-	"value": "<DOMAIN>"
-}
-```
+For each source record, a `url` SCO is created from `url`.
 
 ```json
 {
-	"type": "domain",
-	"spec_version": "2.1",
-	"id": "domain--UUID",
-	"value": "<DOMAIN>"
+  "type": "url",
+  "spec_version": "2.1",
+  "id": "url--<GENERATED BY STIX2 LIB>",
+  "value": "<url>"
 }
 ```
+
+#### Domain Name
+
+For each source record, a `domain-name` SCO is created from `domain`.
 
 ```json
 {
-	"type": "ipv4-addr",
-	"spec_version": "2.1",
-	"id": "ipv4-addr--UUID",
-	"value": "<DOMAIN>"
+  "type": "domain-name",
+  "spec_version": "2.1",
+  "id": "domain-name--<GENERATED BY STIX2 LIB>",
+  "value": "<domain>"
 }
 ```
 
-UUID generated by STIX2 library
+#### IPv4 Address
 
-Each object has relationship to Indicator:
+When `ip` is present, an `ipv4-addr` SCO is created.
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "<URL/DOMAIN/IPV4-ADDR>--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "ipv4-addr",
+  "spec_version": "2.1",
+  "id": "ipv4-addr--<GENERATED BY STIX2 LIB>",
+  "value": "<ip>"
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+#### Autonomous System
 
-#### Indicator
+When `asn` is present, an `autonomous-system` SCO is created. The `org` value is used as the AS name when available.
 
 ```json
 {
-	"type": "indicator",
-	"spec_version": "2.1",
-	"id": "indicator--<UUID VALUE>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"valid_from": "<first_seen>",
-	"indicator_types": [
-		"malicious-activity"
-	],
-	"name": "Domain: <VALUE>",
-	"pattern": "[domain:value='<VALUE>' OR url:value='<VALUE>' OR ipv4-addr:value='<VALUE>']",
-	"pattern_type": "stix",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "autonomous-system",
+  "spec_version": "2.1",
+  "id": "autonomous-system--<GENERATED BY STIX2 LIB>",
+  "number": 8075,
+  "name": "Microsoft Corporation"
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `name`
+#### X509 Certificate
 
-#### Domain -> IPv4 
-
-The IP is joined to the Domain
-
-```json
-{
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "resolves-to",
-	"source_ref": "<domain/url>--<UUID>",
-	"target_ref": "ipv4--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-
-#### Location
-
-For the `country` value, the location object is indexed from CTI Butler.
-
-The location is joined to the IPv4 Addr AND ASN
-
-```json
-{
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "related-to",
-	"source_ref": "<ipv4/autonomous-system>--<UUID>",
-	"target_ref": "location--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-
-#### ASN
-
-```json
-{
-	"type": "autonomous-system",
-	"spec_version": "2.1",
-	"id": "autonomous-system--<UUID>",
-	"number": "<asn>",
-	"name": "<org>"
-}
-```
-
-UUID generated by STIX2 library
-
-The ASN is joined to the IPv4 Addr
-
-```json
-{
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "related-to",
-	"source_ref": "ipv4-addr--<UUID>",
-	"target_ref": "autonomous-system--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
-}
-```
-
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
-
-#### Certificate
+When `cert` is present, an `x509-certificate` SCO is created with a deterministic ID based on the certificate issuer and source marking namespace.
 
 ```json
 {
   "type": "x509-certificate",
   "spec_version": "2.1",
-  "id": "x509-certificate--<UUID>",
-  "issuer": "<CERT>"
+  "id": "x509-certificate--<UUIDV5>",
+  "issuer": "<cert>"
 }
 ```
 
-UUID generated by STIX2 library -- NEED CHECKING IF JUST USING ISSUER IS ENOUGH. IF NOT NEED TO MAKE UUID DETERMINSTIC
+#### Targeted Brand Identity
 
-With relationship to URL
+When `company` is present, an `identity` SDO is created for the targeted brand.
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "related-to",
-	"source_ref": "x509-certificate--<UUID>",
-	"target_ref": "url--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "identity",
+  "spec_version": "2.1",
+  "id": "identity--<UUIDV5>",
+  "created": "2020-01-01T00:00:00.000Z",
+  "modified": "2020-01-01T00:00:00.000Z",
+  "name": "<company>",
+  "identity_class": "organization",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+Identity `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and value `company`.
 
-#### Identity
+#### Indicator
 
-Identities represent the company being spoofed for the phish
+For each source record, an Indicator object is created.
 
 ```json
 {
-    "type": "identity",
-    "spec_version": "2.1",
-    "id": "identity--<UUIDV5>",
-    "created": "2020-01-01T00:00:00.000Z",
-    "modified": "2020-01-01T00:00:00.000Z",
-    "name": "<company>",
-    "identity_class": "organization",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "indicator",
+  "spec_version": "2.1",
+  "id": "indicator--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<date>",
+  "valid_from": "<first_seen>",
+  "indicator_types": [
+    "malicious-activity"
+  ],
+  "name": "Domain: <domain>",
+  "pattern": "[url:value = '<url>' OR domain-name:value = '<domain>' OR ipv4-addr:value = '<ip>']",
+  "pattern_type": "stix",
+  "external_references": [
+    {
+      "source_name": "phishunt",
+      "url": "https://phishunt.io/api/v1/domains",
+      "external_id": "<uuid>"
+    }
+  ],
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-The identity is linked to the Indicator
+Indicator `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`.
+
+#### Indicator Relationships
+
+Indicators link to the URL, domain, IP address, targeted brand identity, and ATT&CK T1566 object.
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "identity--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<date>",
+  "relationship_type": "indicates",
+  "description": "<domain> is known to be used for Phishing (T1566)",
+  "source_ref": "indicator--<ID>",
+  "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
 
-#### MITRE ATT&CK
+#### Hosting Relationships
 
-All objects linked to ATT&CK Enterprise T1566 (`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`).
-
-The phishing object only needs importing once (and able to be kept updated), each Indicator
-
+The domain is linked to the IP address with `resolves-to`. The IP address is linked to the autonomous system with `related-to`.
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<date>",
+  "relationship_type": "resolves-to",
+  "source_ref": "domain-name--<ID>",
+  "target_ref": "ipv4-addr--<ID>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
+
+#### Country Relationships
+
+The imported country `location` object is linked from the IP address and autonomous system with `related-to`. Each country object is only included once per bundle, even when multiple records share the same country.
+
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<date>",
+  "relationship_type": "related-to",
+  "source_ref": "ipv4-addr--<ID>",
+  "target_ref": "location--<COUNTRY ID>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
+}
+```
+
+#### Certificate Relationship
+
+Certificate issuer context is linked to the domain with `related-to`.
+
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<date>",
+  "relationship_type": "related-to",
+  "target_ref": "x509-certificate--<ID>",
+  "source_ref": "domain--<ID>",
+  "description": "<domain> is associated with TLS certificate issued by <issuer>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
+}
+```
+
+## Timestamp Determination
+
+The processor uses:
+
+- `first_seen` for Indicator `created` and `valid_from`
+- `date` for Indicator `modified`
+- `first_seen` for relationship `created`
+- `date` for relationship `modified`
+- `date` for `--since-date` and `--until-date` filtering
+
+All parsed timestamps are normalized to timezone-aware UTC datetimes.
+
+## Usage
+
+```bash
+python processors/phishunt/phishunt.py
+```
+
+### Options
+
+- `--since-date`, `--since_date`: only process entries with `date` on or after this timestamp
+- `--until-date`, `--until_date`: only process entries with `date` on or before this timestamp
+
+Date values can be `YYYY-MM-DD` or ISO datetimes accepted by Python `datetime.fromisoformat()`.
+
+### Examples
+
+```bash
+python processors/phishunt/phishunt.py --since-date 2026-05-21
+python processors/phishunt/phishunt.py --since-date 2026-05-21T10:00:00+00:00 --until-date 2026-05-21T12:00:00+00:00
+```
+
+### Output
+
+The processor groups records by `date` hour and writes one bundle per hour:
+
+* `outputs/phishunt/bundles/phishunt_YYYYMMDD_HH.json`
+
+Each bundle contains:
+
+* phishunt source identity and marking definition
+* feeds2stix marking definition
+* ATT&CK T1566 Phishing attack-pattern
+* country location objects, once per country per bundle
+* URL, domain, IP, ASN, certificate, targeted brand, indicator, and relationship objects
+
+## GitHub Action
+
+The processor is automated via GitHub Actions at [`update-phishunt.yml`](../../.github/workflows/update-phishunt.yml).
+
+### Required Configuration
+
+**Secrets:**
+* `CTX_BASE_URL`
+* `CTX_API_KEY`
+* `CTIBUTLER_BASE_URL`
+* `CTIBUTLER_API_KEY`
+
+**Variables:**
+* `PHISHUNT_FEED_ID`
+* `MAX_BUNDLE_SIZE_KB`

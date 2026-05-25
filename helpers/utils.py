@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import uuid
 from datetime import UTC, date, datetime, time
+import pycountry
 
 import requests
 import stix2extensions
@@ -223,3 +224,17 @@ def parse_until_date(value: str) -> datetime:
 def parse_since_date(value: str) -> datetime:
     dt = datetime.fromisoformat(value)
     return make_aware_time(dt)
+
+
+def country_name_as_alpha2(country_name, original_name=None):
+    original_name = original_name or country_name
+    country_name = country_name.strip().lower()
+    for k in ["name", 'common_name', "official_name"]:
+        country = pycountry.countries.get(**{k: country_name})
+        if country:
+            return country.alpha_2
+    if country_name.startswith('the '):
+        # handle cases like "The Netherlands" that are listed without "The" in pycountry
+        return country_name_as_alpha2(country_name[4:], original_name=original_name)
+    raise ValueError(f"Country name '{original_name}' not found in pycountry database")
+
