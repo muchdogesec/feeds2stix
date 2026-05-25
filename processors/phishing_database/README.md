@@ -1,162 +1,261 @@
-# Phishing Database
+# Phishing.Database
 
-This is a series of txt files maintained on GitHub
+## Overview
 
-https://github.com/Phishing-Database/Phishing.Database/
+Phishing.Database is a public GitHub repository that tracks phishing indicators across domains, URLs, and IPv4 addresses.
 
-The following observable types exist
+**Feed URL:** https://github.com/Phishing-Database/Phishing.Database  
+**Update Schedule:** Continuous repository updates  
+**Format:** Git repository `.txt` datasets
 
-* links (`url`)
-* domains (`domain`)
-* ipv4-addr (`ipv4-addr`)
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `attack-pattern`
+- `indicator`
+- `url`
+- `domain-name`
+- `ipv4-addr`
 
-The files move through the following steps
+**Relationships:**
+- `indicator` -> `url` (`indicates`)
+- `indicator` -> `domain-name` (`indicates`)
+- `indicator` -> `ipv4-addr` (`indicates`)
+- `indicator` -> `attack-pattern` (`indicates`)
 
-1. ACTIVE
-2. INACTIVE / INVALID
+## Data Source
 
-Generally a phishing domain moves into inactive when taken down and invalid when someone reports it as an incorrect addition to the database.
+The processor clones the Phishing.Database repository and only reads `.txt` files under directories ending with:
 
-I am not 100% sure, but I think the top level directories are best to get this data from e.g.
+- `*-ACTIVE`
+- `*-INACTIVE`
 
-* phishing-domains-ACTIVE
-* phishing-domains-INACTIVE
-* phishing-domains-INVALID
+It ignores top-level text files and non-`.txt` files.
 
-Note, each folder holds a manifest file detailing all the files to monitor within them.
+The indicator type is inferred from directory name:
+
+- directory containing `links` -> URL
+- directory containing `domains` -> Domain Name
+- directory containing `ips` -> IPv4
+
+## Timestamp Determination
+
+The processor derives timestamps from git commit history, using the same first-seen approach as OpenPhish:
+
+1. Iterate commits affecting each target `.txt` file from oldest to newest.
+2. Parse file lines at each commit.
+3. Record a line's first commit timestamp when it appears for the first time in that file.
+
+For each normalized indicator value:
+
+- `first_seen` = earliest timestamp seen across all matched ACTIVE/INACTIVE files
+- `inactive_seen` = earliest timestamp from INACTIVE files (if present)
+- `modified` = `inactive_seen` if present, otherwise `active_seen`
+- `revoked` = `true` if `inactive_seen` exists, otherwise `false`
+
+Filtering:
+
+- `--since-date` and `--until-date` filter on `modified`
+- `--cutoff-date` excludes any indicator that became inactive before cutoff (`inactive_seen < cutoff`)
 
 ## Mapping
 
-#### Imported objects
+#### Imported Objects
 
 https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json
 
+ATT&CK Enterprise T1566:
+
+`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`
+
 #### Identity
 
-An identity is hardcoded for the feed 
-
 ```json
 {
-	"type": "identity",
-	"spec_version": "2.1",
-	"id": "identity--<UUID>",
-	"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-	"created": "2020-01-01T00:00:00.000Z",
-	"modified": "2020-01-01T00:00:00.000Z",
-	"name": "Phishing.Database",
-	"description": "The Phishing.Database project is a comprehensive and regularly updated repository designed to help the community identify and mitigate phishing threats.",
-	"identity_class": "organization",
-	"contact_information": "https://github.com/Phishing-Database/Phishing.Database",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-	]
+  "type": "identity",
+  "spec_version": "2.1",
+  "id": "identity--<UUIDV5>",
+  "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+  "created": "2020-01-01T00:00:00.000Z",
+  "modified": "2020-01-01T00:00:00.000Z",
+  "name": "Phishing.Database",
+  "description": "The Phishing.Database project is a comprehensive and regularly updated repository designed to help the community identify and mitigate phishing threats.",
+  "identity_class": "organization",
+  "contact_information": "https://github.com/Phishing-Database/Phishing.Database",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+  ]
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
-
-#### Marking definition
+#### Marking Definition
 
 ```json
 {
-		"type": "marking-definition",
-		"spec_version": "2.1",
-		"id": "marking-definition--<UUIDV5>",
-		"created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-		"created": "2020-01-01T00:00:00.000Z",
-		"definition_type": "statement",
-		"definition": {
-				"statement": "Origin: https://github.com/Phishing-Database/Phishing.Database"
-		},
-		"object_marking_refs": [
-				"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-				"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
-		]
+  "type": "marking-definition",
+  "spec_version": "2.1",
+  "id": "marking-definition--<UUIDV5>",
+  "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+  "created": "2020-01-01T00:00:00.000Z",
+  "definition_type": "statement",
+  "definition": {
+    "statement": "Origin: https://github.com/Phishing-Database/Phishing.Database"
+  },
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0"
+  ]
 }
 ```
 
-Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
-
-#### URL / Domain / IPv4
-
-For each line, one of the following is created (depending on source file that defines the SCOs it contains)
+#### Observables
 
 ```json
 {
-	"type": "url",
-	"spec_version": "2.1",
-	"id": "url--UUID",
-	"value": "<URL IN LIST>"
+  "type": "url",
+  "spec_version": "2.1",
+  "id": "url--<GENERATED BY STIX2 LIB>",
+  "value": "<url>"
 }
 ```
 
 ```json
 {
-	"type": "domain",
-	"spec_version": "2.1",
-	"id": "url--UUID",
-	"value": "<DOMAIN IN LIST>"
+  "type": "domain-name",
+  "spec_version": "2.1",
+  "id": "domain-name--<GENERATED BY STIX2 LIB>",
+  "value": "<domain>"
 }
 ```
 
 ```json
 {
-	"type": "ipv4-addr",
-	"spec_version": "2.1",
-	"id": "ipv4-addr--UUID",
-	"value": "<IPV4 IN LIST>"
+  "type": "ipv4-addr",
+  "spec_version": "2.1",
+  "id": "ipv4-addr--<GENERATED BY STIX2 LIB>",
+  "value": "<ip>"
 }
 ```
 
-UUID generated by STIX2 library
-
-With relationship to Indicator:
+#### Indicator
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<indicator.created>",
-	"modified": "<indicator.modified>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "<url/domain/ipv4-addr>--<UUID>",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "indicator",
+  "spec_version": "2.1",
+  "id": "indicator--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<modified>",
+  "valid_from": "<first_seen>",
+  "indicator_types": [
+    "malicious-activity"
+  ],
+  "name": "URL: <value>",
+  "pattern": "[url:value='<value>']",
+  "pattern_type": "stix",
+  "revoked": false,
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+For indicators sourced from INACTIVE datasets, `revoked` is set to `true`.
 
-#### MITRE ATT&CK
-
-All objects linked to ATT&CK Enterprise T1566 (`attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b`).
-
-The phishing object only needs importing once (and able to be kept updated), each Indicator
+#### Indicator Relationships
 
 ```json
 {
-	"type": "relationship",
-	"spec_version": "2.1",
-	"id": "relationship--<UUID V5>",
-	"created_by_ref": "identity--<UUID OF FEED ID>",
-	"created": "<first_seen>",
-	"modified": "<date>",
-	"relationship_type": "indicates",
-	"source_ref": "indicator--<UUID>",
-	"target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
-	"object_marking_refs": [
-		"marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-		"marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-		"marking-definition--<UUID OF FEED MARKING DEF>"
-	]
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<modified>",
+  "relationship_type": "indicates",
+  "source_ref": "indicator--<UUID>",
+  "target_ref": "url--<UUID>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
 }
 ```
 
-UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<first_seen>",
+  "modified": "<modified>",
+  "relationship_type": "indicates",
+  "description": "<observable> is known to be used for Phishing (T1566)",
+  "source_ref": "indicator--<UUID>",
+  "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
+}
+```
+
+## Usage
+
+```bash
+python processors/phishing_database/phishing_database.py
+```
+
+### Options
+
+- `--since-date`: include records with `modified` on or after this date
+- `--until-date`: include records with `modified` on or before this date
+- `--cutoff-date`: exclude records that became inactive before this date
+
+All date options accept `YYYY-MM-DD` or ISO datetime strings.
+
+### Examples
+
+```bash
+python processors/phishing_database/phishing_database.py --since-date 2026-01-01
+python processors/phishing_database/phishing_database.py --since-date 2026-01-01 --until-date 2026-01-15
+python processors/phishing_database/phishing_database.py --cutoff-date 2026-01-01
+```
+
+## Output
+
+Records are grouped by modified hour:
+
+* `outputs/phishing_database/bundles/phishing_database_YYYYMMDD_HH.json`
+
+Each bundle contains:
+
+* source identity and source marking
+* feeds2stix marking
+* ATT&CK T1566 attack-pattern
+* observable objects
+* indicators
+* indicator-to-observable and indicator-to-ATT&CK relationships
+
+## GitHub Action
+
+The processor is automated via [`update-phishing_database.yml`](../../.github/workflows/update-phishing_database.yml).
+
+### Required Configuration
+
+**Secrets:**
+* `CTX_BASE_URL`
+* `CTX_API_KEY`
+* `CTIBUTLER_BASE_URL`
+* `CTIBUTLER_API_KEY`
+
+**Variables:**
+* `PHISHING_DATABASE_FEED_ID`
+* `MAX_BUNDLE_SIZE_KB`
