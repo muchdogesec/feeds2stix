@@ -15,7 +15,7 @@ from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from helpers.attack_patterns import fetch_attack_pattern
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -187,7 +187,7 @@ def main():
         domains = fetch_phishing_army_feed(data_dir)
 
         logger.info("Creating STIX objects...")
-        stix_objects = [fetch_attack_pattern(ATTACK_PATTERN_ID)] + create_stix_objects(
+        stix_objects = [fetch_enterprise_attack_object(ATTACK_PATTERN_ID)] + create_stix_objects(
             domains, phishing_army_identity, phishing_army_marking, script_run_time
         )
 
