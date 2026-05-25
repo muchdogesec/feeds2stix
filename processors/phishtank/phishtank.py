@@ -18,7 +18,7 @@ from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from helpers.attack_patterns import fetch_attack_pattern
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -230,7 +230,7 @@ def group_entries_to_max_N_elements(entries, max_per_group=500):
 def process_entries_for_date(
     entries, phishtank_identity, phishtank_marking, feeds2stix_marking
 ):
-    all_stix_objects = [fetch_attack_pattern(T1566_STIX_ID)]
+    all_stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)]
     for entry in entries:
         try:
             objects = create_stix_objects_for_phish(
@@ -351,7 +351,7 @@ def main():
     identity = create_phishtank_identity()
     marking = create_phishtank_marking_definition()
     feeds2stix_marking = fetch_external_objects()
-    fetch_attack_pattern(T1566_STIX_ID)  # cache this to avoid repeated CTI Butler calls
+    fetch_enterprise_attack_object(T1566_STIX_ID)  # cache this to avoid repeated CTI Butler calls
 
     data = list(filter_entries_by_date(data, args.since_date, args.until_date))
     logger.info(

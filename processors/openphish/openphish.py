@@ -15,7 +15,7 @@ from git import Repo
 from stix2 import URL, Bundle, Indicator
 from stix2.patterns import StringConstant
 
-from helpers.attack_patterns import fetch_attack_pattern
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -301,7 +301,7 @@ def process_urls_for_date(
 ):
 
     # Create STIX objects for this date
-    stix_objects = [fetch_attack_pattern(T1566_STIX_ID)] + create_stix_objects(
+    stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)] + create_stix_objects(
         url_data_for_date, openphish_identity, openphish_marking
     )
 
