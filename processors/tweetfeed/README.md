@@ -128,6 +128,29 @@ For each record, a `user-account` SCO is created to represent the posting accoun
 
 UUID is generated automatically by the STIX2 library.
 
+#### Indicator -> User account Relationship
+
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<date>",
+  "modified": "<date>",
+  "relationship_type": "indicates",
+  "source_ref": "indicator--<ID>",
+  "target_ref": "user-account--<ID>",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ]
+}
+```
+
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
+
 #### SCOs
 
 The following input `type` values are mapped to SCOs:
