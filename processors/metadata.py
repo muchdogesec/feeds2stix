@@ -60,6 +60,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "url-intelligence"],
     ),
+    "phishing_army": build_processor_metadata(
+        "Phishing Army",
+        "Curated phishing domain blocklist from Phishing Army.",
+        "Phishing Army curates a phishing domain blocklist from public phishing intelligence sources and analyzes it to reduce false positives. This processor publishes phishing domains from the blocklist to support DNS filtering, blocking, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "phishing-domains", "domain-blocklist", "osint"],
+    ),
     "phishtank": build_processor_metadata(
         "PhishTank",
         "Community-verified phishing URL intelligence from PhishTank.",
