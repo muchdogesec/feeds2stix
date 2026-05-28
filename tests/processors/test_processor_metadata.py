@@ -13,6 +13,7 @@ PROCESSOR_FILES = {
     "openphish": Path("processors/openphish/openphish.py"),
     "phishing_army": Path("processors/phishing_army/phishing_army.py"),
     "phishtank": Path("processors/phishtank/phishtank.py"),
+    "phishing_database": Path("processors/phishing_database/phishing_database.py"),
     "greensnow": Path("processors/greensnow/greensnow.py"),
     "abuse_ch_malwarebazaar": Path("processors/abuse_ch_malwarebazaar/malwarebazaar.py"),
     "abuse_ch_threatfox": Path("processors/abuse_ch_threatfox/threatfox.py"),

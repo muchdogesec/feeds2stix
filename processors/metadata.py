@@ -74,6 +74,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "community-verified", "malicious-urls", "url-intelligence"],
     ),
+    "phishing_database": build_processor_metadata(
+        "Phishing.Database",
+        "Open phishing domain, URL, and IP intelligence with active/inactive states.",
+        "Phishing.Database is a continuously updated open repository of phishing indicators maintained on GitHub. This processor analyzes commit history for ACTIVE and INACTIVE TXT datasets to derive first-seen and inactive transition times, then publishes URL, domain, and IPv4 indicators with phishing ATT&CK context for detection, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "malicious-urls", "malicious-domains", "malicious-ips"],
+    ),
     "greensnow": build_processor_metadata(
         "GreenSnow",
         "IP blocklist of hosts observed attacking internet-facing services.",

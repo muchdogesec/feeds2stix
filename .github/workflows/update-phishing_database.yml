@@ -1,0 +1,154 @@
+name: "[Update CTX] Phishing.Database"
+run-name: |
+  [Update CTX] Phishing.Database
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.cutoff_date != ''
+      && format(' @cutoff:{0}', inputs.cutoff_date) || '' }}
+
+on:
+  schedule:
+    - cron: '25 * * * *'
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Which environment(s) to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+      since_date:
+        description: 'Only process records modified on or after this date. Use "auto" to use latest indicator timestamp.'
+        required: true
+        type: string
+        default: 'auto'
+      until_date:
+        description: 'Only process records modified on or before this date. Leave empty for no upper bound.'
+        required: false
+        type: string
+      cutoff_date:
+        description: 'Skip records that became inactive before this date. Leave empty to disable cutoff.'
+        required: false
+        type: string
+
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+    env:
+      PYTHONPATH: .
+      CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+      CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get latest indicator timestamp
+        id: last_run
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+        run: python helpers/latest_timestamp.py "${{ vars.PHISHING_DATABASE_FEED_ID }}" --object-type indicator --delta 10
+
+      - name: Process Phishing.Database feed and create STIX bundles
+        id: process
+        run: |
+          set -e
+
+          since_date="${{ inputs.since_date }}"
+          until_date="${{ inputs.until_date }}"
+          cutoff_date="${{ inputs.cutoff_date }}"
+          latest_timestamp="${{ steps.last_run.outputs.latest_timestamp }}"
+
+          CMD="python processors/phishing_database/phishing_database.py"
+
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "$since_date" = "auto" ]; then
+            if [ -n "$latest_timestamp" ]; then
+              CMD="$CMD --since-date '$latest_timestamp'"
+              echo "Using latest indicator timestamp: $latest_timestamp"
+            fi
+          elif [ -n "$since_date" ]; then
+            CMD="$CMD --since-date '$since_date'"
+          fi
+
+          if [ -n "$until_date" ]; then
+            CMD="$CMD --until-date '$until_date'"
+          fi
+
+          if [ -n "$cutoff_date" ]; then
+            CMD="$CMD --cutoff-date '$cutoff_date'"
+          fi
+
+          echo "Running: $CMD"
+          eval $CMD
+
+      - name: Upload bundles to CTX
+        id: upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          PHISHING_DATABASE_FEED_ID: ${{ vars.PHISHING_DATABASE_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+
+          if [ -z "$PHISHING_DATABASE_FEED_ID" ]; then
+            echo "Error: PHISHING_DATABASE_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading $BUNDLE_PATH to feed $PHISHING_DATABASE_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$PHISHING_DATABASE_FEED_ID"
+
+      - name: Upload dedupe database
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload failed bundles
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phishing-database-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            outputs/
+            upload_artifacts/
+          retention-days: 7
