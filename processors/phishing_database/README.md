@@ -89,6 +89,9 @@ ATT&CK Enterprise T1566:
 }
 ```
 
+Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`
+
+
 #### Marking Definition
 
 ```json
@@ -108,6 +111,9 @@ ATT&CK Enterprise T1566:
   ]
 }
 ```
+
+Marking definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`
+
 
 #### Observables
 
