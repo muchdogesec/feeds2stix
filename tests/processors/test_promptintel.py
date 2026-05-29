@@ -78,10 +78,10 @@ def test_fetch_promptintel_prompts_paginates():
         "processors.promptintel.promptintel.requests.get",
         side_effect=[
             FakeJSONResponse(
-                {"success": True, "data": {"indicators": [p1], "total": 2, "page": 1}}
+                {"success": True, "data": [p1], "pagination":{"total": 2, "page": 1}}
             ),
             FakeJSONResponse(
-                {"success": True, "data": {"indicators": [p2], "total": 2, "page": 2}}
+                {"success": True, "data": [p2], "pagination": {"total": 2, "page": 2}}
             ),
         ],
     ) as mock_get, patch("processors.promptintel.promptintel.time.sleep") as mock_sleep:
@@ -104,7 +104,7 @@ def test_fetch_promptintel_prompts_retries_on_rate_limit():
     rate_limited.raise_for_status = MagicMock()
 
     success = FakeJSONResponse(
-        {"success": True, "data": {"indicators": [p1], "total": 1, "page": 1}}
+        {"success": True, "data": [p1], "pagination": {"total": 1, "page": 1}}
     )
 
     with patch(
@@ -262,7 +262,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
 
     with patch(
         "processors.promptintel.promptintel.requests.get",
-        return_value=FakeJSONResponse({"data": [SAMPLE_PROMPT]}),
+        return_value=FakeJSONResponse({"data": [SAMPLE_PROMPT], "pagination": {"total": 1, "page": 1}}),
     ), patch(
         "processors.promptintel.promptintel.fetch_external_objects",
         return_value={
@@ -289,7 +289,7 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert any(obj["type"] == "indicator" for obj in bundle["objects"])
 
 
-def test_main_splits_into_multiple_bundles(monkeypatch, tmp_path):
+def test_main_splits_into_multiple_bundles(monkeypatch, tmp_path, feeds2stix_marking):
     out_file = tmp_path / "gh_multi.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.setenv("PROMPTINTEL_API_KEY", "test-key")
@@ -307,17 +307,10 @@ def test_main_splits_into_multiple_bundles(monkeypatch, tmp_path):
 
     with patch(
         "processors.promptintel.promptintel.requests.get",
-        return_value=FakeJSONResponse({"data": prompts}),
+        return_value=FakeJSONResponse({"data": prompts, "pagination": {"total": 501, "page": 1}}),
     ), patch(
         "processors.promptintel.promptintel.fetch_external_objects",
-        return_value={
-            "type": "marking-definition",
-            "spec_version": "2.1",
-            "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-            "created": "2020-01-01T00:00:00.000Z",
-            "definition_type": "statement",
-            "definition": {"statement": "feeds2stix"},
-        },
+        return_value=feeds2stix_marking,
     ):
         promptintel.main()
 
