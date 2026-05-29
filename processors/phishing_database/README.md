@@ -237,9 +237,14 @@ python processors/phishing_database/phishing_database.py --cutoff-date 2026-01-0
 
 ## Output
 
-Records are grouped by modified hour:
+Records are grouped by modified month with a maximum of 500 records per bundle:
 
-* `outputs/phishing_database/bundles/phishing_database_YYYYMMDD_HH.json`
+* If a month has 500 or fewer records:
+  * `outputs/phishing_database/bundles/phishing_database_YYYYMM.json`
+* If a month has more than 500 records:
+  * `outputs/phishing_database/bundles/phishing_database_YYYYMMp1.json`
+  * `outputs/phishing_database/bundles/phishing_database_YYYYMMp2.json`
+  * ...
 
 Each bundle contains:
 

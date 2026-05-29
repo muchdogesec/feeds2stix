@@ -4,7 +4,6 @@ import argparse
 import logging
 import os
 import sys
-from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -202,10 +201,27 @@ def filter_records_by_date(records, since_date=None, until_date=None):
     return filtered
 
 
-def group_records_by_hour(records):
-    grouped = defaultdict(list)
+def group_records_by_month_with_parts(records, max_per_bundle=500):
+    by_month = {}
     for record in records:
-        grouped[record["modified"].strftime("%Y%m%d_%H")].append(record)
+        month_key = record["modified"].strftime("%Y%m")
+        by_month.setdefault(month_key, []).append(record)
+
+    grouped = []
+    for month_key in sorted(by_month):
+        month_records = by_month[month_key]
+        if len(month_records) <= max_per_bundle:
+            grouped.append((month_key, month_records))
+            continue
+
+        part = 1
+        total_parts = (len(month_records) + max_per_bundle - 1) // max_per_bundle
+        just_length = len(str(total_parts))
+        for idx in range(0, len(month_records), max_per_bundle):
+            grouped.append(
+                (f"{month_key}p{str(part).zfill(just_length)}", month_records[idx : idx + max_per_bundle])
+            )
+            part += 1
     return grouped
 
 
@@ -283,7 +299,7 @@ def create_stix_objects(records, identity, marking):
     return stix_objects
 
 
-def process_records_for_hour(records, identity, marking, feeds2stix_marking):
+def process_records_for_group(records, identity, marking, feeds2stix_marking):
     stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)] + create_stix_objects(
         records, identity, marking
     )
@@ -329,15 +345,15 @@ def main():
 
     records = collect_observables(repo, repo_path, args.cutoff_date)
     records = filter_records_by_date(records, args.since_date, args.until_date)
-    grouped = group_records_by_hour(records)
+    grouped = group_records_by_month_with_parts(records, max_per_bundle=500)
 
     bundle_paths = []
-    for hour_key in sorted(grouped):
-        bundle = process_records_for_hour(
-            grouped[hour_key], identity, marking, feeds2stix_marking
+    for group_key, group_records in grouped:
+        bundle = process_records_for_group(
+            group_records, identity, marking, feeds2stix_marking
         )
         bundle_path = save_bundle_to_file(
-            bundle, bundles_dir, f"phishing_database_{hour_key}", add_timestamp=False
+            bundle, bundles_dir, f"phishing_database_{group_key}", add_timestamp=False
         )
         bundle_paths.append(bundle_path)
 
