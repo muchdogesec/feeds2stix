@@ -178,6 +178,21 @@ def patched_lookup_country_objects():
         yield
 
 
+def test_create_stix_objects__doesnt_fail_when_asn_is_missing(patched_lookup_country_objects):
+    record = parsed_sample_record(asn="-")
+    identity = phishunt.create_phishunt_identity()
+    marking = phishunt.create_phishunt_marking_definition()
+
+    objects = phishunt.create_stix_objects(
+        [record],
+        identity,
+        marking,
+    )
+    object_dicts = stix_as_dict(objects)
+
+    assert len(object_dicts) == 15
+    assert sum(1 for obj in object_dicts if obj["type"] == "autonomous-system") == 0
+
 def test_create_stix_objects_links_country_once_per_bundle(
     patched_lookup_country_objects,
 ):

@@ -317,12 +317,15 @@ def create_stix_objects(
             ),
         )
 
-        asn_kwargs = {"number": int(record["asn"])}
+        asn_kwargs = {}
+        asn_obj = None
+        if record.get('asn', '-') != '-':
+            asn_kwargs['number'] = int(record["asn"])
         if record.get("org"):
             asn_kwargs["name"] = record["org"]
-        asn_obj = AutonomousSystem(**asn_kwargs)
-        append_once(asn_obj)
-        if ipv4_obj:
+        if 'number' in asn_kwargs:
+            asn_obj = AutonomousSystem(**asn_kwargs)
+            append_once(asn_obj)
             append_once(
                 make_relationship(
                     source_ref=ipv4_obj.id,
