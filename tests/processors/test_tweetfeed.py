@@ -198,7 +198,34 @@ def test_create_stix_objects_dedupes_user_accounts(sample_records):
     assert object_types.count("domain-name") == 1
     assert object_types.count("url") == 1
     assert object_types.count("indicator") == 2
-    assert object_types.count("relationship") == 2
+    assert object_types.count("relationship") == 4
+    rels = [
+        (obj["source_ref"], obj["relationship_type"], obj["target_ref"])
+        for obj in objects
+        if obj["type"] == "relationship"
+    ]
+    assert rels == [
+        (
+            "indicator--3add6527-5a41-51a2-93fd-f1c0c40c7719",
+            "indicates",
+            "domain-name--1ec3675b-d139-5a9d-a859-e3e4dc9fbd4a",
+        ),
+        (
+            "indicator--3add6527-5a41-51a2-93fd-f1c0c40c7719",
+            "related-to",
+            "user-account--1737445b-c4bc-50b4-a041-aeebc59fc49b",
+        ),
+        (
+            "indicator--b4a772a0-5b50-5cb4-a298-ae3c398bde79",
+            "indicates",
+            "url--c524b1b4-77ee-5a21-8f96-3ce6734f1041",
+        ),
+        (
+            "indicator--b4a772a0-5b50-5cb4-a298-ae3c398bde79",
+            "related-to",
+            "user-account--1737445b-c4bc-50b4-a041-aeebc59fc49b",
+        ),
+    ]
 
 
 def test_main_uses_start_date_and_writes_bundle(

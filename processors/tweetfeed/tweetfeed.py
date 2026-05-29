@@ -229,6 +229,19 @@ def create_stix_objects(
                 external_references=indicator["external_references"],
             )
         )
+        stix_objects.append(
+            make_relationship(
+                target_ref=user_account["id"],
+                source_ref=indicator["id"],
+                relationship_type="related-to",
+                created_by_ref=source_identity_id,
+                created=record_time,
+                modified=record_time,
+                description="Indicator was created from post by @"+record['user'],
+                marking_refs=indicator["object_marking_refs"],
+                external_references=indicator["external_references"],
+            )
+        )
 
     return stix_objects
 

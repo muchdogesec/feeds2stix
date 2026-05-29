@@ -138,7 +138,8 @@ UUID is generated automatically by the STIX2 library.
   "created_by_ref": "identity--<UUID OF FEED ID>",
   "created": "<date>",
   "modified": "<date>",
-  "relationship_type": "indicates",
+  "relationship_type": "related-to",
+  "description": "Indicator was created using post by @<user>",
   "source_ref": "indicator--<ID>",
   "target_ref": "user-account--<ID>",
   "object_marking_refs": [
