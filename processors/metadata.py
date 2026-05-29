@@ -60,6 +60,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "url-intelligence"],
     ),
+    "phishing_army": build_processor_metadata(
+        "Phishing Army",
+        "Curated phishing domain blocklist from Phishing Army.",
+        "Phishing Army curates a phishing domain blocklist from public phishing intelligence sources and analyzes it to reduce false positives. This processor publishes phishing domains from the blocklist to support DNS filtering, blocking, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "phishing-domains", "domain-blocklist", "osint"],
+    ),
     "phishtank": build_processor_metadata(
         "PhishTank",
         "Community-verified phishing URL intelligence from PhishTank.",
@@ -73,6 +80,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         "phishunt monitors Certificate Transparency logs and multiple phishing intelligence sources to identify suspicious phishing and scam sites. This processor publishes suspicious URLs, domains, hosting IPs, ASNs, certificate issuer context, targeted brands, and country links to support phishing detection, takedown, enrichment, and threat hunting.",
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "hosting-intelligence"],
+    ),
+    "phishing_database": build_processor_metadata(
+        "Phishing.Database",
+        "Open phishing domain, URL, and IP intelligence with active/inactive states.",
+        "Phishing.Database is a continuously updated open repository of phishing indicators maintained on GitHub. This processor analyzes commit history for ACTIVE and INACTIVE TXT datasets to derive first-seen and inactive transition times, then publishes URL, domain, and IPv4 indicators with phishing ATT&CK context for detection, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "malicious-urls", "malicious-domains", "malicious-ips"],
     ),
     "greensnow": build_processor_metadata(
         "GreenSnow",

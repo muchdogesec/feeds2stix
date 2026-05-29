@@ -11,8 +11,10 @@ from processors.metadata import (
 PROCESSOR_FILES = {
     "abuse_ch_urlhaus": Path("processors/abuse_ch_urlhaus/urlhaus.py"),
     "openphish": Path("processors/openphish/openphish.py"),
+    "phishing_army": Path("processors/phishing_army/phishing_army.py"),
     "phishtank": Path("processors/phishtank/phishtank.py"),
     "phishunt": Path("processors/phishunt/phishunt.py"),
+    "phishing_database": Path("processors/phishing_database/phishing_database.py"),
     "greensnow": Path("processors/greensnow/greensnow.py"),
     "abuse_ch_malwarebazaar": Path("processors/abuse_ch_malwarebazaar/malwarebazaar.py"),
     "abuse_ch_threatfox": Path("processors/abuse_ch_threatfox/threatfox.py"),

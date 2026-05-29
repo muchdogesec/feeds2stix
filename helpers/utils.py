@@ -2,6 +2,8 @@ import logging
 import os
 from pathlib import Path
 import shutil
+from typing import Optional
+from urllib.parse import urlparse
 import uuid
 from datetime import UTC, date, datetime, time
 import pycountry
