@@ -347,8 +347,10 @@ Imports ATLAS from CTI Butler
 
 * AML.T0054 LLM Jailbreak (`attack-pattern--9bf148ad-b901-5aeb-a029-6c0a8ce0a564`) 
 * AML.T0057 LLM Data Leakage (`attack-pattern--0c8eca96-8d33-5fd4-a9c0-51db41128b89`)
+* AML.T0051 LLM Prompt Injection (`attack-pattern--6ff098e9-2864-579e-bebb-a0f1c92ec772`)
 
-Both linked to Indicator:
+
+All linked to Indicator:
 
 ```json
 {
@@ -361,7 +363,7 @@ Both linked to Indicator:
     "relationship_type": "indicates",
     "description": "Prompt is known to be used for <ATLAS ID> <ATLAS NAME>",
     "source_ref": "indicator--<URL INDICATOR>",
-    "target_ref": "attack-pattern--<AML.T0054|AML.T0057>",
+    "target_ref": "attack-pattern--<AML.T0054|AML.T0057|AML.T0051>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
         "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
