@@ -200,4 +200,11 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "malware", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "malware-families", "url-intelligence"],
     ),
+    "promptintel": build_processor_metadata(
+        "PromptIntel",
+        "Adversarial prompt intelligence with NOVA rules, AI prompts, and abuse context.",
+        "PromptIntel tracks malicious or abusive LLM prompts and related context such as NOVA detections, threat categories, actor references, malware hashes, and mitigation guidance. This processor publishes dated PromptIntel records to support AI security monitoring, prompt abuse detection, and enrichment workflows.",
+        ["indicator_of_compromise", "ttp", "cyber_crime"],
+        ["ai-security", "prompt-injection", "jailbreak", "llm-threat-intelligence"],
+    ),
 }

@@ -45,6 +45,19 @@ The processor calls:
 
 and converts each prompt record into STIX 2.1 objects.
 
+Pagination and rate limits:
+
+- Uses `page` and `limit` query parameters.
+- Requests `limit=100` (API maximum) and iterates pages until all records are collected.
+- Sleeps 3 seconds between regular paginated requests.
+- On HTTP `429` rate limits, retries the same page with backoff:
+  - 1st retry: 3 minutes
+  - 2nd retry: 6 minutes
+  - 3rd retry: 9 minutes
+  - 4th retry: 12 minutes
+  - 5th retry: 15 minutes
+- Regular non-429 request failures retry up to 3 times.
+
 ### Timestamp handling
 
 `created_at` from PromptIntel is used for:
@@ -55,7 +68,7 @@ and converts each prompt record into STIX 2.1 objects.
 - related relationship `created` / `modified`
 - `threat-actor` and `course-of-action` timestamps
 
-Records are grouped into hourly bundles using `YYYYMMDD_HH` from source `created_at`.
+Records are grouped into numbered bundles with a maximum of 500 prompts per bundle.
 
 ### Mapping
 
@@ -138,15 +151,16 @@ Created with `stix2extensions.AiPrompt`.
   "indicator_types": ["malicious-activity"],
   "name": "<title>",
   "description": "Impact: <impact_description>",
-  "pattern_type": "nova",
-  "pattern": "<nova_rule>",
+  "pattern_type": "<nova|stix>",
+  "pattern": "<nova_rule OR ai-prompt fallback pattern>",
   "confidence": "<mapped from severity>",
   "labels": ["categories.*", "threats.*", "severity.*", "tags"],
   "external_references": [
     {
       "source_name": "promptintel",
       "description": "url",
-      "url": "https://promptintel.novahunting.ai/prompt/<id>"
+      "url": "https://promptintel.novahunting.ai/prompt/<id>",
+      "external_id": "<id>"
     }
   ],
   "object_marking_refs": [
@@ -159,12 +173,34 @@ Created with `stix2extensions.AiPrompt`.
 
 Indicator `id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`.
 
+Pattern behavior:
+
+- If `nova_rule` is present, the indicator uses:
+  - `pattern_type = "nova"`
+  - `pattern = <nova_rule>`
+- If `nova_rule` is empty/missing, the indicator falls back to:
+  - `pattern_type = "stix"`
+  - `pattern = [ai-prompt:value='<prompt>']`
+
 Severity-to-confidence mapping:
 
 - `low` -> `25`
 - `medium` -> `50`
 - `high` -> `75`
 - `critical` -> `90`
+
+External reference behavior:
+
+- always includes prompt URL with `external_id=<prompt id>`
+- includes an impact reference with:
+  - `description = <impact_description>`
+  - `external_id = "impact_description"`
+- includes author reference with:
+  - `description = "author"`
+  - `external_id = <author>`
+- includes each `reference_urls` entry as:
+  - `description = "reference url"`
+  - `url = <reference url>`
 
 #### File SCO
 
@@ -261,15 +297,17 @@ python processors/promptintel/promptintel.py --since-date 2026-01-01 --until-dat
 
 ### Output
 
-The script creates STIX bundle files grouped by date and hour:
+The script creates STIX bundle files grouped by prompt count:
 
-- `outputs/promptintel/bundles/promptintel_YYYYMMDD_HH.json`
+- `outputs/promptintel/bundles/promptintel_part_1.json`
+- `outputs/promptintel/bundles/promptintel_part_2.json`
+- ...
 
 Each bundle contains:
 
 - source identity and marking definition
 - imported feeds2stix marking definition
-- all STIX objects produced from prompt records in that hour bucket
+- all STIX objects produced from up to 500 prompt records
 
 ## GitHub Action
 
