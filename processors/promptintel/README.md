@@ -281,7 +281,7 @@ With relationship to Indicator
     "created_by_ref": "identity--<UUID OF FEED ID>",
     "created": "<data.created_at>",
     "modified": "<data.created_at>",
-    "relationship_type": "indicates",
+    "relationship_type": "related-to",
     "source_ref": "indicator--<UUID>",
     "target_ref": "threat-actor--<UUID>",
     "object_marking_refs": [
@@ -304,45 +304,75 @@ UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_
     "created": "<data.created_at>",
     "modified": "<data.created_at>",
     "created_by_ref": "identity--<UUID OF FEED ID>",
-
-    "name": "mitigation-poison-ivy-firewall",
-
-    "description": "This action points to a recommended set of steps to respond to the Poison Ivy malware on a Cisco firewall device",
-
-    "action_type": "cisco:ios",
-
-    "action_reference":
-
-        { "source_name": "internet",
-
-          "url": "hxxps://www.stopthebad.com/poisonivyresponse.asa"
-
-        }
-
+    "name": "Mitigation of <data.title>",
+    "description": "<mitigation_suggestions>",
+    "external_references": [
+      {
+        "source_name": "promptintel",
+        "description": "url",
+        "url": "https://promptintel.novahunting.ai/prompt/<data.id>"
+      }
+    ]
   }
 ```
 
-### ATLAS
+`id` generated using namespace `<UUID OF FEED MARKING DEF>` and value `name`
 
+With relationship to Indicator
 
 ```json
 {
     "type": "relationship",
     "spec_version": "2.1",
-    "id": "relationship--<UUID>",
-    "relationship_type": "related-to",
-    "source_ref": "indicator--<UUID>",
-    "target_ref": "file--<UUID>"
+    "id": "relationship--<UUID V5>",
+    "created_by_ref": "identity--<UUID OF FEED ID>",
+    "created": "<data.created_at>",
+    "modified": "<data.created_at>",
+    "relationship_type": "mitigates",
+    "source_ref": "course-of-action--<UUID>",
+    "target_ref": "indicator--<UUID>",
+    "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--<UUID OF FEED MARKING DEF>"
+    ]
 }
 ```
 
+UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`
+
+### ATLAS
+
+Imports ATLAS from CTI Butler
+
+* AML.T0054 LLM Jailbreak (`attack-pattern--9bf148ad-b901-5aeb-a029-6c0a8ce0a564`) 
+* AML.T0057 LLM Data Leakage (`attack-pattern--0c8eca96-8d33-5fd4-a9c0-51db41128b89`)
+
+Both linked to Indicator:
+
 ```json
 {
     "type": "relationship",
     "spec_version": "2.1",
-    "id": "relationship--<UUID>",
-    "relationship_type": "related-to",
-    "source_ref": "indicator--<UUID>",
-    "target_ref": "threat-actor--<UUID>"
+    "id": "relationship--<UUID V5>",
+    "created_by_ref": "identity--<UUID OF FEED ID>",
+    "created": "<data.created_at>",
+    "modified": "<data.created_at>",
+    "relationship_type": "indicates",
+    "description": "Prompt is known to be used for <ATLAS ID> <ATLAS NAME>",
+    "source_ref": "indicator--<URL INDICATOR>",
+    "target_ref": "attack-pattern--<AML.T0054|AML.T0057>",
+    "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "marking-definition--<UUID OF FEED MARKING DEF>"
+    ],
+    "external_references": [
+      {
+        "source_name": "promptintel",
+        "description": "url",
+        "url": "https://promptintel.novahunting.ai/prompt/<data.id>"
+      }
+    ]
 }
 ```
