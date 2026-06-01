@@ -459,6 +459,10 @@ def main(
     hash_conn = hashmanager.load_db(_hash_db_path)
     # ───────────────────────────────────────────────────────────────────
 
+    if use_artifacts:
+        write_github_output(
+            dedupe_artifact_name=dupedb_artifact_name
+        )
     try:
         # Expand directories to individual files
         all_bundle_files = []
@@ -578,6 +582,9 @@ def main(
             # ── Record successfully uploaded objects ─────────────────────
             if result.get("success"):
                 hashmanager.record_uploaded_objects(new_objects, hash_conn)
+                write_github_output(
+                    has_success="true",
+                )
             # ────────────────────────────────────────────────────────────────
 
             bundle_name = Path(bundle_file).stem
@@ -632,27 +639,26 @@ def main(
         logger.info(f"   Failed: {failed_objects_count}")
         logger.info("=" * 120)
 
-        github_output = os.getenv("GITHUB_OUTPUT")
-        if github_output:
-            with open(github_output, "a", encoding="utf-8") as f:
-                f.write(f"has_success={str(has_success).lower()}\n")
-                f.write(f"has_failures={str(has_failures).lower()}\n")
-                f.write(f"bundles_processed={len(results)}\n")
-                f.write(f"artifacts_dir={artifacts_dir}\n")
-                if use_artifacts:
-                    f.write(f"dedupe_artifact_name={dupedb_artifact_name}\n")
-                    f.write(f"failed_artifact_name={failed_artifact_name}\n")
-                    f.write(f"dedupe_path={_hash_db_path}\n")
-                if len(results) == 1:
-                    result = results[0]
-                    f.write(f"job_id={result.get('job_id', '')}\n")
-                    f.write(f"total_objects={result.get('total_objects', 0)}\n")
-                    f.write(
-                        f"submitted_objects={result.get('submitted_objects', 0)}\n"
-                    )
-                    f.write(
-                        f"failed_objects={len(result.get('failed_objects', []))}\n"
-                    )
+        write_github_output(
+            has_success=str(has_success).lower(),
+            has_failures=str(has_failures).lower(),
+            bundles_processed=len(results),
+            artifacts_dir=str(artifacts_dir),
+        )
+        if use_artifacts:
+            write_github_output(
+                dedupe_artifact_name=dupedb_artifact_name,
+                failed_artifact_name=failed_artifact_name,
+                dedupe_path=_hash_db_path,
+            )
+        if len(results) == 1:
+            result = results[0]
+            write_github_output(
+                job_id=result.get("job_id", ""),
+                total_objects=result.get("total_objects", 0),
+                submitted_objects=result.get("submitted_objects", 0),
+                failed_objects=len(result.get("failed_objects", [])),
+            )
 
         if not all(r.get("success") for r in results):
             sys.exit(1)
@@ -665,6 +671,13 @@ def main(
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
+
+def write_github_output(**kwargs):
+    github_output = os.getenv("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a", encoding="utf-8") as f:
+            for key, value in kwargs.items():
+                f.write(f"{key}={value}\n")
 
 
 if __name__ == "__main__":
