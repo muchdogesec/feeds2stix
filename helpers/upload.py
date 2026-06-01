@@ -259,11 +259,13 @@ def write_github_summary(results):
                 submitted = result.get("submitted_objects", 0)
                 failed = len(result.get("failed_objects", []))
                 state = result.get("job_state", "unknown")
-                state_emoji = (
-                    "✅"
-                    if state == "completed"
-                    else ("⏳" if state in ["pending", "processing"] else "❌")
-                )
+                state_emoji_map = {
+                    "completed": "✅",
+                    "skipped": "☑️",
+                    "pending": "⏳",
+                    "processing": "⏳",
+                }
+                state_emoji = state_emoji_map.get(state, "❌")
 
                 f.write(
                     f"| `{job_id}` | `{bundle_name}` | {total} | {submitted} | {failed} | {state_emoji} {state} |\n"
