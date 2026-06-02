@@ -107,6 +107,15 @@ def fetch_phishunt_data(data_dir: Path, since_date: datetime | None = None):
     logger.info("Fetched %s phishunt records", len(records))
     return records
 
+def fetch_phishunt_data_from_file(data_dir: Path):
+    raw_path = data_dir / "phishunt_domains.json"
+    if not raw_path.exists():
+        logger.error("Raw data file %s does not exist. Please run with --fetch-data first.", raw_path)
+        return []
+    payload = json.loads(raw_path.read_text())
+    records = payload.get("results", [])
+    logger.info("Loaded %s phishunt records from %s", len(records), raw_path)
+    return records
 
 def parse_time(value: str) -> datetime:
     dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -353,28 +362,28 @@ def create_stix_objects(
                         marking_refs=object_marking_refs,
                     ),
                 )
-
-        cert_obj = X509Certificate(
-            id="x509-certificate--"
-            + generate_uuid5(
-                f"x509-certificate:issuer:{record['cert']}",
-                phishunt_marking_id,
-            ),
-            issuer=record["cert"],
-        )
-        append_once(cert_obj)
-        append_once(
-            make_relationship(
-                source_ref=domain_obj.id,
-                target_ref=cert_obj.id,
-                relationship_type="related-to",
-                created_by_ref=phishunt_identity_id,
-                created=created,
-                modified=modified,
-                marking_refs=object_marking_refs,
-                description=f"{record['domain']} is associated with TLS certificate issued by {record['cert']}",
-            ),
-        )
+        if record.get("cert") != "-":
+            cert_obj = X509Certificate(
+                id="x509-certificate--"
+                + generate_uuid5(
+                    f"x509-certificate:issuer:{record['cert']}",
+                    phishunt_marking_id,
+                ),
+                issuer=record["cert"],
+            )
+            append_once(cert_obj)
+            append_once(
+                make_relationship(
+                    source_ref=domain_obj.id,
+                    target_ref=cert_obj.id,
+                    relationship_type="related-to",
+                    created_by_ref=phishunt_identity_id,
+                    created=created,
+                    modified=modified,
+                    marking_refs=object_marking_refs,
+                    description=f"{record['domain']} is associated with TLS certificate issued by {record['cert']}",
+                ),
+            )
 
     logger.info("Created %s STIX objects", len(stix_objects))
     return stix_objects
