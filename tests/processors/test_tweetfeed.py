@@ -189,16 +189,28 @@ def test_create_stix_objects_dedupes_user_accounts(sample_records):
     source_identity = tweetfeed.create_tweetfeed_identity()
     source_marking = tweetfeed.create_tweetfeed_marking_definition()
 
-    objects = tweetfeed.create_stix_objects(
-        sample_records, source_identity, source_marking
-    )
+    with patch(
+        "processors.tweetfeed.tweetfeed.fetch_enterprise_attack_object",
+        return_value={
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "Phishing",
+        },
+    ):
+        objects = tweetfeed.create_stix_objects(
+            sample_records, source_identity, source_marking
+        )
     object_types = [obj["type"] for obj in objects]
 
     assert object_types.count("user-account") == 1
     assert object_types.count("domain-name") == 1
     assert object_types.count("url") == 1
     assert object_types.count("indicator") == 2
-    assert object_types.count("relationship") == 4
+    assert object_types.count("attack-pattern") == 1
+    assert object_types.count("relationship") == 5
     rels = [
         (obj["source_ref"], obj["relationship_type"], obj["target_ref"])
         for obj in objects
@@ -216,6 +228,11 @@ def test_create_stix_objects_dedupes_user_accounts(sample_records):
             "user-account--1737445b-c4bc-50b4-a041-aeebc59fc49b",
         ),
         (
+            "indicator--3add6527-5a41-51a2-93fd-f1c0c40c7719",
+            "indicates",
+            "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+        ),
+        (
             "indicator--b4a772a0-5b50-5cb4-a298-ae3c398bde79",
             "indicates",
             "url--c524b1b4-77ee-5a21-8f96-3ce6734f1041",
@@ -229,12 +246,21 @@ def test_create_stix_objects_dedupes_user_accounts(sample_records):
 
 
 def test_main_uses_start_date_and_writes_bundle(
-    monkeypatch, tmp_path, sample_records, feeds2stix_marking
+    monkeypatch, tmp_path, sample_records
 ):
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.setattr(tweetfeed, "BASE_OUTPUT_DIR", str(tmp_path / "output"))
     monkeypatch.setattr(sys, "argv", ["tweetfeed.py", "--start-date", "2026-05-01"])
+
+    feeds2stix_marking = {
+        "type": "marking-definition",
+        "spec_version": "2.1",
+        "id": "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+        "created": "2020-01-01T00:00:00.000Z",
+        "definition_type": "statement",
+        "definition": {"statement": "feeds2stix"},
+    }
 
     captured = {}
 
@@ -249,6 +275,26 @@ def test_main_uses_start_date_and_writes_bundle(
     ), patch(
         "processors.tweetfeed.tweetfeed.fetch_tweetfeed_data",
         side_effect=fake_fetch,
+    ), patch(
+        "processors.tweetfeed.tweetfeed.fetch_enterprise_attack_object",
+        return_value={
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "Phishing",
+        },
+    ), patch(
+        "processors.tweetfeed.tweetfeed.fetch_enterprise_attack_object",
+        return_value={
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+            "created": "2020-01-01T00:00:00.000Z",
+            "modified": "2020-01-01T00:00:00.000Z",
+            "name": "Phishing",
+        },
     ), patch(
         "processors.tweetfeed.tweetfeed.save_bundle_to_file",
         wraps=tweetfeed.save_bundle_to_file,

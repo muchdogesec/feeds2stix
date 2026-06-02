@@ -25,6 +25,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -36,6 +37,7 @@ TWEETFEED_API_BASE = "https://api.tweetfeed.live/v1"
 BASE_OUTPUT_DIR = "outputs/tweetfeed"
 RAW_FEED_FILENAME = "tweetfeed_data.json"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["tweetfeed"]
+T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
 
 
 def create_tweetfeed_identity():
@@ -194,6 +196,7 @@ def create_stix_objects(
     stix_objects = []
     seen_user_ids = set()
     seen_sco_ids = set()
+    seen_attack_pattern_ids = set()
 
     source_identity_id = source_identity["id"]
     source_marking_id = source_marking["id"]
@@ -242,6 +245,27 @@ def create_stix_objects(
                 external_references=indicator["external_references"],
             )
         )
+
+        labels = getattr(indicator, "labels", []) or []
+        if "phishing" in labels:
+            if T1566_STIX_ID not in seen_attack_pattern_ids:
+                stix_objects.append(fetch_enterprise_attack_object(T1566_STIX_ID))
+                seen_attack_pattern_ids.add(T1566_STIX_ID)
+            stix_objects.append(
+                make_relationship(
+                    source_ref=indicator["id"],
+                    target_ref=T1566_STIX_ID,
+                    relationship_type="indicates",
+                    created_by_ref=source_identity_id,
+                    created=record_time,
+                    modified=record_time,
+                    description=(
+                        f"{record['value']} is known to be used for Phishing (T1566)"
+                    ),
+                    marking_refs=indicator["object_marking_refs"],
+                    external_references=indicator["external_references"][:1],
+                )
+            )
 
     return stix_objects
 
