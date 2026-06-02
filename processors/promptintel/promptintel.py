@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
 import os
+from pathlib import Path
 import time
 from datetime import UTC, datetime
 
@@ -11,6 +13,7 @@ from stix2 import CourseOfAction, File, Indicator, ThreatActor
 from stix2.patterns import StringConstant
 from stix2extensions import AiPrompt as AIPrompt
 
+from helpers.kb_fetch import fetch_object_from_kb
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -129,7 +132,7 @@ def request_with_retries(url: str, headers: dict, params: dict):
         time.sleep(REGULAR_REQUEST_SLEEP_SECONDS)
 
 
-def fetch_promptintel_prompts(api_key: str):
+def fetch_promptintel_prompts(api_key: str, data_dir: Path):
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -137,6 +140,8 @@ def fetch_promptintel_prompts(api_key: str):
     page = 1
     limit = PROMPTS_PAGE_LIMIT
     all_prompts = []
+    responses_dir = data_dir / "api_responses"
+    responses_dir.mkdir(parents=True, exist_ok=True)
 
     while True:
         response = request_with_retries(
@@ -145,22 +150,43 @@ def fetch_promptintel_prompts(api_key: str):
             params={"page": page, "limit": limit},
         )
         payload = response.json()
+        (responses_dir / f"page_{page}.json").write_text(json.dumps(payload, indent=2))
         prompts = payload["data"]
-        total = payload["pagination"]["total"]
+        limit = payload["pagination"]["limit"]
         if not isinstance(prompts, list):
             raise ValueError("Unsupported PromptIntel API response shape")
 
         all_prompts.extend(prompts)
 
-        if total is not None:
-            if len(all_prompts) >= int(total):
-                break
-        elif len(prompts) < limit:
+        if not prompts or len(prompts) < limit:
             break
+        for prompt in prompts:
+            prompt_id = prompt['id']
+            prompt_full = fetch_full_prompt_by_id(api_key, prompt_id)
+            (responses_dir / f"prompt_{prompt_id}.json").write_text(json.dumps(prompt_full, indent=2))
+            prompt.update(prompt_full)
         time.sleep(REGULAR_REQUEST_SLEEP_SECONDS)
         page += 1
 
+    raw_path = data_dir / "promptintel_prompts.json"
+    raw_path.write_text(json.dumps({"results": all_prompts}, indent=2))
+    logger.info("Saved raw feed to %s", raw_path)
+
     return sorted(all_prompts, key=lambda x: x['created_at'])
+
+def fetch_full_prompt_by_id(api_key: str, prompt_id: str):
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    response = request_with_retries(
+        f"{API_BASE_URL}/prompts/{prompt_id}",
+        headers=headers,
+        params={},
+    )
+    response.raise_for_status()
+    return response.json()['data']
+
 
 
 def filter_prompts_by_date(prompts, since_date=None, until_date=None):
@@ -237,11 +263,13 @@ def infer_atlas_attack_patterns(prompt):
     haystacks = [
         (prompt.get("title") or "").lower(),
         (prompt.get("impact_description") or "").lower(),
-        " ".join([x.lower() for x in prompt.get("threats", []) if x]),
+        *[x.lower() for x in prompt.get("threats", []) if x],
+        *[x.lower().replace("-", " ") for x in prompt.get("tags", []) if x],
     ]
+    haystack = " / ".join(haystacks)
     matches = []
     for keyword, atlas in ATLAS_BY_KEYWORD.items():
-        if any(keyword in hay for hay in haystacks):
+        if keyword in haystack:
             matches.append(atlas)
     return matches
 
@@ -295,8 +323,8 @@ def create_stix_objects_for_prompt(prompt, source_identity_id, source_marking_id
         )
     )
 
-    for sha256 in prompt.get("malware_hashes", []):
-        file_obj = File(hashes={"SHA-256": sha256})
+    for hash_type, hash_value in parse_malware_hashes(prompt.get("malware_hashes", [])):
+        file_obj = File(hashes={hash_type: hash_value})
         objects.append(file_obj)
         objects.append(
             make_relationship(
@@ -364,12 +392,16 @@ def create_stix_objects_for_prompt(prompt, source_identity_id, source_marking_id
         )
 
     for atlas_id, atlas_stix_id in infer_atlas_attack_patterns(prompt):
+        atlas_obj = fetch_object_from_kb(atlas_stix_id, "atlas")
+        objects.append(
+            atlas_obj
+        )
         objects.append(
             make_relationship(
                 source_ref=indicator.id,
                 target_ref=atlas_stix_id,
                 relationship_type="indicates",
-                description=f"Prompt is known to be used for {atlas_id}",
+                description=f"Prompt is known to be used for {atlas_obj['name']} ({atlas_id})",
                 external_references=external_references[:1],
                 created_by_ref=source_identity_id,
                 created=created,
@@ -379,6 +411,19 @@ def create_stix_objects_for_prompt(prompt, source_identity_id, source_marking_id
         )
 
     return objects
+
+def parse_malware_hashes(hashes) -> list[tuple[str, str]]:
+    result = []
+    for hash in hashes:
+        if len(hash) == 64:
+            result.append(("SHA-256", hash))
+        elif len(hash) == 40:
+            result.append(("SHA-1", hash))
+        elif len(hash) == 32:
+            result.append(("MD5", hash))
+        else:
+            raise ValueError(f"Unsupported hash value: {hash}")
+    return result
 
 
 def main():
@@ -403,12 +448,12 @@ def main():
     if not api_key:
         raise ValueError("PROMPTINTEL_API_KEY must be set")
 
-    bundles_dir, _ = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+    bundles_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
     source_identity = create_promptintel_identity()
     source_marking = create_promptintel_marking_definition()
     feeds2stix_marking = fetch_external_objects()
 
-    prompts = fetch_promptintel_prompts(api_key)
+    prompts = fetch_promptintel_prompts(api_key, data_dir=data_dir)
     prompts = filter_prompts_by_date(
         prompts,
         since_date=args.since_date and args.since_date.replace(tzinfo=UTC),
@@ -419,12 +464,14 @@ def main():
     bundle_paths = []
     for idx, prompt_group in enumerate(grouped_prompts, start=1):
         all_stix_objects = []
+        added_ids = set()
         for prompt in prompt_group:
-            all_stix_objects.extend(
-                create_stix_objects_for_prompt(
+            for obj in create_stix_objects_for_prompt(
                     prompt, source_identity.id, source_marking.id
-                )
-            )
+                ):
+                if obj['id'] not in added_ids:
+                    all_stix_objects.append(obj)
+                    added_ids.add(obj['id'])
 
         bundle = create_bundle_with_metadata(
             stix_objects=all_stix_objects,
