@@ -30,10 +30,10 @@ def ctibutler_session():
 
 def _fetch_attack_pattern_from_ctibutler(stix_id):
     """Fetch an ATT&CK Enterprise attack-pattern object from CTI Butler."""
+    session, ctibutler_base = ctibutler_session()
     if not ctibutler_base:
         logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
         raise Exception("CTIBUTLER_BASE_URL not set")
-    session, ctibutler_base = ctibutler_session()
     url = f"{ctibutler_base}/v1/attack-enterprise/objects/{stix_id}/"
     try:
         resp = session.get(url, timeout=30)
@@ -51,10 +51,10 @@ def _fetch_attack_pattern_from_ctibutler(stix_id):
 def fetch_enterprise_attack_object(stix_id):
     try:
         return _fetch_attack_pattern_from_ctibutler(stix_id)
-    except Exception:
+    except Exception as e:
+        logger.warning("Using local attack-pattern fallback: %s", str(e))
         pattern = (
             Path(__file__).resolve().parent / "data" / f"{stix_id}.json"
         ).read_text()
-        logger.info("Using local attack-pattern fallback")
         return json.loads(pattern)
     
