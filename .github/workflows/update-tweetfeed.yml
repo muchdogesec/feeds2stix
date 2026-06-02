@@ -1,0 +1,129 @@
+name: "[Update CTX] TweetFeed"
+run-name: |
+  [Update CTX] TweetFeed
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
+
+on:
+  schedule:
+    # Run every 15 minutes to keep pace with the feed cadence.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Which environment(s) to run"
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+      since_date:
+        description: "Process IOCs added since this date (YYYY-MM-DD or ISO8601). Leave empty to use the last processed indicator timestamp."
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+    env:
+      PYTHONPATH: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get time for latest indicator processed in feed
+        id: last_run
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.since_date == '' }}
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+        run: python helpers/latest_timestamp.py "${{ vars.TWEETFEED_FEED_ID }}" --object-type indicator
+
+      - name: Process TweetFeed data and create STIX bundle
+        id: process
+        run: |
+          set -e
+
+          CMD="python processors/tweetfeed/tweetfeed.py"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.since_date }}" ]; then
+            SINCE_DATE="${{ inputs.since_date }}"
+            echo "Processing IOCs added since: $SINCE_DATE"
+            CMD="$CMD --start-date '$SINCE_DATE'"
+          elif [ -n "${{ steps.last_run.outputs.latest_timestamp }}" ]; then
+            LAST_RUN_DATE="${{ steps.last_run.outputs.latest_timestamp }}"
+            echo "Processing IOCs added since the last processed indicator timestamp: $LAST_RUN_DATE"
+            CMD="$CMD --start-date '$LAST_RUN_DATE'"
+          else
+            echo "No prior TweetFeed timestamp found; processing the default feed window."
+          fi
+
+          echo "Running: $CMD"
+          eval $CMD
+
+      - name: Upload bundle to CTX
+        id: upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          TWEETFEED_FEED_ID: ${{ vars.TWEETFEED_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
+
+          if [ -z "$TWEETFEED_FEED_ID" ]; then
+            echo "Error: TWEETFEED_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading $BUNDLE_PATH to feed $TWEETFEED_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$TWEETFEED_FEED_ID"
+
+      - name: Upload dedupe database
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload failed bundles
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tweetfeed-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            outputs/
+            upload_artifacts/
+          retention-days: 7
