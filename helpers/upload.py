@@ -461,7 +461,8 @@ def main(
 
     if use_artifacts:
         write_github_output(
-            dedupe_artifact_name=dupedb_artifact_name
+            dedupe_artifact_name=dupedb_artifact_name,
+            dedupe_path=_hash_db_path,
         )
     try:
         # Expand directories to individual files
