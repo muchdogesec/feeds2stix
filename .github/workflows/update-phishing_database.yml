@@ -1,14 +1,16 @@
-name: "[Update CTX] Abuse.ch MalwareBazaar"
+name: "[Update CTX] Phishing.Database"
 run-name: |
-  [Update CTX] Abuse.ch MalwareBazaar
-  ${{ github.event_name == 'workflow_dispatch' && inputs.start_date != ''
-      && format(' @from:{0}', inputs.start_date) || '' }}
+  [Update CTX] Phishing.Database
+  ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
+      && format(' @from:{0}', inputs.since_date) || '' }}
   ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
       && format(' @to:{0}', inputs.until_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.cutoff_date != ''
+      && format(' @cutoff:{0}', inputs.cutoff_date) || '' }}
+
 on:
   schedule:
-    # Run every 6 hours
-    - cron: '0 */6 * * *'
+    - cron: '25 * * * *'
   workflow_dispatch:
     inputs:
       target_environment:
@@ -20,28 +22,25 @@ on:
           - staging
           - production
         default: all
-      start_date:
-        description: 'Start date for filtering records (YYYY-MM-DD[T[HH:MM[:SS]]]). Use "auto" to use last run date, or leave empty to process all.'
-        required: false
+      since_date:
+        description: 'Only process records modified on or after this date. Use "auto" to use latest indicator timestamp.'
+        required: true
         type: string
         default: 'auto'
       until_date:
-        description: 'End date for filtering records (YYYY-MM-DD[T[HH:MM[:SS]]]). Leave empty to process all records until now.'
+        description: 'Only process records modified on or before this date. Leave empty for no upper bound.'
         required: false
         type: string
-      signature:
-        description: 'Process only records with this signature (malware family). Leave empty to process all.'
+      cutoff_date:
+        description: 'Skip records that became inactive before this date. Leave empty to disable cutoff.'
         required: false
         type: string
-      exit_on_integrity_check_failure:
-        description: 'Should fail if data looks bad. This will fail for example if `first_seen_utc == file_name`; optional, always true on schedule'
-        default: false
-        type: boolean
-        required: true
+
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
+
 
 jobs:
   process-and-upload:
@@ -53,86 +52,81 @@ jobs:
     environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .
-    
+      CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+      CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Get modified time for latest indicator processed in feed
+      - name: Get latest indicator timestamp
         id: last_run
         env:
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-        run: python helpers/latest_timestamp.py "${{ vars.MALWAREBAZAAR_FEED_ID }}" --object-type indicator
-      
-      - name: Process MalwareBazaar feed and create STIX bundles
+        run: python helpers/latest_timestamp.py "${{ vars.PHISHING_DATABASE_FEED_ID }}" --object-type indicator --delta 10
+
+      - name: Process Phishing.Database feed and create STIX bundles
         id: process
-        env:
-          EXIT_ON_INTEGRITY_CHECK_FAILURE: ${{ github.event_name == 'schedule' || github.event.inputs.exit_on_integrity_check_failure}}
         run: |
           set -e
 
-          last_run_date="${{ steps.last_run.outputs.latest_timestamp }}"
-          # Remove quotes from the result
-          last_run_date=$(echo "$last_run_date" | tr -d '"')
-          start_date="${{ inputs.start_date }}"
-          
-          CMD="python processors/abuse_ch_malwarebazaar/malwarebazaar.py"
-          
-          # Determine start_date: use last_run_date for auto/scheduled, or custom date
-          if [ "$start_date" = "auto" ] || [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ -n "$last_run_date" ]; then
-              CMD="$CMD --start-date '$last_run_date'"
-              echo "Using last run date: $last_run_date"
+          since_date="${{ inputs.since_date }}"
+          until_date="${{ inputs.until_date }}"
+          cutoff_date="${{ inputs.cutoff_date }}"
+          latest_timestamp="${{ steps.last_run.outputs.latest_timestamp }}"
+
+          CMD="python processors/phishing_database/phishing_database.py"
+
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "$since_date" = "auto" ]; then
+            if [ -n "$latest_timestamp" ]; then
+              CMD="$CMD --since-date '$latest_timestamp'"
+              echo "Using latest indicator timestamp: $latest_timestamp"
             fi
-          elif [ -n "$start_date" ]; then
-            CMD="$CMD --start-date '$start_date'"
+          elif [ -n "$since_date" ]; then
+            CMD="$CMD --since-date '$since_date'"
           fi
-          
-          if [ -n "${{ inputs.signature }}" ]; then
-            CMD="$CMD --signature '${{ inputs.signature }}'"
+
+          if [ -n "$until_date" ]; then
+            CMD="$CMD --until-date '$until_date'"
           fi
-          if [ -n "${{ inputs.until_date }}" ]; then
-            CMD="$CMD --until-date '${{ inputs.until_date }}'"
+
+          if [ -n "$cutoff_date" ]; then
+            CMD="$CMD --cutoff-date '$cutoff_date'"
           fi
-          
+
           echo "Running: $CMD"
           eval $CMD
-      
+
       - name: Upload bundles to CTX
         id: upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-          MALWAREBAZAAR_FEED_ID: ${{ vars.MALWAREBAZAAR_FEED_ID }}
+          PHISHING_DATABASE_FEED_ID: ${{ vars.PHISHING_DATABASE_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
           ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
-          
-          if [ -z "$BUNDLE_PATH" ] || [ ! -d "$BUNDLE_PATH" ]; then
-            echo "Error: Bundle directory was not created at $BUNDLE_PATH"
+
+          if [ -z "$PHISHING_DATABASE_FEED_ID" ]; then
+            echo "Error: PHISHING_DATABASE_FEED_ID variable is not set"
             exit 1
           fi
-          
-          if [ -z "$MALWAREBAZAAR_FEED_ID" ]; then
-            echo "Error: MALWAREBAZAAR_FEED_ID variable is not set"
-            exit 1
-          fi
-          
-          echo "Uploading bundles from $BUNDLE_PATH to feed $MALWAREBAZAAR_FEED_ID..."
-          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$MALWAREBAZAAR_FEED_ID"
-      
+
+          echo "Uploading $BUNDLE_PATH to feed $PHISHING_DATABASE_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$PHISHING_DATABASE_FEED_ID"
+
       - name: Upload dedupe database
         if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
         uses: actions/upload-artifact@v7
@@ -153,7 +147,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: malwarebazaar-upload-artifacts-${{ matrix.target_env }}
+          name: phishing-database-upload-artifacts-${{ matrix.target_env }}
           path: |
             outputs/
             upload_artifacts/

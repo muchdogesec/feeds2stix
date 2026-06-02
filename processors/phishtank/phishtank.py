@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-from functools import lru_cache
 import io
 import json
 import logging
 import os
 from pathlib import Path
+import shutil
 import sys
 from collections import defaultdict
 from datetime import UTC, datetime
@@ -18,6 +18,7 @@ from stix2.patterns import StringConstant
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
+from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.utils import (
     create_bundle_with_metadata,
     create_identity_object,
@@ -41,7 +42,7 @@ FEED_URL = "http://data.phishtank.com/data/online-valid.json.gz"
 API_FEED_URL = "http://data.phishtank.com/data/API_KEY/online-valid.json.gz"
 OUTPUT_DIR = "outputs/phishtank"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["phishtank"]
-ATTACK_PATTERN_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
+T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
 OBJECT_MARKING_REFS_BASE = [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
@@ -77,55 +78,13 @@ def fetch_phishtank_data(data_dir: Path):
 
     raw_path = data_dir / "phishtank_online-valid.json.gz"
     raw_path.write_bytes(response.content)
+    json_path = data_dir / "phishtank_online-valid.json"
 
     gzip_content = response.content
     gzip_file = gzip.GzipFile(fileobj=io.BytesIO(gzip_content))
-    data = json.load(gzip_file)
+    json_path.write_bytes(gzip_file.read())
     logger.info(f"Saved raw feed to {raw_path}")
-    return data
-
-
-def _fetch_attack_pattern_from_ctibutler():
-    """Fetch the T1566 Phishing attack-pattern from CTI Butler."""
-    ctibutler_base = os.getenv("CTIBUTLER_BASE_URL", "").rstrip("/")
-    ctibutler_key = os.getenv("CTIBUTLER_API_KEY", "")
-
-    if not ctibutler_base:
-        logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
-        raise Exception("CTIBUTLER_BASE_URL not set")
-
-    url = f"{ctibutler_base}/v1/attack-enterprise/objects/{ATTACK_PATTERN_ID}/"
-    headers = {}
-    if ctibutler_key:
-        headers["API-KEY"] = ctibutler_key
-
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        if "objects" in data:
-            return data["objects"][0]
-        else:
-            return data
-    except Exception as e:
-        logger.warning(f"Failed to fetch attack-pattern from CTI Butler: {e}")
-        raise
-
-
-@lru_cache(maxsize=1)
-def fetch_attack_pattern():
-    try:
-        return _fetch_attack_pattern_from_ctibutler()
-    except Exception:
-        pattern = Path(
-            os.path.join(
-                os.path.dirname(__file__),
-                "data",
-                "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b.json",
-            )
-        ).read_text()
-        logger.info("Using local attack-pattern fallback")
-        return json.loads(pattern)
+    return json_path
 
 
 def parse_time(ts_str):
@@ -201,7 +160,7 @@ def create_stix_objects_for_phish(entry, identity_id, marking_id):
     objects.append(
         make_relationship(
             source_ref=indicator_id,
-            target_ref=ATTACK_PATTERN_ID,
+            target_ref=T1566_STIX_ID,
             relationship_type="indicates",
             created_by_ref=identity_id,
             created=submission_time,
@@ -271,7 +230,7 @@ def group_entries_to_max_N_elements(entries, max_per_group=500):
 def process_entries_for_date(
     entries, phishtank_identity, phishtank_marking, feeds2stix_marking
 ):
-    all_stix_objects = [fetch_attack_pattern()]  # already cached by lru_cache
+    all_stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)]
     for entry in entries:
         try:
             objects = create_stix_objects_for_phish(
@@ -307,38 +266,96 @@ def main():
     parser = argparse.ArgumentParser(
         description="Process PhishTank feed and generate STIX bundles"
     )
-    parser.add_argument(
+
+    subparsers = parser.add_subparsers(
+        dest="mode",
+        required=True,
+    )
+
+    # ------------------------------------------------------------------
+    # download
+    # ------------------------------------------------------------------
+
+    download_parser = subparsers.add_parser(
+        "download",
+        help="Download PhishTank data only",
+    )
+
+    # ------------------------------------------------------------------
+    # process
+    # ------------------------------------------------------------------
+
+    process_parser = subparsers.add_parser(
+        "process",
+        help="Process PhishTank data into JSON bundles",
+    )
+
+    process_parser.add_argument(
+        "--file",
+        type=Path,
+        help="Existing PhishTank JSON file to process",
+    )
+
+    process_parser.add_argument(
         "--since-date",
         "--since_date",
         type=parse_since_date,
         help="Only process entries with submission_time on or after this date (ISO format)",
     )
-    parser.add_argument(
+
+    process_parser.add_argument(
         "--until-date",
         "--until_date",
         type=parse_until_date,
         help="Only process entries with modification time on or before this date (ISO format)",
     )
+
     args = parser.parse_args()
 
-    since_date = args.since_date
-    until_date = args.until_date
-
     bundles_dir, data_dir = setup_output_directory(OUTPUT_DIR, clean=True)
+
+    # ------------------------------------------------------------------
+    # download mode
+    # ------------------------------------------------------------------
+
+    if args.mode == "download":
+        json_path = fetch_phishtank_data(data_dir)
+
+        logger.info(f"Downloaded PhishTank data to {json_path}")
+
+        raise SystemExit(0)
+
+    # ------------------------------------------------------------------
+    # process mode
+    # ------------------------------------------------------------------
+
+    if args.file:
+        if not args.file.exists():
+            raise FileNotFoundError(f"File does not exist: {args.file}")
+
+        json_path = data_dir / args.file.name
+
+        shutil.copy2(args.file, json_path)
+
+        logger.info(f"Copied input file to {json_path}")
+    else:
+        json_path = fetch_phishtank_data(data_dir)
+
+        logger.info(f"Downloaded PhishTank data to {json_path}")
+
+    data = json.loads(json_path.read_text())
+
+    logger.info(f"Fetched {len(data)} entries from PhishTank")
+
 
     identity = create_phishtank_identity()
     marking = create_phishtank_marking_definition()
     feeds2stix_marking = fetch_external_objects()
-    attack_pattern = (
-        fetch_attack_pattern()
-    )  # cache this to avoid repeated CTI Butler calls
+    fetch_enterprise_attack_object(T1566_STIX_ID)  # cache this to avoid repeated CTI Butler calls
 
-    data = fetch_phishtank_data(data_dir)
-    logger.info(f"Fetched {len(data)} entries from PhishTank")
-
-    data = list(filter_entries_by_date(data, since_date, until_date))
+    data = list(filter_entries_by_date(data, args.since_date, args.until_date))
     logger.info(
-        f"{len(data)} entries remain after filtering by since_date={since_date} until_date={until_date}"
+        f"{len(data)} entries remain after filtering by since_date={args.since_date} until_date={args.until_date}"
     )
     N = 500
     grouped = group_entries_to_max_N_elements(data, N)

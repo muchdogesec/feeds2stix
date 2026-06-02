@@ -1,4 +1,8 @@
 name: "[Update CTX] ThreatView"
+run-name: |
+  [Update CTX] ThreatView
+  [${{ github.event_name == 'workflow_dispatch'
+      && inputs.feed_type || 'all' }}]
 
 on:
   schedule:
@@ -73,10 +77,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
       

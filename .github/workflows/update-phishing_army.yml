@@ -1,13 +1,13 @@
-name: "[Update CTX] CINS Score"
+name: "[Update CTX] Phishing Army"
 
 on:
   schedule:
-    # Run daily at 04:00 UTC
-    - cron: '0 4 * * *'
+    # Run every 6 hours to match the feed cadence.
+    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       target_environment:
-        description: 'Which environment(s) to run'
+        description: "Which environment(s) to run"
         required: true
         type: choice
         options:
@@ -16,11 +16,9 @@ on:
           - production
         default: all
 
-
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-
 
 jobs:
   process-and-upload:
@@ -32,47 +30,47 @@ jobs:
     environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .
-    
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
-      
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      
-      - name: Process CINS Score feed and create STIX bundle
+
+      - name: Process Phishing Army feed and create STIX bundle
         id: process
         run: |
           set -e
-          echo "Processing CINS Score feed..."
-          python processors/cinsscore/cinsscore.py
-      
+          echo "Processing Phishing Army feed..."
+          python processors/phishing_army/phishing_army.py
+
       - name: Upload bundle to CTX
         id: upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-          CINSSCORE_FEED_ID: ${{ vars.CINSSCORE_FEED_ID }}
+          PHISHING_ARMY_FEED_ID: ${{ vars.PHISHING_ARMY_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
           ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
-          
-          if [ -z "$CINSSCORE_FEED_ID" ]; then
-            echo "Error: CINSSCORE_FEED_ID variable is not set"
+
+          if [ -z "$PHISHING_ARMY_FEED_ID" ]; then
+            echo "Error: PHISHING_ARMY_FEED_ID variable is not set"
             exit 1
           fi
-          
-          echo "Uploading $BUNDLE_PATH to feed $CINSSCORE_FEED_ID..."
-          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$CINSSCORE_FEED_ID"
-      
+
+          echo "Uploading $BUNDLE_PATH to feed $PHISHING_ARMY_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$PHISHING_ARMY_FEED_ID"
+
       - name: Upload dedupe database
         if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
         uses: actions/upload-artifact@v7
@@ -93,7 +91,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: cinsscore-upload-artifacts-${{ matrix.target_env }}
+          name: phishing-army-upload-artifacts-${{ matrix.target_env }}
           path: |
             outputs/
             upload_artifacts/
