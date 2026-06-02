@@ -223,6 +223,46 @@ Indicator `id` is generated using namespace `<UUID OF FEED MARKING DEF>` and val
 
 UUIDv5 uses namespace `<UUID OF FEED MARKING DEF>` and value `source_ref+target_ref`.
 
+
+#### ATT&CK 
+
+The following `labels` are assigned to Indicators (June 2026):
+
+aitm, android, apt, asyncrat, booking, c2, clickfix, deimos, dprk, infostealer, kimsuky, lazarus, malware, mustangpanda, netsupport, opendir, phishing, ransomware, rat, remcos, scam, stealer, supershell, trojan, vidar, xworm
+
+We should link Indicators containing the label `phishing` to the ATT&CK technique 
+ `T1566` `attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b` using CTI Butler
+
+Imports: `attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b` from CTI Butler
+
+With relationship to Indicator:
+
+```json
+{
+  "type": "relationship",
+  "spec_version": "2.1",
+  "id": "relationship--<UUID V5>",
+  "created_by_ref": "identity--<UUID OF FEED ID>",
+  "created": "<date>",
+  "modified": "<date>",
+  "relationship_type": "indicates",
+  "description": "<VALUE> is known to be used for Phishing (T1566)",
+  "source_ref": "indicator--<URL INDICATOR>",
+  "target_ref": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
+  "object_marking_refs": [
+    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
+    "marking-definition--<UUID OF FEED MARKING DEF>"
+  ],
+  "external_references": [
+    {
+      "source_name": "x_url",
+      "url": "<TWEET>"
+    }
+  ]
+}
+```
+
 ## Usage
 
 ```bash
