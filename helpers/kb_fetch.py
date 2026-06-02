@@ -55,11 +55,11 @@ def fetch_enterprise_attack_object(stix_id):
 def fetch_object_from_kb(stix_id, knowledge_base):
     try:
         return _fetch_kb_object_from_ctibutler(stix_id, knowledge_base=knowledge_base)
-    except Exception:
+    except Exception as e:
+        logger.warning("Using local attack-pattern fallback: %s", str(e))
         p = Path(__file__).resolve().parent / "data" / f"{stix_id}.json"
         if not p.exists():
             logger.error(f"Local fallback file {p} does not exist. Cannot fetch {knowledge_base} object {stix_id}.")
             raise RemoteFetchError(f"Failed to fetch {stix_id} from CTI Butler and no local fallback available.")
         pattern = p.read_text()
-        logger.info("Using local attack-pattern fallback")
         return json.loads(pattern)
