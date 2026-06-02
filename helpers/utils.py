@@ -239,7 +239,7 @@ def remove_accents(input_str):
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
-def fuzzy_match(country_name):
+def fuzzy_match_country(country_name):
     country_name = remove_accents(country_name.strip().lower().replace(" ", ""))
     scores = {}
     for country in pycountry.countries:
@@ -264,7 +264,7 @@ def country_name_as_alpha2(country_name, original_name=None):
     if country_name.startswith('the '):
         # handle cases like "The Netherlands" that are listed without "The" in pycountry
         return country_name_as_alpha2(country_name[4:], original_name=original_name)
-    fuzzy_result = fuzzy_match(country_name)
+    fuzzy_result = fuzzy_match_country(country_name)
     if fuzzy_result:
         return fuzzy_result
     raise ValueError(f"Country name '{original_name}' not found in pycountry database")
