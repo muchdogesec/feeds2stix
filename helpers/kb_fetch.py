@@ -28,13 +28,14 @@ def ctibutler_session():
     return session, base_url
 
 
-def _fetch_attack_pattern_from_ctibutler(stix_id):
+def _fetch_kb_object_from_ctibutler(stix_id, knowledge_base="attack-enterprise"):
     """Fetch an ATT&CK Enterprise attack-pattern object from CTI Butler."""
+    session, ctibutler_base = ctibutler_session()
     session, ctibutler_base = ctibutler_session()
     if not ctibutler_base:
         logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
         raise Exception("CTIBUTLER_BASE_URL not set")
-    url = f"{ctibutler_base}/v1/attack-enterprise/objects/{stix_id}/"
+    url = f"{ctibutler_base}/v1/{knowledge_base}/objects/{stix_id}/"
     try:
         resp = session.get(url, timeout=30)
         resp.raise_for_status()
@@ -47,14 +48,19 @@ def _fetch_attack_pattern_from_ctibutler(stix_id):
         raise
 
 
-@lru_cache(maxsize=1280)
 def fetch_enterprise_attack_object(stix_id):
+    return fetch_object_from_kb(stix_id, knowledge_base="attack-enterprise")
+    
+
+@lru_cache(maxsize=1280)
+def fetch_object_from_kb(stix_id, knowledge_base):
     try:
-        return _fetch_attack_pattern_from_ctibutler(stix_id)
+        return _fetch_kb_object_from_ctibutler(stix_id, knowledge_base=knowledge_base)
     except Exception as e:
         logger.warning("Using local attack-pattern fallback: %s", str(e))
-        pattern = (
-            Path(__file__).resolve().parent / "data" / f"{stix_id}.json"
-        ).read_text()
+        p = Path(__file__).resolve().parent / "data" / f"{stix_id}.json"
+        if not p.exists():
+            logger.error(f"Local fallback file {p} does not exist. Cannot fetch {knowledge_base} object {stix_id}.")
+            raise RemoteFetchError(f"Failed to fetch {stix_id} from CTI Butler and no local fallback available.")
+        pattern = p.read_text()
         return json.loads(pattern)
-    

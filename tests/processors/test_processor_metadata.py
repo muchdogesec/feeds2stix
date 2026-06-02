@@ -32,6 +32,7 @@ PROCESSOR_FILES = {
     "ipsum": Path("processors/ipsum/ipsum.py"),
     "cinsscore": Path("processors/cinsscore/cinsscore.py"),
     "viriback": Path("processors/viriback/viriback.py"),
+    "promptintel": Path("processors/promptintel/promptintel.py"),
 }
 
 
