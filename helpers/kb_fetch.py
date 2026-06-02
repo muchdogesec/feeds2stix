@@ -51,10 +51,10 @@ def _fetch_attack_pattern_from_ctibutler(stix_id):
 def fetch_enterprise_attack_object(stix_id):
     try:
         return _fetch_attack_pattern_from_ctibutler(stix_id)
-    except Exception:
+    except Exception as e:
+        logger.warning("Using local attack-pattern fallback: %s", str(e))
         pattern = (
             Path(__file__).resolve().parent / "data" / f"{stix_id}.json"
         ).read_text()
-        logger.warning("Using local attack-pattern fallback")
         return json.loads(pattern)
     
