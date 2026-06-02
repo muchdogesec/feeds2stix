@@ -31,6 +31,7 @@ def ctibutler_session():
 def _fetch_kb_object_from_ctibutler(stix_id, knowledge_base="attack-enterprise"):
     """Fetch an ATT&CK Enterprise attack-pattern object from CTI Butler."""
     session, ctibutler_base = ctibutler_session()
+    session, ctibutler_base = ctibutler_session()
     if not ctibutler_base:
         logger.warning("CTIBUTLER_BASE_URL not set; skipping attack-pattern import")
         raise Exception("CTIBUTLER_BASE_URL not set")
