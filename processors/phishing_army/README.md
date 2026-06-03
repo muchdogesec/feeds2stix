@@ -209,6 +209,8 @@ The processor is intended to run on a 6-hour schedule and upload the current sna
 **Secrets:**
 * `CTX_BASE_URL`
 * `CTX_API_KEY`
+* `CTIBUTLER_BASE_URL`: base URL for the CTI Butler API used to fetch ATT&CK objects
+* `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 **Variables:**
 * `PHISHING_ARMY_FEED_ID`

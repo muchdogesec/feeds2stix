@@ -67,6 +67,8 @@ jobs:
       - name: Process PromptIntel feed and create STIX bundles
         id: process
         env:
+          CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+          CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
           PROMPTINTEL_API_KEY: ${{ secrets.PROMPTINTEL_API_KEY }}
         run: |
           set -e

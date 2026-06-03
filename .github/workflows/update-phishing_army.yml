@@ -46,6 +46,9 @@ jobs:
 
       - name: Process Phishing Army feed and create STIX bundle
         id: process
+        env:
+          CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+          CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
         run: |
           set -e
           echo "Processing Phishing Army feed..."
