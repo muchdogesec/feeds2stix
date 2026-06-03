@@ -371,6 +371,8 @@ def main():
         data = get_data_for_time_range(repo_path, start_dt=args.start_date, end_dt=args.until_date)
         object_count = 0
         for bundle_name, records in group_data_by_month(data, max_per_bundle=1000):
+            if not records:
+                continue
             stix_objects = create_stix_objects(records, source_identity, source_marking)
             bundle = create_bundle_with_metadata(
                 stix_objects,
