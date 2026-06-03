@@ -25,6 +25,7 @@ from helpers.utils import (
     save_bundle_to_file,
     setup_output_directory,
 )
+from helpers.git_helper import clone_or_update_repo
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -59,19 +60,6 @@ def create_phishing_database_marking_definition():
     return create_marking_definition_object(
         "Origin: https://github.com/Phishing-Database/Phishing.Database"
     )
-
-
-def clone_or_update_repo(repo_path, repo_url):
-    if os.path.exists(repo_path):
-        logger.info("Repository already exists at %s, pulling latest changes...", repo_path)
-        repo = Repo(repo_path)
-        repo.remotes.origin.pull()
-    else:
-        logger.info("Cloning repository from %s...", repo_url)
-        repo = Repo.clone_from(repo_url, repo_path)
-    logger.info("Repository ready")
-    logger.info("HEAD commit id: %s", repo.head.commit.hexsha)
-    return repo
 
 
 def get_target_feed_files(repo_path):

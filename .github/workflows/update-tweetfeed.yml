@@ -3,6 +3,8 @@ run-name: |
   [Update CTX] TweetFeed
   ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
       && format(' @from:{0}', inputs.since_date) || '' }}
+  ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
+      && format(' @to:{0}', inputs.until_date) || '' }}
 
 on:
   schedule:
@@ -21,6 +23,10 @@ on:
         default: all
       since_date:
         description: "Process IOCs added since this date (YYYY-MM-DD or ISO8601). Leave empty to use the last processed indicator timestamp."
+        required: false
+        type: string
+      until_date:
+        description: "Process IOCs up to this date (YYYY-MM-DD or ISO8601). Leave empty to process through the current time."
         required: false
         type: string
 
@@ -80,6 +86,12 @@ jobs:
             CMD="$CMD --start-date '$LAST_RUN_DATE'"
           else
             echo "No prior TweetFeed timestamp found; processing the default feed window."
+          fi
+
+          if [ -n "${{ inputs.until_date }}" ]; then
+            UNTIL_DATE="${{ inputs.until_date }}"
+            echo "Processing IOCs up to: $UNTIL_DATE"
+            CMD="$CMD --until-date '$UNTIL_DATE'"
           fi
 
           echo "Running: $CMD"
