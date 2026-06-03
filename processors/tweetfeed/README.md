@@ -2,13 +2,12 @@
 
 ## Overview
 
-TweetFeed collects indicators of compromise shared by the infosec community on X/Twitter and exposes them through a public API.
+TweetFeed collects indicators of compromise shared by the infosec community on X/Twitter and publishes them as CSV snapshots in a git repository.
 
-**Feed URL:** https://tweetfeed.live/feeds/  
-**API Base:** https://api.tweetfeed.live/v1/  
-**Format:** JSON feed of IOC records
+**Feed Repository:** https://github.com/0xDanielLopez/TweetFeed  
+**Format:** CSV IOC snapshots in a git repository
 
-The API supports a `since`-based query model and only returns up to one year of data at a time.
+The processor clones the TweetFeed repository and reads CSV files from the repository tree. It supports `--start-date` and `--until-date` filters and groups records into monthly bundles of up to 1000 records each.
 
 **STIX Objects Created:**
 - `identity`
@@ -25,30 +24,14 @@ The API supports a `since`-based query model and only returns up to one year of 
 
 ## Data source
 
-The API returns records shaped like this:
+The repository contains CSV files shaped like this:
 
-```json
-[
-  {
-    "date": "2026-05-01 02:47:00",
-    "user": "harugasumi",
-    "type": "domain",
-    "value": "nedabaci.z4.web.core.windows.net",
-    "tags": [],
-    "tweet": "https://x.com/harugasumi/status/2050044303926505846"
-  },
-  {
-    "date": "2026-05-01 02:47:00",
-    "user": "harugasumi",
-    "type": "url",
-    "value": "https://nedabaci.z4.web.core.windows.net",
-    "tags": [],
-    "tweet": "https://x.com/harugasumi/status/2050044303926505846"
-  }
-]
+```csv
+date,user,type,value,tags,tweet
+2026-05-01 02:47:00,harugasumi,domain,nedabaci.z4.web.core.windows.net,#phishing #CobaltStrike,https://x.com/harugasumi/status/2050044303926505846
 ```
 
-Each record represents one IOC observed in a tweet, with:
+Each CSV row represents one IOC observed in a tweet, with:
 
 - `date`: observation timestamp in `YYYY-MM-DD HH:MM:SS` format
 - `user`: X/Twitter account that posted the IOC
@@ -56,6 +39,8 @@ Each record represents one IOC observed in a tweet, with:
 - `value`: IOC value
 - `tags`: feed tags attached to the IOC
 - `tweet`: source tweet URL
+
+The processor reads files under `20*/*/*.csv`, filters rows by `--start-date` and `--until-date`, then groups records by month into zero-padded bundle parts such as `tweetfeed_202605p01.json` and `tweetfeed_202605p02.json`.
 
 ## Mapping
 
@@ -266,10 +251,11 @@ With relationship to Indicator:
 ## Usage
 
 ```bash
-python processors/tweetfeed/tweetfeed.py [--start-date YYYY-MM-DD]
+python processors/tweetfeed/tweetfeed.py [--start-date YYYY-MM-DD] [--until-date YYYY-MM-DD]
 ```
 
-When `--start-date` is supplied, the processor queries the TweetFeed API's `since` endpoint with that timestamp so it only pulls records from the requested point forward.
+When `--start-date` is supplied, the processor only includes records on or after that timestamp.
+When `--until-date` is supplied, the processor only includes records on or before that timestamp.
 
 This processor is date-driven and uses the feed record timestamp to set STIX timestamps.
 
@@ -281,14 +267,16 @@ The processor produces STIX bundles containing:
 - an SCO for the IOC value
 - an `indicator` object that matches the IOC
 - a relationship from the `indicator` to the SCO
+- when the `phishing` label is present, an ATT&CK T1566 relationship and attack-pattern object
 - identity and marking definition objects
 
-Bundles are written to `outputs/tweetfeed/bundles/tweetfeed_YYYYMMDD.json`.
+Bundles are written to `outputs/tweetfeed/bundles/tweetfeed_YYYYMMpNN.json`.
 
 ## Notes
 
 - The API only exposes a bounded lookback window of one year per query.
 - The feed is best treated as a dated processor because each record includes an explicit `date`.
+- Records are grouped into bundles of up to 1000 rows per month.
 
 ## GitHub Action
 
@@ -299,7 +287,14 @@ The processor is intended to run on a 15-minute schedule and resume from the las
 **Secrets:**
 - `CTX_BASE_URL`
 - `CTX_API_KEY`
+- `CTIBUTLER_BASE_URL`: Base URL for the CTI Butler API used to fetch ATT&CK objects
+- `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 **Variables:**
 - `TWEETFEED_FEED_ID`
 - `MAX_BUNDLE_SIZE_KB`
+
+### Workflow inputs
+
+- `since_date`: optional lower bound for records included in a manual run
+- `until_date`: optional upper bound for records included in a manual run

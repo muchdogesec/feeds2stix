@@ -107,15 +107,6 @@ def fetch_phishunt_data(data_dir: Path, since_date: datetime | None = None):
     logger.info("Fetched %s phishunt records", len(records))
     return records
 
-def fetch_phishunt_data_from_file(data_dir: Path):
-    raw_path = data_dir / "phishunt_domains.json"
-    if not raw_path.exists():
-        logger.error("Raw data file %s does not exist. Please run with --fetch-data first.", raw_path)
-        return []
-    payload = json.loads(raw_path.read_text())
-    records = payload.get("results", [])
-    logger.info("Loaded %s phishunt records from %s", len(records), raw_path)
-    return records
 
 def parse_time(value: str) -> datetime:
     dt = datetime.fromisoformat(value.replace("Z", "+00:00"))

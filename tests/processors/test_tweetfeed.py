@@ -1,12 +1,13 @@
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
-import sys
+from types import ModuleType
 from unittest.mock import patch
 
 import pytest
 
 from processors.tweetfeed import tweetfeed
-from tests.utils import FakeJSONResponse, stix_as_dict
+from tests.utils import stix_as_dict
 
 
 @pytest.fixture
@@ -31,36 +32,70 @@ def sample_records():
     ]
 
 
-def test_build_feed_url_uses_since_when_start_date_is_provided():
-    start_date = datetime(2026, 5, 1, tzinfo=UTC)
-    assert (
-        tweetfeed.build_feed_url(start_date)
-        == "https://api.tweetfeed.live/v1/since/2026-05-01T00:00:00Z"
+def test_parse_record_timestamp_returns_utc():
+    timestamp = tweetfeed.parse_record_timestamp("2026-05-01 02:47:00")
+
+    assert timestamp == datetime(2026, 5, 1, 2, 47, tzinfo=UTC)
+
+
+def test_load_data_from_csv_filters_rows_and_parses_tags(tmp_path):
+    csv_path = tmp_path / "20260501.csv"
+    csv_path.write_text(
+        "\n".join(
+            [
+                "2026-04-30 23:59:59,skip,url,https://skip.example/#,\"#ignore\",https://x.com/skip",
+                "2026-05-01 02:47:00,harugasumi,domain,nedabaci.z4.web.core.windows.net,\"#phishing #CobaltStrike\",https://x.com/harugasumi/status/2050044303926505846",
+                "2026-05-02 00:00:00,blank,url,https://blank.example/#,\"#phishing\",",
+            ]
+        )
+        + "\n"
     )
 
-
-def test_build_feed_url_defaults_to_year_window():
-    assert tweetfeed.build_feed_url() == "https://api.tweetfeed.live/v1/year"
-
-
-def test_fetch_tweetfeed_data_uses_since_endpoint(
-    monkeypatch, tmp_path, sample_records
-):
-    monkeypatch.chdir(tmp_path)
-    start_date = datetime(2026, 5, 1, tzinfo=UTC)
-
-    with patch(
-        "processors.tweetfeed.tweetfeed.requests.get",
-        return_value=FakeJSONResponse(sample_records),
-    ) as mock_get:
-        records = tweetfeed.fetch_tweetfeed_data(tmp_path, start_date=start_date)
-
-    assert records == sample_records
-    mock_get.assert_called_once_with(
-        "https://api.tweetfeed.live/v1/since/2026-05-01T00:00:00Z",
-        timeout=300,
+    rows = list(
+        tweetfeed.load_data_from_csv(
+            csv_path,
+            "2026-05-01 00:00:00",
+            "2026-05-01 23:59:59",
+        )
     )
-    assert (tmp_path / "tweetfeed_data.json").exists()
+
+    assert rows == [
+        {
+            "date": "2026-05-01 02:47:00",
+            "user": "harugasumi",
+            "type": "domain",
+            "value": "nedabaci.z4.web.core.windows.net",
+            "tags": ("phishing", "CobaltStrike"),
+            "tweet": "https://x.com/harugasumi/status/2050044303926505846",
+        }
+    ]
+
+
+def test_get_data_for_time_range_reads_repo_tree(tmp_path):
+    repo_path = tmp_path / "TweetFeed"
+    first_file = repo_path / "202605" / "202605" / "20260501.csv"
+    second_file = repo_path / "202606" / "202606" / "20260602.csv"
+    first_file.parent.mkdir(parents=True)
+    second_file.parent.mkdir(parents=True)
+
+    first_file.write_text(
+        "2026-05-01 02:47:00,harugasumi,domain,nedabaci.z4.web.core.windows.net,\"#phishing\",https://x.com/harugasumi/status/2050044303926505846\n"
+    )
+    second_file.write_text(
+        "2026-06-02 10:00:00,harugasumi,url,https://example.com,\"#phishing\",https://x.com/harugasumi/status/2050044303926505846\n"
+    )
+
+    records = list(
+        tweetfeed.get_data_for_time_range(
+            repo_path,
+            start_dt=datetime(2026, 5, 1, tzinfo=UTC),
+            end_dt=datetime(2026, 6, 30, tzinfo=UTC),
+        )
+    )
+
+    assert [month for month, _ in records] == ["202605", "202606"]
+    assert records[0][1]["value"] == "nedabaci.z4.web.core.windows.net"
+    assert records[1][1]["value"] == "https://example.com"
 
 
 @pytest.mark.parametrize(
@@ -185,7 +220,7 @@ def test_create_indicator_object():
     }
 
 
-def test_create_stix_objects_dedupes_user_accounts(sample_records):
+def test_create_stix_objects_dedupes_user_accounts_and_links_attack_pattern(sample_records):
     source_identity = tweetfeed.create_tweetfeed_identity()
     source_marking = tweetfeed.create_tweetfeed_marking_definition()
 
@@ -201,8 +236,11 @@ def test_create_stix_objects_dedupes_user_accounts(sample_records):
         },
     ):
         objects = tweetfeed.create_stix_objects(
-            sample_records, source_identity, source_marking
+            sample_records,
+            source_identity,
+            source_marking,
         )
+
     object_types = [obj["type"] for obj in objects]
 
     assert object_types.count("user-account") == 1
@@ -251,7 +289,17 @@ def test_main_uses_start_date_and_writes_bundle(
     out_file = tmp_path / "gh.out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out_file))
     monkeypatch.setattr(tweetfeed, "BASE_OUTPUT_DIR", str(tmp_path / "output"))
-    monkeypatch.setattr(sys, "argv", ["tweetfeed.py", "--start-date", "2026-05-01"])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "tweetfeed.py",
+            "--start-date",
+            "2026-05-01",
+            "--until-date",
+            "2026-06-30",
+        ],
+    )
 
     feeds2stix_marking = {
         "type": "marking-definition",
@@ -262,19 +310,25 @@ def test_main_uses_start_date_and_writes_bundle(
         "definition": {"statement": "feeds2stix"},
     }
 
-    captured = {}
-
-    def fake_fetch(data_dir, start_date=None):
-        captured["data_dir"] = data_dir
-        captured["start_date"] = start_date
-        return sample_records
+    grouped_records = [
+        ("202605p01", [sample_records[0]]),
+        ("202606p01", [sample_records[1]]),
+    ]
 
     with patch(
         "processors.tweetfeed.tweetfeed.fetch_external_objects",
         return_value=feeds2stix_marking,
     ), patch(
-        "processors.tweetfeed.tweetfeed.fetch_tweetfeed_data",
-        side_effect=fake_fetch,
+        "processors.tweetfeed.tweetfeed.get_data_for_time_range",
+        return_value=iter(
+            [
+                ("202605", sample_records[0]),
+                ("202606", sample_records[1]),
+            ]
+        ),
+    ), patch(
+        "processors.tweetfeed.tweetfeed.group_data_by_month",
+        return_value=iter(grouped_records),
     ), patch(
         "processors.tweetfeed.tweetfeed.fetch_enterprise_attack_object",
         return_value={
@@ -285,23 +339,17 @@ def test_main_uses_start_date_and_writes_bundle(
             "modified": "2020-01-01T00:00:00.000Z",
             "name": "Phishing",
         },
-    ), patch(
-        "processors.tweetfeed.tweetfeed.fetch_enterprise_attack_object",
-        return_value={
-            "type": "attack-pattern",
-            "spec_version": "2.1",
-            "id": "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b",
-            "created": "2020-01-01T00:00:00.000Z",
-            "modified": "2020-01-01T00:00:00.000Z",
-            "name": "Phishing",
-        },
-    ), patch(
-        "processors.tweetfeed.tweetfeed.save_bundle_to_file",
-        wraps=tweetfeed.save_bundle_to_file,
-    ) as mock_save:
+    ):
         assert tweetfeed.main() == 0
 
-    assert captured["start_date"] == datetime(2026, 5, 1, tzinfo=UTC)
-    assert captured["data_dir"] == Path(tmp_path / "output" / "data")
-    assert mock_save.call_count == 1
-    assert out_file.read_text().startswith("bundle_path=")
+    assert out_file.exists()
+    content = out_file.read_text()
+    assert "bundle_path=" in content
+    assert "bundle_count=2" in content
+
+    bundle_dir = Path(content.split("bundle_path=")[1].splitlines()[0].strip())
+    bundle_files = sorted(path.name for path in bundle_dir.glob("*.json"))
+    assert bundle_files == [
+        "tweetfeed_202605p01.json",
+        "tweetfeed_202606p01.json",
+    ]
