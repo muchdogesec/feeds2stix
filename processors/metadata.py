@@ -81,6 +81,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "community-verified", "malicious-urls", "url-intelligence"],
     ),
+    "phishunt": build_processor_metadata(
+        "phishunt",
+        "Real-time phishing and scam site intelligence enriched with hosting context.",
+        "phishunt monitors Certificate Transparency logs and multiple phishing intelligence sources to identify suspicious phishing and scam sites. This processor publishes suspicious URLs, domains, hosting IPs, ASNs, certificate issuer context, targeted brands, and country links to support phishing detection, takedown, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "malicious-urls", "brand-abuse", "hosting-intelligence"],
+    ),
     "phishing_database": build_processor_metadata(
         "Phishing.Database",
         "Open phishing domain, URL, and IP intelligence with active/inactive states.",

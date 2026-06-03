@@ -14,6 +14,7 @@ PROCESSOR_FILES = {
     "tweetfeed": Path("processors/tweetfeed/tweetfeed.py"),
     "phishing_army": Path("processors/phishing_army/phishing_army.py"),
     "phishtank": Path("processors/phishtank/phishtank.py"),
+    "phishunt": Path("processors/phishunt/phishunt.py"),
     "phishing_database": Path("processors/phishing_database/phishing_database.py"),
     "greensnow": Path("processors/greensnow/greensnow.py"),
     "abuse_ch_malwarebazaar": Path("processors/abuse_ch_malwarebazaar/malwarebazaar.py"),

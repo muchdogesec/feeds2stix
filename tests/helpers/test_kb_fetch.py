@@ -20,7 +20,7 @@ class FakeSession:
         self.calls = []
 
     def get(self, url, timeout=None, params=None):
-        self.calls.append({"url": url, "timeout": timeout, "params": params})
+        self.calls.append({"url": url, "timeout": timeout, "params": params and params.copy()})
         return FakeJSONResponse(self.responses.pop(0))
 
 
@@ -54,4 +54,29 @@ def test_fetch_attack_pattern_from_ctibutler_uses_session_base_url():
             "timeout": 30,
             "params": None,
         }
+    ]
+
+
+def test_get_all_pages_uses_initial_params_only():
+    session = FakeSession(
+        [
+            {"objects": [{"id": "location--1"}], "page_size": 1, 'total_results_count': 2},
+            {"objects": [{"id": "location--2"}], "page_size": 2, 'total_results_count': 2},
+        ]
+    )
+
+    results = kb_fetch.get_all_pages(session, "https://ctibutler.example/")
+
+    assert results == [{"id": "location--1"}, {"id": "location--2"}]
+    assert session.calls == [
+        {
+            "url": "https://ctibutler.example/",
+            "timeout": 30,
+            "params": {"page": 1},
+        },
+        {
+            "url": "https://ctibutler.example/",
+            "timeout": 30,
+            "params": {"page": 2},
+        },
     ]
