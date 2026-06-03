@@ -299,6 +299,8 @@ The processor is intended to run on a 15-minute schedule and resume from the las
 **Secrets:**
 - `CTX_BASE_URL`
 - `CTX_API_KEY`
+- `CTIBUTLER_BASE_URL`: base URL for the CTI Butler API used to fetch ATT&CK objects
+- `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 **Variables:**
 - `TWEETFEED_FEED_ID`

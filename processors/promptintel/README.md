@@ -322,6 +322,8 @@ Configure the following in your GitHub repository.
 - `PROMPTINTEL_API_KEY`: API key used by the PromptIntel processor
 - `CTX_BASE_URL`: base URL for your CTX instance
 - `CTX_API_KEY`: API key for CTX uploads
+- `CTIBUTLER_BASE_URL`: base URL for the CTI Butler API used to fetch ATT&CK objects
+- `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 **Variables**:
 
