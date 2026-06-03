@@ -47,8 +47,6 @@ jobs:
     environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .
-      CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
-      CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
     
     steps:
       - name: Checkout repository
@@ -72,6 +70,9 @@ jobs:
       
       - name: Process phishunt feed and create STIX bundles
         id: process
+        env:
+          CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
+          CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
         run: |
           set -e
 

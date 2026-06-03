@@ -401,6 +401,8 @@ Required secrets and variables:
   * `CTX_BASE_URL`: Base URL for the CTX API
   * `CTX_API_KEY`: API key for CTX authentication
   * `GITHUB_TOKEN`: GitHub token used for artifact uploads
+  * `CTIBUTLER_BASE_URL`: Base URL for the CTI Butler API used to fetch ATT&CK objects
+  * `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 * **Variables**:
 
