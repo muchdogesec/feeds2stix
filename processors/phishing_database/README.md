@@ -224,6 +224,7 @@ python processors/phishing_database/phishing_database.py
 - `--since-date`: include records with `modified` on or after this date
 - `--until-date`: include records with `modified` on or before this date
 - `--cutoff-date`: exclude records that became inactive before this date
+- `--type`: process only one observable type (`links`, `domains`, or `ips`)
 
 All date options accept `YYYY-MM-DD` or ISO datetime strings.
 
@@ -233,6 +234,7 @@ All date options accept `YYYY-MM-DD` or ISO datetime strings.
 python processors/phishing_database/phishing_database.py --since-date 2026-01-01
 python processors/phishing_database/phishing_database.py --since-date 2026-01-01 --until-date 2026-01-15
 python processors/phishing_database/phishing_database.py --cutoff-date 2026-01-01
+python processors/phishing_database/phishing_database.py --type links
 ```
 
 ## Output
@@ -258,6 +260,9 @@ Each bundle contains:
 ## GitHub Action
 
 The processor is automated via [`update-phishing_database.yml`](../../.github/workflows/update-phishing_database.yml).
+
+The workflow dispatch supports selecting a single observable type or `all`.
+When `all` is selected, GitHub Actions uses matrix concurrency so staging and production can run in parallel, but only one job per environment is allowed at a time.
 
 ### Required Configuration
 

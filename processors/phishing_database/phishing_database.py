@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from collections import defaultdict
 import logging
 import os
 import sys
@@ -122,6 +123,11 @@ def get_lines_first_seen(repo, file_path):
 
     return line_first_seen
 
+OBSERVABLE_MAP = {
+    "url": "links",
+    "domain-name": "domains",
+    "ipv4-addr": "ips",
+}
 
 def infer_observable_type(file_path):
     top_dir = Path(file_path).parts[0].lower()
@@ -139,13 +145,15 @@ def infer_status(file_path):
     return "inactive" if top_dir.endswith("-INACTIVE") else "active"
 
 
-def collect_observables(repo, repo_path, cutoff_date=None):
+def collect_observables(repo, repo_path, cutoff_date=None, type=None):
     records = {}
     target_files = get_target_feed_files(repo_path)
     logger.info("Found %s target .txt files in ACTIVE/INACTIVE directories", len(target_files))
 
     for file_path in target_files:
         observable_type = infer_observable_type(file_path)
+        if type and OBSERVABLE_MAP[observable_type] != type:
+            continue
         status = infer_status(file_path)
         line_first_seen = get_lines_first_seen(repo, file_path)
 
@@ -202,9 +210,9 @@ def filter_records_by_date(records, since_date=None, until_date=None):
 
 
 def group_records_by_month_with_parts(records, max_per_bundle=500):
-    by_month = {}
+    by_month = defaultdict(list)
     for record in records:
-        month_key = record["modified"].strftime("%Y%m")
+        month_key = record["modified"].strftime("%Y%m") + "_" + OBSERVABLE_MAP[record['observable_type']]
         by_month.setdefault(month_key, []).append(record)
 
     grouped = []
@@ -333,6 +341,12 @@ def main():
         type=parse_since_date,
         help="Skip records that became inactive before this date (YYYY-MM-DD format)",
     )
+    parser.add_argument(
+        "--type",
+        choices=["links", "domains", "ips"],
+        help="Process only one observable type: links, domains, or ips",
+        default=None,
+    )
     args = parser.parse_args()
 
     bundles_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
@@ -343,7 +357,7 @@ def main():
     repo_path = os.path.join(data_dir, "phishing_database_repo")
     repo = clone_or_update_repo(repo_path, REPO_URL)
 
-    records = collect_observables(repo, repo_path, args.cutoff_date)
+    records = collect_observables(repo, repo_path, args.cutoff_date, type=args.type)
     records = filter_records_by_date(records, args.since_date, args.until_date)
     grouped = group_records_by_month_with_parts(records, max_per_bundle=500)
 
