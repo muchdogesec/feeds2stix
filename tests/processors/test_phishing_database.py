@@ -150,9 +150,9 @@ def test_filter_group_and_create_stix_objects():
     assert [r["value"] for r in filtered] == ["http://phish.example.com/login"]
 
     grouped = phishing_database.group_records_by_month_with_parts(records)
-    assert len(grouped) == 1
-    assert grouped[0][0] == "202601"
-    assert len(grouped[0][1]) == 2
+    assert len(grouped) == 2
+    assert {key for key, _ in grouped} == {"domains_202601", "links_202601"}
+    assert all(len(group_records) == 1 for _, group_records in grouped)
 
     objects = stix_as_dict(phishing_database.create_stix_objects(records, identity, marking))
     assert {obj["type"] for obj in objects} == {"url", "domain-name", "indicator", "relationship"}
@@ -211,13 +211,15 @@ def test_main_success_writes_output(monkeypatch, tmp_path):
     assert out_file.exists()
     content = out_file.read_text()
     assert "bundle_path=" in content
-    assert "bundle_count=1" in content
+    assert "bundle_count=3" in content
     assert "latest_timestamp=2026-01-05T10:00:00+00:00" in content
 
     bundle_dir = Path(content.split("bundle_path=")[1].splitlines()[0].strip())
     bundle_files = sorted(path.name for path in bundle_dir.glob("*.json"))
     assert bundle_files == [
-        "phishing_database_202601.json",
+        "phishing_database_domains_202601.json",
+        "phishing_database_ips_202601.json",
+        "phishing_database_links_202601.json",
     ]
 
     any_bundle = json.loads((bundle_dir / bundle_files[0]).read_text())
@@ -238,7 +240,7 @@ def test_group_records_by_month_with_parts_over_500():
         )
 
     grouped = phishing_database.group_records_by_month_with_parts(records, max_per_bundle=500)
-    assert [k for k, _ in grouped] == ["202605p1", "202605p2", "202605p3"]
+    assert [k for k, _ in grouped] == ["links_202605p1", "links_202605p2", "links_202605p3"]
     assert len(grouped[0][1]) == 500
     assert len(grouped[1][1]) == 500
     assert len(grouped[2][1]) == 200
@@ -261,9 +263,9 @@ def test_group_records_by_month_with_parts_zfill_for_double_digits():
         records, max_per_bundle=500
     )
     keys = [k for k, _ in grouped]
-    assert keys[0] == "202605p01"
-    assert keys[1] == "202605p02"
-    assert keys[8] == "202605p09"
-    assert keys[9] == "202605p10"
-    assert keys[10] == "202605p11"
+    assert keys[0] == "links_202605p01"
+    assert keys[1] == "links_202605p02"
+    assert keys[8] == "links_202605p09"
+    assert keys[9] == "links_202605p10"
+    assert keys[10] == "links_202605p11"
     assert len(grouped) == 11

@@ -212,7 +212,11 @@ def filter_records_by_date(records, since_date=None, until_date=None):
 def group_records_by_month_with_parts(records, max_per_bundle=500):
     by_month = defaultdict(list)
     for record in records:
-        month_key = record["modified"].strftime("%Y%m") + "_" + OBSERVABLE_MAP[record['observable_type']]
+        month_key = (
+            OBSERVABLE_MAP[record["observable_type"]]
+            + "_"
+            + record["modified"].strftime("%Y%m")
+        )
         by_month.setdefault(month_key, []).append(record)
 
     grouped = []
