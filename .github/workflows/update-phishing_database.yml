@@ -74,15 +74,16 @@ jobs:
     name: "Process Phishing.Database: ${{ matrix.type }} @ ${{ matrix.target_env }}"
     strategy:
       fail-fast: false
-      max-parallel: 2
       matrix:
         type: ${{ fromJson(needs.generate-matrix.outputs.matrix).type }}
         target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
     environment: ${{ matrix.target_env }}
+
     concurrency:
       group: ${{ github.workflow }}-${{ matrix.target_env }}
       cancel-in-progress: false
       queue: max
+
     env:
       PYTHONPATH: .
       CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
