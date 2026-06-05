@@ -14,6 +14,8 @@ import requests
 from split_jsons import split_stix_bundle
 import hashmanager
 
+from utils import write_github_output
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", stream=sys.stdout
@@ -678,15 +680,6 @@ def main(
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
-
-def write_github_output(**kwargs):
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a", encoding="utf-8") as f:
-            for key, value in kwargs.items():
-                f.write(f"{key}={value}\n")
-
-
 
 forcibly_terminated = False
 

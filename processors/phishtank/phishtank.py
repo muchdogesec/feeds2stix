@@ -30,6 +30,7 @@ from helpers.utils import (
     setup_output_directory,
     parse_since_date,
     parse_until_date,
+    write_github_output,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -384,11 +385,10 @@ def main():
 
     logger.info(f"Processing complete. Created {len(bundle_paths)} bundles.")
 
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"bundle_path={bundles_dir}\n")
-            f.write(f"bundle_count={len(bundle_paths)}\n")
+    write_github_output(
+        bundle_path=bundles_dir,
+        bundle_count=len(bundle_paths),
+    )
 
 
 if __name__ == "__main__":
