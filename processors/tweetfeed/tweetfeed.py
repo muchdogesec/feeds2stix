@@ -27,6 +27,7 @@ from helpers.utils import (
     parse_until_date,
     save_bundle_to_file,
     setup_output_directory,
+    write_github_output,
 )
 from helpers.kb_fetch import fetch_enterprise_attack_object
 from helpers.git_helper import clone_or_update_repo
@@ -44,6 +45,7 @@ PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["tweetfeed"]
 T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
 GIT_REPO = "https://github.com/0xDanielLopez/TweetFeed"
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 def create_tweetfeed_identity():
     """Create the TweetFeed identity object."""
@@ -94,7 +96,6 @@ def normalize_tag(tag: str) -> str:
     return tag.strip().lstrip("#@").lower()
 
 
-
 def build_indicator_pattern(record: Dict[str, str]) -> str:
     """Create a STIX pattern for a TweetFeed IOC record."""
     value = record["value"].strip()
@@ -117,7 +118,9 @@ def build_indicator_pattern(record: Dict[str, str]) -> str:
 def create_user_account_object(record: Dict[str, str], namespace: str) -> UserAccount:
     """Create a deterministic user-account SCO for the posting account."""
     user = record["user"].strip().lstrip("@")
-    user_id = f"user-account--{generate_uuid5(f'tweetfeed:user:{user.lower()}', namespace)}"
+    user_id = (
+        f"user-account--{generate_uuid5(f'tweetfeed:user:{user.lower()}', namespace)}"
+    )
     return UserAccount(
         id=user_id,
         account_type="twitter",
@@ -219,7 +222,9 @@ def create_stix_objects(
             seen_sco_ids.add(sco_object.id)
             stix_objects.append(sco_object)
 
-        indicator = create_indicator_object(record, source_identity_id, source_marking_id)
+        indicator = create_indicator_object(
+            record, source_identity_id, source_marking_id
+        )
         stix_objects.append(indicator)
 
         stix_objects.append(
@@ -242,7 +247,7 @@ def create_stix_objects(
                 created_by_ref=source_identity_id,
                 created=record_time,
                 modified=record_time,
-                description="Indicator was created from post by @"+record['user'],
+                description="Indicator was created from post by @" + record["user"],
                 marking_refs=indicator["object_marking_refs"],
                 external_references=indicator["external_references"],
             )
@@ -270,25 +275,28 @@ def create_stix_objects(
             )
     return stix_objects
 
+
 def get_data_for_time_range(repo_path, start_dt: datetime, end_dt: datetime):
-    start_day_file = start_dt.strftime('%Y%m%d.csv')
+    start_day_file = start_dt.strftime("%Y%m%d.csv")
     start_dt_str = start_dt.strftime(TIME_FORMAT)
-    end_day_file = end_dt.strftime('%Y%m%d.csv')
+    end_day_file = end_dt.strftime("%Y%m%d.csv")
     end_dt_str = end_dt.strftime(TIME_FORMAT)
-    files = sorted(glob.glob(str(repo_path)+"/20*/*/*.csv"))
+    files = sorted(glob.glob(str(repo_path) + "/20*/*/*.csv"))
 
     for file in files:
-        *_, month, name = file.split('/')
+        *_, month, name = file.split("/")
         if name < start_day_file or name > end_day_file:
             continue
         for record in load_data_from_csv(file, start_dt_str, end_dt_str):
             yield month, record
 
+
 def group_data_by_month(records, max_per_bundle=500):
     bundle_records = []
-    name = ''
+    name = ""
     month_count = 0
     part = 1
+
     def clear_records():
         nonlocal month_count, part, bundle_records
         month_count -= month_count
@@ -299,16 +307,17 @@ def group_data_by_month(records, max_per_bundle=500):
         if not name.startswith(month):
             yield name, bundle_records
             clear_records()
-            name = f'{month}p01'
+            name = f"{month}p01"
             part = 1
 
         if month_count >= max_per_bundle:
             yield name, bundle_records
             clear_records()
-            name = f'{month}p{part:02d}'
+            name = f"{month}p{part:02d}"
         month_count += 1
         bundle_records.append(record)
     yield name, bundle_records
+
 
 def load_data_from_csv(path: Path, min_date, max_date):
     headers = [
@@ -327,9 +336,9 @@ def load_data_from_csv(path: Path, min_date, max_date):
             if row[0] < min_date or row[0] > max_date:
                 continue
             record = dict(zip(headers, row))
-            if not record['tweet']:
+            if not record["tweet"]:
                 continue
-            record['tags'] = tuple(x.strip('#') for x in record['tags'].split())
+            record["tags"] = tuple(x.strip("#") for x in record["tags"].split())
             yield record
 
 
@@ -365,10 +374,12 @@ def main():
         source_identity = create_tweetfeed_identity()
         source_marking = create_tweetfeed_marking_definition()
 
-        repo_path = data_dir/"tweetfeed.git/"
+        repo_path = data_dir / "tweetfeed.git/"
         repo = clone_or_update_repo(repo_path, GIT_REPO)
 
-        data = get_data_for_time_range(repo_path, start_dt=args.start_date, end_dt=args.until_date)
+        data = get_data_for_time_range(
+            repo_path, start_dt=args.start_date, end_dt=args.until_date
+        )
         object_count = 0
         for bundle_name, records in group_data_by_month(data, max_per_bundle=1000):
             if not records:
@@ -388,13 +399,14 @@ def main():
                 f"Successfully created STIX bundle with {len(stix_objects)} objects"
             )
             object_count += len(stix_objects)
-        logger.info(f"Created total {len(bundle_paths)} bundles with {object_count} objects")
-
-        github_output = os.getenv("GITHUB_OUTPUT")
-        if github_output:
-            with open(github_output, "a") as f:
-                f.write(f"bundle_path={bundles_dir}\n")
-                f.write(f"bundle_count={len(bundle_paths)}\n")
+        logger.info(
+            f"Created total {len(bundle_paths)} bundles with {object_count} objects"
+        )
+        
+        write_github_output(
+            bundle_path=bundles_dir,
+            bundle_count=len(bundle_paths),
+        )
         return 0
 
     except Exception as e:

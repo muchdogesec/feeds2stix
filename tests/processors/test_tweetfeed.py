@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from processors.tweetfeed import tweetfeed
-from tests.utils import stix_as_dict
+from tests.utilities import stix_as_dict
 
 
 @pytest.fixture
