@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from helpers import hashmanager
-from tests import utils as test_utils
+from tests import utilities as test_utils
 
 
 # ── Hashing tests ───────────────────────────────────────────────────────────

@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import processors
 from processors.vxvault import vxvault
-from tests import utils as test_utils
-from tests.utils import stix_as_dict
+from tests import utilities as test_utils
+from tests.utilities import stix_as_dict
 
 
 def test_create_vxvault_identity():

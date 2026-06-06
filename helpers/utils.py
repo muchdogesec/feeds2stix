@@ -155,6 +155,14 @@ def save_bundle_to_file(bundle, output_dir, filename, add_timestamp=True):
     return filepath
 
 
+def write_github_output(**kwargs):
+    github_output = os.getenv("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a", encoding="utf-8") as f:
+            for key, value in kwargs.items():
+                f.write(f"{key}={value}\n")
+
+
 def setup_output_directory(base_dir, clean=True):
     """
     Setup output directory for bundles, optionally cleaning existing content.

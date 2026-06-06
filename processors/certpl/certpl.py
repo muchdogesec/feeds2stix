@@ -19,6 +19,7 @@ from helpers.utils import (
     make_relationship,
     save_bundle_to_file,
     setup_output_directory,
+    write_github_output,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -160,10 +161,7 @@ def main():
 
         print(f"BUNDLE_PATH={bundle_path}")
 
-        github_output = os.getenv("GITHUB_OUTPUT")
-        if github_output:
-            with open(github_output, "a") as f:
-                f.write(f"bundle_path={bundle_path}\n")
+        write_github_output(bundle_path=bundle_path)
 
         return 0
 

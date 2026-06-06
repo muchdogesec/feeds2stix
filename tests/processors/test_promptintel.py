@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from processors.promptintel import promptintel
-from tests.utils import FakeJSONResponse, stix_as_dict
+from tests.utilities import FakeJSONResponse, stix_as_dict
 
 SAMPLE_PROMPT = {
     "id": "97a15a75-45e3-4d86-aa1d-a7b1a5e830d1",

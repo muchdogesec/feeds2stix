@@ -36,6 +36,7 @@ from helpers.utils import (
     parse_until_date,
     save_bundle_to_file,
     setup_output_directory,
+    write_github_output,
 )
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
@@ -220,9 +221,7 @@ def create_indicator(
     )
 
 
-def create_stix_objects(
-    records, phishunt_identity, phishunt_marking
-):
+def create_stix_objects(records, phishunt_identity, phishunt_marking):
     stix_objects = []
     seen_ids = set()
     phishunt_identity_id = phishunt_identity["id"]
@@ -319,11 +318,11 @@ def create_stix_objects(
 
         asn_kwargs = {}
         asn_obj = None
-        if record.get('asn', '-') != '-':
-            asn_kwargs['number'] = int(record["asn"])
+        if record.get("asn", "-") != "-":
+            asn_kwargs["number"] = int(record["asn"])
         if record.get("org"):
             asn_kwargs["name"] = record["org"]
-        if 'number' in asn_kwargs:
+        if "number" in asn_kwargs:
             asn_obj = AutonomousSystem(**asn_kwargs)
             append_once(asn_obj)
             append_once(
@@ -441,14 +440,13 @@ def main():
         )
         bundle_paths.append(bundle_path)
 
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"bundle_path={bundles_dir}\n")
-            f.write(f"bundle_count={len(bundle_paths)}\n")
-            if records:
-                latest_timestamp = max(record["date"] for record in records)
-                f.write(f"latest_timestamp={latest_timestamp.isoformat()}\n")
+    write_github_output(
+        bundle_path=bundles_dir,
+        bundle_count=len(bundle_paths),
+        latest_timestamp=(
+            max(record["date"] for record in records).isoformat() if records else "None"
+        ),
+    )
 
     logger.info("Processing complete. Created %s bundles.", len(bundle_paths))
 
