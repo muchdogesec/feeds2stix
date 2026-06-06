@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, call, patch
 import pytest
 
 from helpers import upload
-from tests import utils as test_utils
+from tests import utilities as test_utils
 
 
 def test_poll_job_status_completed(monkeypatch):

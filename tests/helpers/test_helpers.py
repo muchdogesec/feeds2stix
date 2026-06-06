@@ -8,7 +8,7 @@ import uuid
 from stix2 import Bundle
 
 from helpers import utils as h
-from tests import utils as test_utils
+from tests import utilities as test_utils
 
 
 class SerializableBundle:

@@ -7,7 +7,7 @@ from unittest.mock import patch
 from git import Repo
 
 from processors.phishing_database import phishing_database
-from tests.utils import stix_as_dict
+from tests.utilities import stix_as_dict
 
 
 def _commit_all(repo, message, dt):
