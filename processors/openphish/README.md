@@ -239,6 +239,8 @@ You need to set the following secrets and variables:
 **Secrets:**
 * `CTX_BASE_URL`: typically `https://api.cyberthreatexchange.com` (unless testing)
 * `CTX_API_KEY`: for team that owns the feed ID selected
+* `CTIBUTLER_BASE_URL`: base URL for the CTI Butler API used to fetch ATT&CK objects
+* `CTIBUTLER_API_KEY`: API key for CTI Butler
 
 **Variables:**
 * `OPENPHISH_FEED_ID`: the CTX feed ID for OpenPhish

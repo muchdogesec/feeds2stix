@@ -1,6 +1,6 @@
-name: "[Update CTX] OpenPhish"
+name: "[Update CTX] PromptIntel"
 run-name: |
-  [Update CTX] OpenPhish
+  [Update CTX] PromptIntel
   ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
       && format(' @from:{0}', inputs.since_date) || '' }}
   ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
@@ -8,8 +8,7 @@ run-name: |
 
 on:
   schedule:
-    # Run at 1am and 1pm UTC every day (feed updates every 12 hours)
-    - cron: '0 1,13 * * *'
+    - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       target_environment:
@@ -22,19 +21,18 @@ on:
           - production
         default: all
       since_date:
-        description: 'Process URLs added since this date (YYYY-MM-DD). Leave empty to use 12 hours ago.'
+        description: 'Start date for filtering prompts. Use "auto" to use last run date.'
         required: false
         type: string
+        default: 'auto'
       until_date:
-        description: 'Process URLs added on or before this date (YYYY-MM-DD). Leave empty to process up to now.'
+        description: 'End date for filtering prompts.'
         required: false
         type: string
-
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-
 
 jobs:
   process-and-upload:
@@ -46,71 +44,82 @@ jobs:
     environment: ${{ matrix.target_env }}
     env:
       PYTHONPATH: .
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-      
-      - name: Process OpenPhish feed and create STIX bundle
+        run: pip install -r requirements.txt
+
+      - name: Get modified time for latest indicator processed in feed
+        id: last_run
+        env:
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+        run: python helpers/latest_timestamp.py "${{ vars.PROMPTINTEL_FEED_ID }}" --object-type indicator
+
+      - name: Process PromptIntel feed and create STIX bundles
         id: process
         env:
           CTIBUTLER_BASE_URL: ${{ secrets.CTIBUTLER_BASE_URL }}
           CTIBUTLER_API_KEY: ${{ secrets.CTIBUTLER_API_KEY }}
+          PROMPTINTEL_API_KEY: ${{ secrets.PROMPTINTEL_API_KEY }}
         run: |
           set -e
-          
-          CMD="python processors/openphish/openphish.py"
-          
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.since_date }}" ]; then
-            # Use user-provided date
-            SINCE_DATE="${{ inputs.since_date }}"
-            echo "Processing URLs added since: $SINCE_DATE"
-            CMD="$CMD --since-date '$SINCE_DATE'"
-          else
-            # Use 12 hours ago as default
-            SINCE_DATE=$(date -u -d '12 hours ago' '+%Y-%m-%d')
-            echo "Processing URLs added since (12 hours ago): $SINCE_DATE"
-            CMD="$CMD --since-date '$SINCE_DATE'"
+
+          latest_timestamp="${{ steps.last_run.outputs.latest_timestamp }}"
+          latest_timestamp=$(echo "$latest_timestamp" | tr -d '"')
+          since_date="${{ inputs.since_date }}"
+          until_date="${{ inputs.until_date }}"
+
+          CMD="python processors/promptintel/promptintel.py"
+
+          if [ "$since_date" = "auto" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ -n "$latest_timestamp" ]; then
+              CMD="$CMD --since-date '$latest_timestamp'"
+            fi
+          elif [ -n "$since_date" ]; then
+            CMD="$CMD --since-date '$since_date'"
           fi
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.until_date }}" ]; then
-            UNTIL_DATE="${{ inputs.until_date }}"
-            echo "Processing URLs added on or before: $UNTIL_DATE"
-            CMD="$CMD --until-date '$UNTIL_DATE'"
+          if [ -n "$until_date" ]; then
+            CMD="$CMD --until-date '$until_date'"
           fi
-          
+
           echo "Running: $CMD"
           eval $CMD
-      
-      - name: Upload bundle to CTX
+
+      - name: Upload bundles to CTX
         id: upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
           CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
-          OPENPHISH_FEED_ID: ${{ vars.OPENPHISH_FEED_ID }}
+          PROMPTINTEL_FEED_ID: ${{ vars.PROMPTINTEL_FEED_ID }}
           MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
           ARTIFACT_PREFIX: ${{ matrix.target_env }}
         run: |
           BUNDLE_PATH="${{ steps.process.outputs.bundle_path }}"
-          
-          if [ -z "$OPENPHISH_FEED_ID" ]; then
-            echo "Error: OPENPHISH_FEED_ID variable is not set"
+
+          if [ -z "$BUNDLE_PATH" ] || [ ! -d "$BUNDLE_PATH" ]; then
+            echo "Error: Bundle directory was not created at $BUNDLE_PATH"
             exit 1
           fi
-          
-          echo "Uploading $BUNDLE_PATH to feed $OPENPHISH_FEED_ID..."
-          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$OPENPHISH_FEED_ID"
-      
+
+          if [ -z "$PROMPTINTEL_FEED_ID" ]; then
+            echo "Error: PROMPTINTEL_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading bundles from $BUNDLE_PATH to feed $PROMPTINTEL_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$PROMPTINTEL_FEED_ID"
+
       - name: Upload dedupe database
         if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
         uses: actions/upload-artifact@v7
@@ -131,7 +140,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: openphish-upload-artifacts-${{ matrix.target_env }}
+          name: promptintel-upload-artifacts-${{ matrix.target_env }}
           path: |
             outputs/
             upload_artifacts/

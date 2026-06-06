@@ -60,6 +60,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "brand-abuse", "url-intelligence"],
     ),
+    "tweetfeed": build_processor_metadata(
+        "TweetFeed",
+        "Community-sourced IOC intelligence from X/Twitter.",
+        "TweetFeed aggregates indicators of compromise shared by security researchers on X/Twitter and republishes them as STIX objects. This processor publishes URLs, domains, IP addresses, and file hashes from the TweetFeed API to support enrichment, filtering, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "malware", "cyber_crime"],
+        ["twitter", "ioc-feed", "malicious-urls", "file-hashes"],
+    ),
     "phishing_army": build_processor_metadata(
         "Phishing Army",
         "Curated phishing domain blocklist from Phishing Army.",
@@ -73,6 +80,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         "PhishTank is a free community site operated by Cisco Talos where users submit, verify, track, and share phishing data. This processor publishes online, validated phishing URLs from the PhishTank feed to support phishing detection, blocking, enrichment, and investigation workflows.",
         ["indicator_of_compromise", "campaign", "cyber_crime"],
         ["phishing", "community-verified", "malicious-urls", "url-intelligence"],
+    ),
+    "phishunt": build_processor_metadata(
+        "phishunt",
+        "Real-time phishing and scam site intelligence enriched with hosting context.",
+        "phishunt monitors Certificate Transparency logs and multiple phishing intelligence sources to identify suspicious phishing and scam sites. This processor publishes suspicious URLs, domains, hosting IPs, ASNs, certificate issuer context, targeted brands, and country links to support phishing detection, takedown, enrichment, and threat hunting.",
+        ["indicator_of_compromise", "campaign", "cyber_crime"],
+        ["phishing", "malicious-urls", "brand-abuse", "hosting-intelligence"],
     ),
     "phishing_database": build_processor_metadata(
         "Phishing.Database",
@@ -199,5 +213,12 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         "Viriback is a collaborative clearing house for phishing and malware activity on the internet that publishes openly accessible tracker data. This processor publishes malicious URLs, associated IP addresses, and malware-family context from the Viriback feed to support phishing detection, malware delivery monitoring, enrichment, and investigations.",
         ["indicator_of_compromise", "malware", "campaign", "cyber_crime"],
         ["phishing", "malicious-urls", "malware-families", "url-intelligence"],
+    ),
+    "promptintel": build_processor_metadata(
+        "PromptIntel",
+        "Adversarial prompt intelligence with NOVA rules, AI prompts, and abuse context.",
+        "PromptIntel tracks malicious or abusive LLM prompts and related context such as NOVA detections, threat categories, actor references, malware hashes, and mitigation guidance. This processor publishes dated PromptIntel records to support AI security monitoring, prompt abuse detection, and enrichment workflows.",
+        ["indicator_of_compromise", "ttp", "cyber_crime"],
+        ["ai-security", "prompt-injection", "jailbreak", "llm-threat-intelligence"],
     ),
 }

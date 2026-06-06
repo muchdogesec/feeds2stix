@@ -1,11 +1,14 @@
+from difflib import SequenceMatcher
 import logging
 import os
 from pathlib import Path
 import shutil
 from typing import Optional
+import unicodedata
 from urllib.parse import urlparse
 import uuid
 from datetime import UTC, date, datetime, time
+import pycountry
 
 import requests
 import stix2extensions
@@ -216,7 +219,8 @@ def make_relationship(
 
     return relationship
 
-def make_aware_time(d: datetime|date) -> datetime:
+
+def make_aware_time(d: datetime | date) -> datetime:
     if type(d) == date:
         d = datetime(d.year, d.month, d.day)
     if not d.tzinfo:
@@ -230,6 +234,45 @@ def parse_until_date(value: str) -> datetime:
         dt = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
     return make_aware_time(dt)
 
+
 def parse_since_date(value: str) -> datetime:
     dt = datetime.fromisoformat(value)
     return make_aware_time(dt)
+
+
+def remove_accents(input_str):
+    # Decompose characters into base characters and diacritics
+    nfkd_form = unicodedata.normalize("NFKD", input_str)
+    # Filter out characters that are combining diacritical marks
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
+
+def fuzzy_match_country(country_name):
+    country_name = remove_accents(country_name.strip().lower().replace(" ", ""))
+    scores = {}
+    for country in pycountry.countries:
+        candidate = remove_accents(country.name.strip().lower().replace(" ", ""))
+        if candidate in country_name or country_name in candidate:
+            return country.alpha_2
+        score = SequenceMatcher(None, candidate, country_name).ratio()
+        scores[country] = max(score, scores.get(country, 0))
+
+    # Return the country with the highest similarity score
+    if scores:
+        return max(scores, key=scores.get).alpha_2
+
+
+def country_name_as_alpha2(country_name, original_name=None):
+    original_name = original_name or country_name
+    country_name = country_name.strip().lower()
+    for k in ["name", 'common_name', "official_name"]:
+        country = pycountry.countries.get(**{k: country_name})
+        if country:
+            return country.alpha_2
+    if country_name.startswith('the '):
+        # handle cases like "The Netherlands" that are listed without "The" in pycountry
+        return country_name_as_alpha2(country_name[4:], original_name=original_name)
+    fuzzy_result = fuzzy_match_country(country_name)
+    if fuzzy_result:
+        return fuzzy_result
+    raise ValueError(f"Country name '{original_name}' not found in pycountry database")

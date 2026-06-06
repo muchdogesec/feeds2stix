@@ -11,8 +11,10 @@ from processors.metadata import (
 PROCESSOR_FILES = {
     "abuse_ch_urlhaus": Path("processors/abuse_ch_urlhaus/urlhaus.py"),
     "openphish": Path("processors/openphish/openphish.py"),
+    "tweetfeed": Path("processors/tweetfeed/tweetfeed.py"),
     "phishing_army": Path("processors/phishing_army/phishing_army.py"),
     "phishtank": Path("processors/phishtank/phishtank.py"),
+    "phishunt": Path("processors/phishunt/phishunt.py"),
     "phishing_database": Path("processors/phishing_database/phishing_database.py"),
     "greensnow": Path("processors/greensnow/greensnow.py"),
     "abuse_ch_malwarebazaar": Path("processors/abuse_ch_malwarebazaar/malwarebazaar.py"),
@@ -31,6 +33,7 @@ PROCESSOR_FILES = {
     "ipsum": Path("processors/ipsum/ipsum.py"),
     "cinsscore": Path("processors/cinsscore/cinsscore.py"),
     "viriback": Path("processors/viriback/viriback.py"),
+    "promptintel": Path("processors/promptintel/promptintel.py"),
 }
 
 
