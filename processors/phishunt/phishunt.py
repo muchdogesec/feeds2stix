@@ -444,7 +444,7 @@ def main():
         bundle_path=bundles_dir,
         bundle_count=len(bundle_paths),
         latest_timestamp=(
-            max(record["date"] for record in records) if records else "None"
+            max(record["date"] for record in records).isoformat() if records else "None"
         ),
     )
 
