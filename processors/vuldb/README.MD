@@ -34,13 +34,13 @@ Upgrading the affected component is recommended.]]></description>
 There are two challenges in the design of this
 
 1. Need to parse the CVE ID logically. I think we can do this inside the `<title>` but needs validation
-2. The harder problem is that this data usually exists before Vulmatch has it. The feed also publishes 100's of results a day, but the feed only ever contains 100 items.
+2. The harder problem is that this data usually exists before Vulmatch has it (Vulmatch published 24-48 hours later). The feed also publishes 100's of results a day, but the feed only ever contains 100 items.
 
 ### Dealing with problem 2
 
 We need to poll the feed every hour.
 
-We should only add records for CVEs that exist in Vulmatch.
+We should only add records for CVEs that exist in Vulmatch (and not attempt to create them)
 
 Which means we need to store CVEs in artefacts that do not match on Vulmatch, to be rerun on the next command.
 
@@ -106,7 +106,7 @@ Marking Definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22
 
 #### Note
 
-To represent the VulDB data we should attach a Note to the Indicator
+To represent the VulDB data we should attach a Note to the Vulnerability (thus must exist in Vulmatch)
 
 ```json
 {
