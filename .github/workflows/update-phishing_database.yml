@@ -1,6 +1,7 @@
 name: "[Update CTX] Phishing.Database"
 run-name: |
   [Update CTX] Phishing.Database
+  [${{ github.event_name == 'workflow_dispatch' && inputs.type || 'all' }}]
   ${{ github.event_name == 'workflow_dispatch' && inputs.since_date != ''
       && format(' @from:{0}', inputs.since_date) || '' }}
   ${{ github.event_name == 'workflow_dispatch' && inputs.until_date != ''
@@ -21,6 +22,16 @@ on:
           - all
           - staging
           - production
+        default: all
+      type:
+        description: 'Which observable type to process'
+        required: true
+        type: choice
+        options:
+          - all
+          - links
+          - domains
+          - ips
         default: all
       since_date:
         description: 'Only process records modified on or after this date. Use "auto" to use latest indicator timestamp.'
@@ -43,13 +54,36 @@ concurrency:
 
 
 jobs:
-  process-and-upload:
+  generate-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate type matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.type }}" = "all" ]; then
+            echo 'matrix={"type":["links","domains","ips"]}' >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix={\"type\":[\"${{ github.event.inputs.type }}\"]}" >> "$GITHUB_OUTPUT"
+          fi
+
+  process-and-upload:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    name: "Process Phishing.Database: ${{ matrix.type }} @ ${{ matrix.target_env }}"
     strategy:
       fail-fast: false
       matrix:
+        type: ${{ fromJson(needs.generate-matrix.outputs.matrix).type }}
         target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
     environment: ${{ matrix.target_env }}
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.target_env }}
+      cancel-in-progress: false
+      queue: max
+
     env:
       PYTHONPATH: .
 
@@ -84,6 +118,7 @@ jobs:
           since_date="${{ inputs.since_date }}"
           until_date="${{ inputs.until_date }}"
           cutoff_date="${{ inputs.cutoff_date }}"
+          type="${{ matrix.type }}"
           latest_timestamp="${{ steps.last_run.outputs.latest_timestamp }}"
 
           CMD="python processors/phishing_database/phishing_database.py"
@@ -103,6 +138,10 @@ jobs:
 
           if [ -n "$cutoff_date" ]; then
             CMD="$CMD --cutoff-date '$cutoff_date'"
+          fi
+
+          if [ -n "$type" ] && [ "$type" != "all" ]; then
+            CMD="$CMD --type '$type'"
           fi
 
           echo "Running: $CMD"

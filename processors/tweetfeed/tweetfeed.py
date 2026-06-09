@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
+import glob
 import logging
 import os
 import sys
@@ -22,10 +24,13 @@ from helpers.utils import (
     generate_uuid5,
     make_relationship,
     parse_since_date,
+    parse_until_date,
     save_bundle_to_file,
     setup_output_directory,
+    write_github_output,
 )
 from helpers.kb_fetch import fetch_enterprise_attack_object
+from helpers.git_helper import clone_or_update_repo
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -38,6 +43,8 @@ BASE_OUTPUT_DIR = "outputs/tweetfeed"
 RAW_FEED_FILENAME = "tweetfeed_data.json"
 PROCESSOR_METADATA = PROCESSOR_METADATA_BY_PROCESSOR["tweetfeed"]
 T1566_STIX_ID = "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
+GIT_REPO = "https://github.com/0xDanielLopez/TweetFeed"
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def create_tweetfeed_identity():
@@ -80,7 +87,7 @@ def fetch_tweetfeed_data(data_dir: Path, start_date: Optional[datetime] = None):
 
 def parse_record_timestamp(value: str) -> datetime:
     """Parse a TweetFeed timestamp into UTC."""
-    dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+    dt = datetime.strptime(value, TIME_FORMAT)
     return dt.replace(tzinfo=UTC)
 
 
@@ -111,7 +118,9 @@ def build_indicator_pattern(record: Dict[str, str]) -> str:
 def create_user_account_object(record: Dict[str, str], namespace: str) -> UserAccount:
     """Create a deterministic user-account SCO for the posting account."""
     user = record["user"].strip().lstrip("@")
-    user_id = f"user-account--{generate_uuid5(f'tweetfeed:user:{user.lower()}', namespace)}"
+    user_id = (
+        f"user-account--{generate_uuid5(f'tweetfeed:user:{user.lower()}', namespace)}"
+    )
     return UserAccount(
         id=user_id,
         account_type="twitter",
@@ -202,11 +211,7 @@ def create_stix_objects(
     source_marking_id = source_marking["id"]
 
     for idx, record in enumerate(records, start=1):
-        if idx % 1000 == 0:
-            logger.info(f"Processed {idx}/{len(records)} TweetFeed records...")
-
         record_time = parse_record_timestamp(record["date"])
-
         user_account = create_user_account_object(record, source_marking_id)
         if user_account.id not in seen_user_ids:
             seen_user_ids.add(user_account.id)
@@ -217,7 +222,9 @@ def create_stix_objects(
             seen_sco_ids.add(sco_object.id)
             stix_objects.append(sco_object)
 
-        indicator = create_indicator_object(record, source_identity_id, source_marking_id)
+        indicator = create_indicator_object(
+            record, source_identity_id, source_marking_id
+        )
         stix_objects.append(indicator)
 
         stix_objects.append(
@@ -240,7 +247,7 @@ def create_stix_objects(
                 created_by_ref=source_identity_id,
                 created=record_time,
                 modified=record_time,
-                description="Indicator was created from post by @"+record['user'],
+                description="Indicator was created from post by @" + record["user"],
                 marking_refs=indicator["object_marking_refs"],
                 external_references=indicator["external_references"],
             )
@@ -266,8 +273,73 @@ def create_stix_objects(
                     external_references=indicator["external_references"][:1],
                 )
             )
-
     return stix_objects
+
+
+def get_data_for_time_range(repo_path, start_dt: datetime, end_dt: datetime):
+    start_day_file = start_dt.strftime("%Y%m%d.csv")
+    start_dt_str = start_dt.strftime(TIME_FORMAT)
+    end_day_file = end_dt.strftime("%Y%m%d.csv")
+    end_dt_str = end_dt.strftime(TIME_FORMAT)
+    files = sorted(glob.glob(str(repo_path) + "/20*/*/*.csv"))
+
+    for file in files:
+        *_, month, name = file.split("/")
+        if name < start_day_file or name > end_day_file:
+            continue
+        for record in load_data_from_csv(file, start_dt_str, end_dt_str):
+            yield month, record
+
+
+def group_data_by_month(records, max_per_bundle=500):
+    bundle_records = []
+    name = ""
+    month_count = 0
+    part = 1
+
+    def clear_records():
+        nonlocal month_count, part, bundle_records
+        month_count -= month_count
+        part += 1
+        bundle_records = []
+
+    for month, record in records:
+        if not name.startswith(month):
+            yield name, bundle_records
+            clear_records()
+            name = f"{month}p01"
+            part = 1
+
+        if month_count >= max_per_bundle:
+            yield name, bundle_records
+            clear_records()
+            name = f"{month}p{part:02d}"
+        month_count += 1
+        bundle_records.append(record)
+    yield name, bundle_records
+
+
+def load_data_from_csv(path: Path, min_date, max_date):
+    headers = [
+        "date",
+        "user",
+        "type",
+        "value",
+        "tags",
+        "tweet",
+    ]
+    headers_len = len(headers)
+    with open(path, "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            assert len(row) == headers_len
+            if row[0] < min_date or row[0] > max_date:
+                continue
+            record = dict(zip(headers, row))
+            if not record["tweet"]:
+                continue
+            record["tags"] = tuple(x.strip("#") for x in record["tags"].split())
+            yield record
 
 
 def main():
@@ -282,41 +354,59 @@ def main():
         dest="start_date",
         type=parse_since_date,
         help="Only process IOCs added since this date (YYYY-MM-DD format)",
+        default=datetime(2020, 1, 1, tzinfo=UTC),
     )
 
+    parser.add_argument(
+        "--until-date",
+        dest="until_date",
+        type=parse_until_date,
+        help="Only process IOCs added since this date (YYYY-MM-DD format)",
+        default=datetime.now(UTC),
+    )
     args = parser.parse_args()
 
     try:
-        output_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
+        bundles_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
         feeds2stix_marking = fetch_external_objects()
+        bundle_paths = []
 
         source_identity = create_tweetfeed_identity()
         source_marking = create_tweetfeed_marking_definition()
 
-        records = fetch_tweetfeed_data(data_dir, start_date=args.start_date)
+        repo_path = data_dir / "tweetfeed.git/"
+        repo = clone_or_update_repo(repo_path, GIT_REPO)
 
-        logger.info("Creating STIX objects...")
-        stix_objects = create_stix_objects(records, source_identity, source_marking)
-
-        logger.info("Creating STIX bundle...")
-        bundle = create_bundle_with_metadata(
-            stix_objects,
-            source_identity,
-            source_marking,
-            feeds2stix_marking,
+        data = get_data_for_time_range(
+            repo_path, start_dt=args.start_date, end_dt=args.until_date
         )
-
-        bundle_path = save_bundle_to_file(bundle, output_dir, "tweetfeed")
-
+        object_count = 0
+        for bundle_name, records in group_data_by_month(data, max_per_bundle=1000):
+            if not records:
+                continue
+            stix_objects = create_stix_objects(records, source_identity, source_marking)
+            bundle = create_bundle_with_metadata(
+                stix_objects,
+                source_identity,
+                source_marking,
+                feeds2stix_marking,
+            )
+            bundle_path = save_bundle_to_file(
+                bundle, bundles_dir, f"tweetfeed_{bundle_name}", add_timestamp=False
+            )
+            bundle_paths.append(bundle_path)
+            logger.info(
+                f"Successfully created STIX bundle with {len(stix_objects)} objects"
+            )
+            object_count += len(stix_objects)
         logger.info(
-            f"Successfully created STIX bundle with {len(stix_objects)} objects"
+            f"Created total {len(bundle_paths)} bundles with {object_count} objects"
         )
-
-        github_output = os.getenv("GITHUB_OUTPUT")
-        if github_output:
-            with open(github_output, "a") as f:
-                f.write(f"bundle_path={bundle_path}\n")
-
+        
+        write_github_output(
+            bundle_path=bundles_dir,
+            bundle_count=len(bundle_paths),
+        )
         return 0
 
     except Exception as e:

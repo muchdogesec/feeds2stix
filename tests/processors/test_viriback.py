@@ -12,7 +12,7 @@ import pytest
 
 from processors.viriback import viriback
 from helpers.generics import BaseEntry, Group
-from tests.utils import FakeResponse, stix_as_dict
+from tests.utilities import FakeResponse, stix_as_dict
 
 
 # Fixture to reset Group.start_date and Group.end_date for each test

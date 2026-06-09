@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import signal
 import sys
 import time
 from pathlib import Path
@@ -12,6 +13,8 @@ import shutil
 import requests
 from split_jsons import split_stix_bundle
 import hashmanager
+
+from utils import write_github_output
 
 # Setup logging
 logging.basicConfig(
@@ -105,7 +108,6 @@ def poll_job_status(job_id, api_base_url, api_key, poll_interval=5, max_wait=300
             else:
                 logger.warning(f"Job {job_id} unknown state: {state}")
                 time.sleep(poll_interval)
-
         except Exception as e:
             logger.error(f"Error polling job {job_id}: {e}")
             time.sleep(poll_interval)
@@ -461,6 +463,11 @@ def main(
     hash_conn = hashmanager.load_db(_hash_db_path)
     # ───────────────────────────────────────────────────────────────────
 
+    if use_artifacts:
+        write_github_output(
+            dedupe_artifact_name=dupedb_artifact_name,
+            dedupe_path=_hash_db_path,
+        )
     try:
         # Expand directories to individual files
         all_bundle_files = []
@@ -509,115 +516,123 @@ def main(
         print(
             f"::group::CTX Bundle Upload - Processing {len(processed_files)} bundle(s)"
         )
-        for i, bundle_file in enumerate(processed_files, 1):
-            logger.info(
-                f"Processing bundle {i} of {len(processed_files)}: {bundle_file}"
-            )
-            try:
-                with open(bundle_file, "r") as f:
-                    bundle = json.load(f)
-            except Exception as e:
-                logger.error(f"Failed to load bundle {bundle_file}: {e}")
-                results.append(
-                    {
-                        "success": False,
-                        "bundle_file": bundle_file,
-                        "total_objects": 0,
-                        "submitted_objects": 0,
-                        "failed_objects": [],
-                        "error": f"Failed to load bundle: {e}",
-                        "job_id": None,
-                        "job_state": "error",
-                    }
-                )
-                continue
+        try:
+            for i, bundle_file in enumerate(processed_files, 1):
+                try:
+                    logger.info(
+                        f"Processing bundle {i} of {len(processed_files)}: {bundle_file}"
+                    )
+                    with open(bundle_file, "r") as f:
+                        bundle = json.load(f)
 
-            # ── Filter already-uploaded objects ──────────────────────────
-            original_objects = bundle.get("objects", [])
-            new_objects, skipped_count = hashmanager.filter_new_objects(
-                original_objects, hash_conn
-            )
-            if skipped_count:
-                logger.info(
-                    "Skipped %d already-uploaded objects in %s",
-                    skipped_count,
-                    bundle_file,
-                )
-            if not new_objects:
-                logger.info(
-                    "All %d objects in %s already uploaded; skipping.",
-                    len(original_objects),
-                    bundle_file,
-                )
-                results.append(
-                    {
-                        "success": True,
-                        "bundle_file": bundle_file,
-                        "total_objects": len(original_objects),
-                        "submitted_objects": 0,
-                        "skipped_objects": skipped_count,
-                        "failed_objects": [],
-                        "job_id": None,
-                        "job_state": "skipped",
-                    }
-                )
-                continue
+                    # ── Filter already-uploaded objects ──────────────────────────
+                    original_objects = bundle.get("objects", [])
+                    new_objects, skipped_count = hashmanager.filter_new_objects(
+                        original_objects, hash_conn
+                    )
+                    if skipped_count:
+                        logger.info(
+                            "Skipped %d already-uploaded objects in %s",
+                            skipped_count,
+                            bundle_file,
+                        )
+                    if not new_objects:
+                        logger.info(
+                            "All %d objects in %s already uploaded; skipping.",
+                            len(original_objects),
+                            bundle_file,
+                        )
+                        results.append(
+                            {
+                                "success": True,
+                                "bundle_file": bundle_file,
+                                "total_objects": len(original_objects),
+                                "submitted_objects": 0,
+                                "skipped_objects": skipped_count,
+                                "failed_objects": [],
+                                "job_id": None,
+                                "job_state": "skipped",
+                            }
+                        )
+                        continue
 
-            filtered_bundle = {**bundle, "objects": new_objects}
-            # ────────────────────────────────────────────────────────────────
+                    filtered_bundle = {**bundle, "objects": new_objects}
+                    # ────────────────────────────────────────────────────────────────
 
-            result = upload_bundle(
-                filtered_bundle,
-                api_base_url,
-                api_key,
-                feed_id,
-                wait_for_completion=True,
-            )
-            result["bundle_file"] = bundle_file
-            result["skipped_objects"] = skipped_count
-            results.append(result)
+                    result = upload_bundle(
+                        filtered_bundle,
+                        api_base_url,
+                        api_key,
+                        feed_id,
+                        wait_for_completion=True,
+                    )
+                    result["bundle_file"] = bundle_file
+                    result["skipped_objects"] = skipped_count
+                    results.append(result)
 
-            # ── Record successfully uploaded objects ─────────────────────
-            if result.get("success"):
-                hashmanager.record_uploaded_objects(new_objects, hash_conn)
-            # ────────────────────────────────────────────────────────────────
+                    # ── Record successfully uploaded objects ─────────────────────
+                    if result.get("success"):
+                        hashmanager.record_uploaded_objects(new_objects, hash_conn)
+                        write_github_output(
+                            has_success="true",
+                        )
+                    # ────────────────────────────────────────────────────────────────
 
-            bundle_name = Path(bundle_file).stem
-            save_artifacts(result, artifacts_dir, bundle_name, bundle_file)
+                    bundle_name = Path(bundle_file).stem
+                    save_artifacts(result, artifacts_dir, bundle_name, bundle_file)
 
-            job_id = result.get("job_id") or "N/A"
-            bundle_name_display = Path(bundle_file).name[:28]
-            total = result.get("total_objects", 0)
-            submitted = result.get("submitted_objects", 0)
-            failed = len(result.get("failed_objects", []))
-            state = result.get("job_state") or "unknown"
-            logger.info(
-                str(
-                    {
-                        "job_id": job_id,
-                        "bundle_name": bundle_name_display,
-                        "total": total,
-                        "submitted": submitted,
-                        "failed": failed,
-                        "state": state,
-                    }
-                )
-            )
+                    job_id = result.get("job_id") or "N/A"
+                    bundle_name_display = Path(bundle_file).name[:28]
+                    total = result.get("total_objects", 0)
+                    submitted = result.get("submitted_objects", 0)
+                    failed = len(result.get("failed_objects", []))
+                    state = result.get("job_state") or "unknown"
+                    logger.info(
+                        str(
+                            {
+                                "job_id": job_id,
+                                "bundle_name": bundle_name_display,
+                                "total": total,
+                                "submitted": submitted,
+                                "failed": failed,
+                                "state": state,
+                            }
+                        )
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to load bundle {bundle_file}: {e}")
+                    results.append(
+                        {
+                            "success": False,
+                            "bundle_file": bundle_file,
+                            "total_objects": 0,
+                            "submitted_objects": 0,
+                            "failed_objects": [],
+                            "error": f"Failed to upload bundle: {e}",
+                            "job_id": None,
+                            "job_state": "error",
+                        }
+                    )
+                    continue
 
+        except Terminated:
+            logger.info("❌ Process has received a termination signal... cleaning up")
         print("::endgroup::")
 
         write_github_summary(results)
+
+
+        # ── Persist hash DB ──────────────────────────────────────────────
+        hashmanager.save_db(hash_conn, _hash_db_path)
+        logger.info("Hash DB saved to %s", _hash_db_path)
+
+        ## save failed bundles
         failed_bundles_count = save_failed_bundles(results, os.getenv("GITHUB_RUN_ID", "unknown"), current_session_failed_bundles_dir)
 
 
         # ── Determine success/failure status ─────────────────────────────
         has_success = any(r.get("success") for r in results)
         has_failures = failed_bundles_count > 0
-
-
-        # ── Persist hash DB ──────────────────────────────────────────────
-        hashmanager.save_db(hash_conn, _hash_db_path)
-        logger.info("Hash DB saved to %s", _hash_db_path)
 
         logger.info("=" * 120)
         total_bundles = len(results)
@@ -634,28 +649,28 @@ def main(
         logger.info(f"   Failed: {failed_objects_count}")
         logger.info("=" * 120)
 
-        github_output = os.getenv("GITHUB_OUTPUT")
-        if github_output:
-            with open(github_output, "a", encoding="utf-8") as f:
-                f.write(f"has_success={str(has_success).lower()}\n")
-                f.write(f"has_failures={str(has_failures).lower()}\n")
-                f.write(f"bundles_processed={len(results)}\n")
-                f.write(f"artifacts_dir={artifacts_dir}\n")
-                if use_artifacts:
-                    f.write(f"dedupe_artifact_name={dupedb_artifact_name}\n")
-                    f.write(f"failed_artifact_name={failed_artifact_name}\n")
-                    f.write(f"dedupe_path={_hash_db_path}\n")
-                if len(results) == 1:
-                    result = results[0]
-                    f.write(f"job_id={result.get('job_id', '')}\n")
-                    f.write(f"total_objects={result.get('total_objects', 0)}\n")
-                    f.write(
-                        f"submitted_objects={result.get('submitted_objects', 0)}\n"
-                    )
-                    f.write(
-                        f"failed_objects={len(result.get('failed_objects', []))}\n"
-                    )
-
+        write_github_output(
+            has_success=str(has_success).lower(),
+            has_failures=str(has_failures).lower(),
+            bundles_processed=len(results),
+            artifacts_dir=str(artifacts_dir),
+        )
+        if use_artifacts:
+            write_github_output(
+                dedupe_artifact_name=dupedb_artifact_name,
+                failed_artifact_name=failed_artifact_name,
+                dedupe_path=_hash_db_path,
+            )
+        if len(results) == 1:
+            result = results[0]
+            write_github_output(
+                job_id=result.get("job_id", ""),
+                total_objects=result.get("total_objects", 0),
+                submitted_objects=result.get("submitted_objects", 0),
+                failed_objects=len(result.get("failed_objects", [])),
+            )
+        if forcibly_terminated:
+            sys.exit(37)
         if not all(r.get("success") for r in results):
             sys.exit(1)
 
@@ -668,6 +683,23 @@ def main(
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
 
+forcibly_terminated = False
+
+class Terminated(BaseException):
+    pass
+
+def handle_sigterm(signum, frame):
+    global forcibly_terminated
+    forcibly_terminated = True
+    logger.error("SIGNAL: ({signum}) received, will stop after current iteration")
+    raise Terminated(f"Process terminated ({signum=}, {frame=})")
+
+for s in [
+    signal.SIGTERM,
+    signal.SIGINT,
+    signal.SIGABRT
+]:
+    signal.signal(s, handle_sigterm)
 
 if __name__ == "__main__":
     import argparse

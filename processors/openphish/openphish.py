@@ -27,7 +27,9 @@ from helpers.utils import (
     setup_output_directory,
     parse_since_date,
     parse_until_date,
+    write_github_output,
 )
+from helpers.git_helper import clone_or_update_repo
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -61,24 +63,6 @@ def create_openphish_marking_definition():
     return create_marking_definition_object(
         f"Origin: https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
     )
-
-
-def clone_or_update_repo(repo_path, repo_url):
-    """Clone the repository or pull latest changes if it already exists"""
-    if os.path.exists(repo_path):
-        logger.info(
-            f"Repository already exists at {repo_path}, pulling latest changes..."
-        )
-        repo = Repo(repo_path)
-        origin = repo.remotes.origin
-        origin.pull()
-    else:
-        logger.info(f"Cloning repository from {repo_url}...")
-        repo = Repo.clone_from(repo_url, repo_path)
-    logger.info("Repository ready")
-    logger.info("HEAD commit id: %s", repo.head.commit.hexsha)
-    return repo
-
 
 def get_lines_since_date(repo, file_path, since_date=None, until_date=None):
     """
@@ -286,11 +270,10 @@ def main():
         logger.info(f"Processing complete. Created {len(bundle_paths)} bundles.")
 
     # Set GitHub Actions output
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"bundle_path={bundles_dir}\n")
-            f.write(f"bundle_count={len(bundle_paths)}\n")
+    write_github_output(
+        bundle_path=bundles_dir,
+        bundle_count=len(bundle_paths),
+    )
 
 
 def process_urls_for_date(

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
+from collections import defaultdict
 import logging
 import os
 import sys
-from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -24,7 +24,9 @@ from helpers.utils import (
     parse_until_date,
     save_bundle_to_file,
     setup_output_directory,
+    write_github_output,
 )
+from helpers.git_helper import clone_or_update_repo
 from processors.metadata import PROCESSOR_METADATA_BY_PROCESSOR
 
 logging.basicConfig(
@@ -59,19 +61,6 @@ def create_phishing_database_marking_definition():
     return create_marking_definition_object(
         "Origin: https://github.com/Phishing-Database/Phishing.Database"
     )
-
-
-def clone_or_update_repo(repo_path, repo_url):
-    if os.path.exists(repo_path):
-        logger.info("Repository already exists at %s, pulling latest changes...", repo_path)
-        repo = Repo(repo_path)
-        repo.remotes.origin.pull()
-    else:
-        logger.info("Cloning repository from %s...", repo_url)
-        repo = Repo.clone_from(repo_url, repo_path)
-    logger.info("Repository ready")
-    logger.info("HEAD commit id: %s", repo.head.commit.hexsha)
-    return repo
 
 
 def get_target_feed_files(repo_path):
@@ -123,6 +112,11 @@ def get_lines_first_seen(repo, file_path):
 
     return line_first_seen
 
+OBSERVABLE_MAP = {
+    "url": "links",
+    "domain-name": "domains",
+    "ipv4-addr": "ips",
+}
 
 def infer_observable_type(file_path):
     top_dir = Path(file_path).parts[0].lower()
@@ -140,13 +134,15 @@ def infer_status(file_path):
     return "inactive" if top_dir.endswith("-INACTIVE") else "active"
 
 
-def collect_observables(repo, repo_path, cutoff_date=None):
+def collect_observables(repo, repo_path, cutoff_date=None, type=None):
     records = {}
     target_files = get_target_feed_files(repo_path)
     logger.info("Found %s target .txt files in ACTIVE/INACTIVE directories", len(target_files))
 
     for file_path in target_files:
         observable_type = infer_observable_type(file_path)
+        if type and OBSERVABLE_MAP[observable_type] != type:
+            continue
         status = infer_status(file_path)
         line_first_seen = get_lines_first_seen(repo, file_path)
 
@@ -202,10 +198,31 @@ def filter_records_by_date(records, since_date=None, until_date=None):
     return filtered
 
 
-def group_records_by_hour(records):
-    grouped = defaultdict(list)
+def group_records_by_month_with_parts(records, max_per_bundle=500):
+    by_month = defaultdict(list)
     for record in records:
-        grouped[record["modified"].strftime("%Y%m%d_%H")].append(record)
+        month_key = (
+            OBSERVABLE_MAP[record["observable_type"]]
+            + "_"
+            + record["modified"].strftime("%Y%m")
+        )
+        by_month.setdefault(month_key, []).append(record)
+
+    grouped = []
+    for month_key in sorted(by_month):
+        month_records = by_month[month_key]
+        if len(month_records) <= max_per_bundle:
+            grouped.append((month_key, month_records))
+            continue
+
+        part = 1
+        total_parts = (len(month_records) + max_per_bundle - 1) // max_per_bundle
+        just_length = len(str(total_parts))
+        for idx in range(0, len(month_records), max_per_bundle):
+            grouped.append(
+                (f"{month_key}p{str(part).zfill(just_length)}", month_records[idx : idx + max_per_bundle])
+            )
+            part += 1
     return grouped
 
 
@@ -283,7 +300,7 @@ def create_stix_objects(records, identity, marking):
     return stix_objects
 
 
-def process_records_for_hour(records, identity, marking, feeds2stix_marking):
+def process_records_for_group(records, identity, marking, feeds2stix_marking):
     stix_objects = [fetch_enterprise_attack_object(T1566_STIX_ID)] + create_stix_objects(
         records, identity, marking
     )
@@ -317,6 +334,12 @@ def main():
         type=parse_since_date,
         help="Skip records that became inactive before this date (YYYY-MM-DD format)",
     )
+    parser.add_argument(
+        "--type",
+        choices=["links", "domains", "ips"],
+        help="Process only one observable type: links, domains, or ips",
+        default=None,
+    )
     args = parser.parse_args()
 
     bundles_dir, data_dir = setup_output_directory(BASE_OUTPUT_DIR, clean=True)
@@ -327,28 +350,28 @@ def main():
     repo_path = os.path.join(data_dir, "phishing_database_repo")
     repo = clone_or_update_repo(repo_path, REPO_URL)
 
-    records = collect_observables(repo, repo_path, args.cutoff_date)
+    records = collect_observables(repo, repo_path, args.cutoff_date, type=args.type)
     records = filter_records_by_date(records, args.since_date, args.until_date)
-    grouped = group_records_by_hour(records)
+    grouped = group_records_by_month_with_parts(records, max_per_bundle=500)
 
     bundle_paths = []
-    for hour_key in sorted(grouped):
-        bundle = process_records_for_hour(
-            grouped[hour_key], identity, marking, feeds2stix_marking
+    for group_key, group_records in grouped:
+        bundle = process_records_for_group(
+            group_records, identity, marking, feeds2stix_marking
         )
         bundle_path = save_bundle_to_file(
-            bundle, bundles_dir, f"phishing_database_{hour_key}", add_timestamp=False
+            bundle, bundles_dir, f"phishing_database_{group_key}", add_timestamp=False
         )
         bundle_paths.append(bundle_path)
 
-    github_output = os.getenv("GITHUB_OUTPUT")
-    if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"bundle_path={bundles_dir}\n")
-            f.write(f"bundle_count={len(bundle_paths)}\n")
-            if records:
-                latest_timestamp = max(record["modified"] for record in records)
-                f.write(f"latest_timestamp={latest_timestamp.isoformat()}\n")
+    output_kwargs = {
+        "bundle_path": bundles_dir,
+        "bundle_count": len(bundle_paths),
+    }
+    if records:
+        latest_timestamp = max(record["modified"] for record in records)
+        output_kwargs["latest_timestamp"] = latest_timestamp.isoformat()
+    write_github_output(**output_kwargs)
 
     logger.info("Processing complete. Created %s bundles.", len(bundle_paths))
 
