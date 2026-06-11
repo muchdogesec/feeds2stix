@@ -2,214 +2,86 @@
 
 ## Overview
 
-RansomLook publishes open-source ransomware and data-extortion intelligence covering groups, victim posts, actors, crypto wallets, leak sites, file servers, chat infrastructure, and related ecosystem entities.
-
-This document is a **draft STIX mapping** for a future `ransomlook` processor. It follows the design patterns used across current `feeds2stix` processors, especially [`ransomware_live`](../ransomware_live/README.md), but adapts them to RansomLook's post-centric and infrastructure-rich data model.
+RansomLook is an open-source ransomware intelligence platform that publishes victim posts, group profiles, ransom notes, threat actors, infrastructure, and cryptocurrency context.
 
 **Feed URL:** `https://www.ransomlook.io/api`  
-**Update Schedule:** Updated live on the source platform  
-**Format:** Authenticated JSON API
+**API Docs:** `https://www.ransomlook.io/doc/#/`  
+**Update Schedule:** Daily, with CTX resume support in the workflow  
+**Format:** JSON API, with optional `RANSOMLOOK_API_KEY` authentication
+
+This processor is date-driven. It fetches posts in month-sized windows from `GET /posts/period/{start_date}/{end_date}`, then writes:
+
+- one threat-actor bundle for the actor catalogue
+- one STIX bundle per month window of posts
 
 **STIX Objects Created:**
 - `identity`
 - `marking-definition`
 - `intrusion-set`
+- `threat-actor`
 - `incident`
 - `note`
-- `threat-actor`
-- `location`
 - `url`
 - `cryptocurrency-wallet`
 - `relationship`
 
 **Relationships:**
-- `intrusion-set` -> `url` (`uses`) for leak, file-server, chat, admin, and relay locations
-- `intrusion-set` -> `cryptocurrency-wallet` (`uses`) for ransom-payment wallets
-- `intrusion-set` -> `identity` (`targets`) for victim organisations
-- `incident` -> `intrusion-set` (`attributed-to`) for victim posts claimed by a group
-- `incident` -> `identity` (`targets`) for the victim named in the post
-- `identity` -> `location` (`located-in`) when victim country is available
-- `threat-actor` -> `intrusion-set` (`associated-with`) for actor-to-group relations
+- `intrusion-set` -> `url` (`uses`) for group infrastructure
+- `intrusion-set` -> `cryptocurrency-wallet` (`uses`) for wallet addresses
+- `incident` -> `intrusion-set` (`attributed-to`) for claimed victim posts
+- `incident` -> `identity` (`targets`) for the victim organization
+- `threat-actor` -> `intrusion-set` (`associated-with`) for actor-to-group links
 
-Ransom notes should be modeled as STIX `note` SDOs that reference their related `intrusion-set` via `object_refs`, rather than via a separate STIX relationship object.
+Victim notes are modeled as STIX `note` objects with `object_refs` pointing back to the related `intrusion-set`.
 
-## Data generation
+## Data Source
 
-### Required environment variables
+The processor reads the public RansomLook API surface used by the rewritten module:
 
-The following environment variable should be set before running the processor locally:
+- `GET /posts/period/{start_date}/{end_date}` for dated victim posts
+- `GET /group/{group_name}` for group metadata and group-linked posts
+- `GET /crypto/` for the list of groups with wallet data
+- `GET /crypto/{group_name}` for wallet details
+- `GET /notes/` for the list of groups with note coverage
+- `GET /notes/group/{group_name}` for note metadata
+- `GET /notes/{note_id}` for note bodies and update timestamps
+- `GET /actors/` for actor names
+- `GET /actors/{actor_name}` for actor details and related groups
 
-| Variable | Description |
-|---|---|
-| `RANSOMLOOK_API_KEY` | API key sent in the `Authorization` header |
+The processor accepts both `{"posts": [...]}` and raw list responses from the period endpoint. Each post is expected to include:
 
-### Data source
-
-RansomLook exposes an authenticated API at `https://www.ransomlook.io/api`. The public documentation currently shows these relevant endpoints:
-
-- `GET /posts` with `days=<n>` for recent victim posts
-- `GET /group/<slug>` for a specific group's details
-- `GET /search?query=<text>` for global victim-post search
-- `GET /export/<db_num>` for full database export
-- `GET /actor/<name>` for actor profiles
-- `GET /crypto/<group>` for group wallet data
-
-The documentation explicitly notes these export databases:
-
-- `0` = Groups
-- `2` = Posts
-- `3` = Markets
-- `4` = Leaks
-- `5` = Actors
-
-### Public endpoint shape validated without authentication
-
-The following endpoint behavior has been validated against the live public API on **2026-06-06**:
-
-- `GET /posts?days=<n>` is publicly accessible
-  - response shape: `{"posts": [{"group_name": "...", "discovered": "..."}]}`
-- `GET /group/<slug>` is publicly accessible
-  - response shape: a JSON array with:
-    - index `0`: group metadata object
-    - index `1`: victim-post array
-- `GET /crypto/<group>` is publicly accessible for groups with wallet data
-  - response shape: `{"group": "...", "aliases": [...], "total": <int>, "by_chain": {...}}`
-- `GET /export/<db_num>` requires authentication
-  - unauthenticated response: HTTP `401`
-
-The public `group` metadata object was observed to contain these keys:
-
-- `affiliates`
-- `captcha`
-- `hash`
-- `jabber`
-- `locations`
-- `mail`
-- `matrix`
-- `meta`
-- `other`
-- `pgp`
-- `private`
-- `profile`
-- `raas`
-- `ransomware_galaxy_value`
-- `session`
-- `telegram`
-- `tox`
-
-The public victim-post objects from `GET /group/<slug>` were observed to contain:
-
+- `group_name`
 - `post_title`
 - `discovered`
+
+It also uses these optional fields when present:
+
 - `description`
 - `link`
+- `screen`
 - `magnet`
-- `screen`
 
-The public `locations` entries from `GET /group/<slug>` were observed to contain:
+Group metadata is expected to include:
 
-- `slug`
-- `fqdn`
-- `timeout`
-- `delay`
-- `fs`
-- `chat`
-- `admin`
-- `browser`
-- `init_script`
-- `private`
-- `version`
-- `available`
-- `title`
-- `updated`
-- `lastscrape`
-- `header`
-- `fixedfile`
-- `screen`
-- `source`
+- `aliases`
+- `affiliates`
+- `profile`
+- `description`
+- `raas`
+- `locations`
+- `notes`
 
-The public wallet entries from `GET /crypto/<group>` were observed to contain:
-
-- `address`
-- `balance`
-- `blockchain`
-- `createdAt`
-- `family`
-- `updatedAt`
-- `balanceUSD`
-- `tx_count`
-- `last_tx_time`
-- `created_at`
-- `updated_at`
-- `imported_at`
-- `source`
-- `origin`
-- `group`
-
-Public ransom-note coverage was also validated:
-
-- `/notes` publicly lists family-specific note pages such as `/notes/krybit`
-- `/notes/<family>` pages expose note bodies publicly in HTML, including:
-  - note filename
-  - full note text inside `<pre class="note-body">`
-  - a link back to the corresponding `/group/<name>` page
-
-### Collection strategy
-
-The recommended processor design is:
-
-1. Discover active or relevant groups from `GET /posts?days=<n>`.
-2. For each discovered group slug, call `GET /group/<slug>`.
-3. Use `GET /group/<slug>` index `0` for group metadata and infrastructure locations.
-4. Use `GET /group/<slug>` index `1` for victim posts.
-5. Enrich each group with `GET /crypto/<group>` when wallet data is available.
-
-This keeps the processor entirely on the public API surface we validated live, and still mirrors the `ransomware_live` pattern of creating one ransomware-group-centric bundle.
-
-### Public-only processor design
-
-Because RansomLook's export endpoints are private, the recommended V1 processor should avoid them completely.
-
-The public-only implementation model is:
-
-- seed the run from `GET /posts?days=<n>`
-- deduplicate `group_name` values
-- normalize each `group_name` into the group slug used by `GET /group/<slug>`
-- fetch `GET /group/<slug>` for each group
-- optionally fetch `GET /crypto/<group>` for the same slug
-
-Tradeoffs of the public-only design:
-
-- pros:
-  - no private API dependency
-  - sufficient data for `intrusion-set`, `incident`, `url`, and `cryptocurrency-wallet`
-  - enough structure for a useful first processor
-- cons:
-  - no bulk historical export
-  - actor coverage is likely limited or unavailable
-  - structured victim country/sector/domain enrichment may be absent
-
-### Timestamp handling
-
-Based on the public docs and glossary:
-
-- post discovery timestamps should drive `incident.created`
-- the highest seen source timestamp for an entity should drive `modified`
-- if a source object has no timestamp, fall back to processor run time
-
-Because the public docs do not currently publish full response schemas, exact field names for some timestamps must be confirmed during implementation against authenticated payloads.
+The location records are filtered on `available`, and wallet data is read from `by_chain`.
 
 ## Mapping
 
-#### Imported objects
+#### Imported Objects
 
-The processor should import the shared feeds2stix marking definition:
+The processor imports the shared feeds2stix marking definition:
 
 `https://raw.githubusercontent.com/muchdogesec/stix4doge/refs/heads/main/objects/marking-definition/feeds2stix.json`
 
 #### Source Identity
-
-An identity should be hardcoded for the feed:
 
 ```json
 {
@@ -220,8 +92,8 @@ An identity should be hardcoded for the feed:
   "created": "2020-01-01T00:00:00.000Z",
   "modified": "2020-01-01T00:00:00.000Z",
   "name": "RansomLook",
-  "description": "Open-source ransomware and data-extortion intelligence covering groups, victim posts, actors, infrastructure, ransom notes, leaks, and cryptocurrency wallets.",
-  "identity_class": "system",
+  "description": "RansomLook is an open-source ransomware and data-extortion intelligence platform covering groups, victim posts, actors, infrastructure, ransom notes, leaks, and cryptocurrency wallets.",
+  "identity_class": "organization",
   "contact_information": "https://www.ransomlook.io/",
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -230,9 +102,9 @@ An identity should be hardcoded for the feed:
 }
 ```
 
-Identity `id` should be generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
+Identity `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the value `RansomLook`.
 
-#### Marking definition
+#### Marking Definition
 
 ```json
 {
@@ -252,383 +124,169 @@ Identity `id` should be generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22
 }
 ```
 
-Marking definition `id` should be generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
+Marking definition `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and the origin statement.
 
 #### Intrusion Set
 
-Each ransomware group should be represented as an `intrusion-set`.
-
-RansomLook's glossary defines a group as a ransomware or data-extortion collective, and group pages expose details such as description, RaaS status, affiliates, and locations. The current draft mapping is:
+Each group becomes one `intrusion-set` object.
 
 ```json
 {
   "type": "intrusion-set",
   "spec_version": "2.1",
   "id": "intrusion-set--<UUIDV5>",
-  "created_by_ref": "identity--<UUID OF FEED IDENTITY>",
-  "created": "<processor run time or earliest group timestamp>",
-  "modified": "<latest group timestamp>",
-  "name": "<group.name>",
-  "description": "<group.description>",
-  "aliases": ["<group.slug>", "<other aliases when present>"],
-  "resource_level": "organization",
-  "primary_motivation": "organizational-gain",
-  "goals": [
-    "extortion",
-    "data theft",
-    "ransomware deployment"
-  ],
-  "labels": [
-    "ransomware",
-    "data-extortion",
-    "raas"
-  ],
+  "created_by_ref": "identity--<UUID OF RANSOMLOOK IDENTITY>",
+  "created": "<first post timestamp in the window>",
+  "modified": "<last post timestamp in the window>",
+  "first_seen": "<first post timestamp in the window>",
+  "last_seen": "<last post timestamp in the window>",
+  "name": "<group name>",
+  "aliases": ["<alias>", "<affiliate>"],
+  "labels": ["raas"],
+  "description": "<group description>",
   "external_references": [
     {
       "source_name": "ransomlook",
-      "url": "https://www.ransomlook.io/group/<group.slug>",
-      "external_id": "<group.slug>"
+      "url": "https://www.ransomlook.io/group/<group-name>"
+    },
+    {
+      "source_name": "ransomlook-profile",
+      "url": "<profile url>"
     }
   ],
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "marking-definition--<UUID OF FEED MARKING DEF>"
+    "marking-definition--<UUID OF RANSOMLOOK MARKING>"
   ]
 }
 ```
 
-`intrusion-set.id` should be generated using namespace `<UUID OF FEED MARKING DEF>` and a stable group key such as `group.slug` if present, else `group.name.lower()`.
-
-Notes:
-
-- `labels` like `raas` should only be included when the source marks the group as RaaS.
-- `goals` are a draft design choice derived from RansomLook's glossary and may be omitted if the team prefers stricter source fidelity.
-
-#### Victim Identity
-
-Each victim post should create or reuse an `identity` object for the targeted organisation.
-
-```json
-{
-  "type": "identity",
-  "spec_version": "2.1",
-  "id": "identity--<UUIDV5>",
-  "created_by_ref": "identity--<UUID OF FEED IDENTITY>",
-  "created": "<post.discovered>",
-  "modified": "<latest post timestamp for this victim>",
-  "name": "<post.post_title or normalized victim name>",
-  "identity_class": "organization",
-  "sectors": ["<mapped sector when present>"],
-  "contact_information": "<victim domain when present>",
-  "object_marking_refs": [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "marking-definition--<UUID OF FEED MARKING DEF>"
-  ]
-}
-```
-
-`identity.id` should be generated using namespace `<UUID OF FEED MARKING DEF>` and a stable victim key. Preferred order:
-
-1. explicit victim ID from source, if present
-2. normalized victim domain
-3. normalized victim name
+The `intrusion-set` ID is deterministic and uses `generate_uuid5(group_name, source_marking_id)`.
 
 #### Incident
 
-Each victim post should become an `incident`.
-
-RansomLook's glossary defines a victim/post as a single entry published by a group and associated with one group and one discovery timestamp. That maps well to one STIX `incident` per post.
+Each victim post becomes one `incident` object.
 
 ```json
 {
   "type": "incident",
   "spec_version": "2.1",
   "id": "incident--<UUIDV5>",
-  "created_by_ref": "identity--<UUID OF FEED IDENTITY>",
-  "created": "<post.discovered>",
-  "modified": "<post.discovered or latest post update timestamp>",
-  "name": "<victim name> claimed by <group name>",
-  "description": "<post description or excerpt when present>",
-  "first_seen": "<post.discovered>",
+  "created_by_ref": "identity--<UUID OF RANSOMLOOK IDENTITY>",
+  "created": "<post discovered timestamp>",
+  "modified": "<post discovered timestamp>",
+  "name": "<victim name> claimed by <group>",
+  "description": "<post description>",
   "external_references": [
     {
       "source_name": "ransomlook",
-      "url": "https://www.ransomlook.io/post/<post id or slug>",
-      "external_id": "<post id>"
+      "url": "https://www.ransomlook.io/group/<group-name>"
     }
-  ],
-  "object_marking_refs": [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "marking-definition--<UUID OF FEED MARKING DEF>"
   ]
 }
 ```
 
-`incident.id` should be generated using namespace `<UUID OF FEED MARKING DEF>` and a stable post key such as `<group_slug>:<post_id>` or `<group_slug>:<post_url>`.
+The incident ID is deterministic and uses `generate_uuid5(f"{group.name}:{post['post_title']}", source_marking_id)`.
 
-#### URL SCO
+#### Identity
 
-RansomLook tracks multiple kinds of group infrastructure, including DLS, file servers, chats, admin panels, and relays. Each distinct URL should become a `url` SCO.
-
-```json
-{
-  "type": "url",
-  "spec_version": "2.1",
-  "id": "url--<GENERATED BY STIX2 LIB>",
-  "value": "<location.url>"
-}
-```
-
-Recommended labeling behavior:
-
-- keep infrastructure type on the relationship `description` or `labels`
-- avoid encoding DLS/FS/chat/admin directly into the SCO beyond the URL value
-
-#### Cryptocurrency Wallet SCO
-
-RansomLook exposes crypto address data by group. Each address should become a `cryptocurrency-wallet` SCO.
+Each post also creates a victim `identity` object.
 
 ```json
 {
-  "type": "cryptocurrency-wallet",
+  "type": "identity",
   "spec_version": "2.1",
-  "id": "cryptocurrency-wallet--<UUIDV5 OR PRODUCER LOGIC>",
-  "address": "<wallet.address>",
-  "currency_type": "<chain or asset symbol>"
+  "id": "identity--<UUIDV5>",
+  "created_by_ref": "identity--<UUID OF RANSOMLOOK IDENTITY>",
+  "created": "<post discovered timestamp>",
+  "modified": "<post discovered timestamp>",
+  "name": "<victim name>",
+  "identity_class": "organization"
 }
 ```
 
-If additional enrichment is present, such as transaction counts or chain labels, it can be carried in:
+The identity ID is deterministic and uses `generate_uuid5(post['post_title'], source_marking_id)`.
 
-- `labels`
-- `external_references`
-- a custom property if the team already has a preferred extension pattern
+#### Note
 
-#### Threat Actor
-
-RansomLook has a distinct actor model and actor-to-group relations. Each actor should become a `threat-actor`.
-
-```json
-{
-  "type": "threat-actor",
-  "spec_version": "2.1",
-  "id": "threat-actor--<UUIDV5>",
-  "created_by_ref": "identity--<UUID OF FEED IDENTITY>",
-  "created": "<processor run time or actor timestamp>",
-  "modified": "<latest actor timestamp>",
-  "name": "<actor.name>",
-  "aliases": ["<actor.aliases>"],
-  "threat_actor_types": ["crime-syndicate"],
-  "roles": ["affiliate", "developer", "broker", "admin"],
-  "external_references": [
-    {
-      "source_name": "ransomlook",
-      "url": "https://www.ransomlook.io/actor/<actor.slug or name>",
-      "external_id": "<actor.slug or name>"
-    }
-  ],
-  "object_marking_refs": [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "marking-definition--<UUID OF FEED MARKING DEF>"
-  ]
-}
-```
-
-Notes:
-
-- `roles` should only be populated when the source clearly distinguishes them.
-- if actor type is unknown, use `threat_actor_types: ["unknown"]` as done elsewhere in the repo.
-
-#### Ransom Note
-
-When a public `/notes/<family>` page exists, each note file on that page should become a STIX `note` SDO.
+Group notes are modeled as STIX `note` objects.
 
 ```json
 {
   "type": "note",
   "spec_version": "2.1",
   "id": "note--<UUIDV5>",
-  "created_by_ref": "identity--<UUID OF FEED IDENTITY>",
-  "created": "<processor run time>",
-  "modified": "<processor run time>",
-  "abstract": "<filename>",
-  "content": "<full ransom note text>",
+  "created_by_ref": "identity--<UUID OF RANSOMLOOK IDENTITY>",
+  "created": "<group first_seen timestamp>",
+  "modified": "<note updated_at timestamp>",
+  "abstract": "<note title>",
+  "content": "<note body>",
   "object_refs": [
-    "intrusion-set--<group id>"
+    "intrusion-set--<UUID OF GROUP>"
   ],
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--a1cb37d2-3bd3-5b23-8526-47a22694b7e0",
-    "marking-definition--<UUID OF FEED MARKING DEF>"
+    "marking-definition--<UUID OF RANSOMLOOK MARKING>"
+  ],
+  "external_references": [
+    {
+      "source_name": "ransomlook",
+      "url": "https://www.ransomlook.io/notes/<note-id>"
+    }
   ]
 }
 ```
 
-Recommended ID strategy:
+The note ID is deterministic and uses `generate_uuid5(f"note:{note_id}", source_marking_id)`.
 
-- generate `note.id` using namespace `<UUID OF FEED MARKING DEF>` and value `<group slug>:<filename>:<content hash>`
+#### URLs and Wallets
 
-Recommended extraction behavior:
+Available infrastructure locations become `url` SCOs and wallet addresses become `cryptocurrency-wallet` SCOs. Each one is linked from the group with a `uses` relationship.
 
-- use the note filename as `abstract`
-- use the full note body as `content`
-- create one `note` object per note file shown on the page
-- attach the corresponding `intrusion-set` in `object_refs`
-- optionally extract any onion or clearnet URLs from the note body as `url` SCOs if the team wants note-derived infrastructure pivots in V2
+#### Threat Actors
 
-#### Location
+Actor records from `/actors/{name}` become `threat-actor` objects. Each actor is linked to the referenced groups with `associated-with` relationships.
 
-When a victim country is present in post data, it should resolve to a CTI Butler `location` object using the same country-normalization pattern already used by processors like `phishunt`.
+## Timestamp Handling
 
-#### Relationships
+- post `discovered` timestamps drive incident and victim identity timestamps
+- group first/last seen timestamps are derived from the posts in the current month window
+- note `created` uses the group first-seen timestamp
+- note `modified` uses the note `updated_at` timestamp
+- threat actor `created` and `modified` are derived from the grouped records they reference
+- `--since-date` and `--until-date` filter on the post `discovered` timestamp after each month window is downloaded
 
-##### Intrusion Set -> URL (`uses`)
+Date-only CLI inputs are normalized with the shared parsing helpers, so `--until-date 2026-06-30` is treated as the end of that day in UTC.
 
-Each group infrastructure URL should be linked back to the group:
+## Usage
 
-```json
-{
-  "type": "relationship",
-  "spec_version": "2.1",
-  "id": "relationship--<UUIDV5>",
-  "relationship_type": "uses",
-  "source_ref": "intrusion-set--<group id>",
-  "target_ref": "url--<location id>",
-  "description": "<location type: dls|fs|chat|admin|relay>",
-  "created": "<group timestamp>",
-  "modified": "<group timestamp>"
-}
+```bash
+python processors/ransomlook/ransomlook.py [--since-date YYYY-MM-DD] [--until-date YYYY-MM-DD]
 ```
 
-##### Intrusion Set -> Cryptocurrency Wallet (`uses`)
+When `--since-date` is supplied, the processor only includes posts discovered on or after that timestamp.
+When `--until-date` is supplied, the processor only includes posts discovered on or before that timestamp.
 
-Each ransom wallet should be linked to the group with `uses`.
+This processor is date-driven and uses the post `discovered` timestamp to set STIX timestamps. It fetches posts in month-sized windows from `GET /posts/period/{start_date}/{end_date}` and then filters on the full `since_date` and `until_date` values, including time.
 
-##### Incident -> Intrusion Set (`attributed-to`)
+## GitHub Action
 
-Each victim post incident should be linked to the claiming group with `attributed-to`.
+The workflow lives at [`.github/workflows/update-ransomlook.yml`](../../.github/workflows/update-ransomlook.yml).
 
-##### Incident -> Identity (`targets`)
+### Required Configuration
 
-Each incident should link to the victim organization with `targets`.
+**Secrets:**
+- `CTX_BASE_URL`
+- `CTX_API_KEY`
 
-##### Intrusion Set -> Identity (`targets`)
+**Variables:**
+- `RANSOMLOOK_FEED_ID`
+- `MAX_BUNDLE_SIZE_KB`
 
-This relationship is optional but recommended for direct group-to-victim pivoting across bundles.
+### Workflow inputs
 
-##### Identity -> Location (`located-in`)
-
-When victim country is available, link victim identity to the resolved country `location`.
-
-##### Threat Actor -> Intrusion Set (`associated-with`)
-
-For each actor relation to a group, create an `associated-with` relationship.
-
-## Bundle strategy
-
-Recommended output pattern:
-
-- one bundle per group, matching the current `ransomware_live` operational shape
-- each bundle contains:
-  - source identity
-  - source marking definition
-  - feeds2stix marking definition
-  - one `intrusion-set`
-  - related `incident` objects for that group
-  - deduplicated victim `identity` objects
-  - related `location` objects
-  - group infrastructure `url` objects
-  - group `cryptocurrency-wallet` objects
-  - related `threat-actor` objects
-  - all connecting relationships
-
-Alternative:
-
-- date-based bundles for very large post volumes
-
-The group-bundle pattern is the closer fit to the current ransomware processors in this repo.
-
-## Remaining questions before implementation
-
-The public surface is now well enough understood to narrow these down substantially:
-
-1. `group_name` from `GET /posts` appears to map directly to `GET /group/<slug>` when URL-encoded, with no additional slug-normalization required.
-   - validated examples include:
-     - `coinbase cartel` -> `/group/coinbase%20cartel`
-     - `inc ransom` -> `/group/inc%20ransom`
-     - `eraleign (apt73)` -> `/group/eraleign%20%28apt73%29`
-   - a live check across sampled groups from `GET /posts?days=2` returned HTTP `200` for each URL-encoded `group_name`
-
-2. Victim posts have a stable deterministic key in the public group response: the relative `link` field `/post/<hash>`.
-   - the hash component is suitable as the incident source key
-   - however, direct navigation to `/post/<hash>` returned HTTP `404` during validation, so the hash should be treated as a stable identifier, not necessarily a resolvable public URL
-
-3. Victim country, sector, and domain do not appear as structured fields on the public post objects.
-   - `post_title` is often a domain-like string and can often serve as the best public victim-domain hint
-   - `description` frequently contains free-text country and sector clues such as "company in Turkey" or industry descriptions
-   - the public group page embeds the same victim-post data in a `posts-data` JSON script block, but still without dedicated structured fields for country or sector
-
-4. Public actor coverage is available via HTML pages, not the documented API endpoint.
-   - `GET /api/actor/<name>` returned HTTP `404` in validation
-   - public actor pages such as `/actor/LockBitSupp` and `/actor/bassterlord` exist
-   - those pages expose useful structured HTML, including:
-     - linked group relations
-     - linked market/forum relations
-     - optional biographical fields such as first and last name
-   - this means actor support is possible in a public-only processor, but via HTML scraping rather than API JSON
-
-5. Leaks and ransom notes are publicly reachable and parseable, while markets remain less certain.
-   - leaks:
-     - `/leaks` publicly lists `/leak/<id>` links
-     - `/leak/1` returned compact JSON with fields like `id`, `name`, and nested `group` metadata
-   - ransom notes:
-     - `/notes` publicly lists family pages such as `/notes/krybit`
-     - `/notes/krybit` returned public HTML containing note bodies in `<pre class="note-body">`
-   - markets:
-     - public actor pages link to `/market/<name>` paths
-     - a dedicated market schema was not validated in this round
-
-### Recommended V1 boundary after public validation
-
-Recommended in V1:
-
-- groups -> `intrusion-set`
-- victim posts -> `incident`
-- victims -> `identity`
-- infrastructure -> `url`
-- crypto -> `cryptocurrency-wallet`
-- core relationships
-
-Reasonable but optional in V1:
-
-- actors via public HTML scraping from `/actor/<name>`
-- ransom notes via public `/notes/<family>` pages
-
-Better deferred to V2 unless explicitly needed:
-
-- leaks
-- markets/forums
-
-The reason to defer those is not lack of public access, but scope control: the public data is there, but it adds a second collection model beyond the core group/post processor.
-
-## Suggested V1 scope
-
-To keep the first implementation aligned with existing design patterns, V1 should focus on:
-
-- groups -> `intrusion-set`
-- posts -> `incident`
-- victims -> `identity`
-- group infrastructure -> `url`
-- group crypto -> `cryptocurrency-wallet`
-- core relationships only
-
-Optional only when validated from public data:
-
-- victim country -> `location`
-- actor profiles -> `threat-actor`
-
-This keeps the processor close to `ransomware_live`, while still capturing the richer infrastructure model that makes RansomLook distinct, without depending on private API access.
+- `target_environment`: choose `all`, `staging`, or `production` for manual runs
+- `since_date`: optional lower bound for posts included in a manual run; use `auto` to resume from the latest note timestamp
+- `until_date`: optional upper bound for posts included in a manual run

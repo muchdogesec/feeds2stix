@@ -20,6 +20,7 @@ PROCESSOR_FILES = {
     "abuse_ch_malwarebazaar": Path("processors/abuse_ch_malwarebazaar/malwarebazaar.py"),
     "abuse_ch_threatfox": Path("processors/abuse_ch_threatfox/threatfox.py"),
     "ransomware_live": Path("processors/ransomware_live/ransomware_live.py"),
+    "ransomlook": Path("processors/ransomlook/ransomlook.py"),
     "certpl": Path("processors/certpl/certpl.py"),
     "abuse_ch_sslblacklist": Path("processors/abuse_ch_sslblacklist/sslblacklist.py"),
     "blocklist_de": Path("processors/blocklist_de/blocklist_de.py"),
