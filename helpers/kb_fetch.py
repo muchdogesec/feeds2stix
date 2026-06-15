@@ -13,6 +13,21 @@ class RemoteFetchError(Exception):
     """Custom exception for remote fetch failures."""
     pass
 
+
+def vulmatch_session():
+    """Create a requests session for CTI Butler with appropriate headers."""
+    session = requests.Session()
+    vulmatch_key = os.getenv("VULMATCH_API_KEY", "")
+    base_url = os.getenv("VULMATCH_BASE_URL", "").rstrip("/")
+    if not base_url:
+        logger.warning("VULMATCH_BASE_URL not set; skipping attack-pattern import")
+        raise Exception("VULMATCH_BASE_URL not set")
+    if vulmatch_key:
+        session.headers.update({"API-KEY": vulmatch_key})
+    else:
+        logger.warning("VULMATCH_API_KEY not set; Vulmatch requests may fail")
+    return session, base_url    
+
 def ctibutler_session():
     """Create a requests session for CTI Butler with appropriate headers."""
     session = requests.Session()
@@ -93,3 +108,13 @@ def fetch_countries():
         return {obj["country"]: obj for obj in get_all_pages(session, url)}
     except Exception as e:
         raise RemoteFetchError(f"Failed to fetch countries from CTI Butler: {e}") from e
+
+
+def fetch_vulnerabilities(cve_ids):
+    assert len(cve_ids) <= 50, "can't fetch more than 50 items at once"
+    session, base_url = vulmatch_session()
+    url = f"{base_url}/v1/cve/objects/?cve_id="+','.join(cve_ids)
+    try:
+        return {obj["name"]: obj for obj in get_all_pages(session, url)}
+    except Exception as e:
+        raise RemoteFetchError(f"Failed to fetch countries from Vulmatch: {e}") from e

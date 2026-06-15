@@ -34,6 +34,7 @@ PROCESSOR_FILES = {
     "cinsscore": Path("processors/cinsscore/cinsscore.py"),
     "viriback": Path("processors/viriback/viriback.py"),
     "promptintel": Path("processors/promptintel/promptintel.py"),
+    "vuldb": Path("processors/vuldb/vuldb.py"),
 }
 
 

@@ -139,3 +139,39 @@ To represent the VulDB data we should attach a Note to the Vulnerability (thus m
   ]
 }
 ```
+
+## Usage
+
+```bash
+python processors/vuldb/vuldb.py path/to/vuldb-cve-list.json
+```
+
+The argument is a persistent JSON file mapping CVE IDs to the parsed RSS item that first introduced them. Each run reads the file, appends CVE IDs parsed from `https://vuldb.com/rss/recent`, fetches CVEs from Vulmatch in chunks of 50, removes found CVEs from the map, and writes the unresolved map back to disk.
+
+The processor uses the VulDB RSS item `pubDate` timestamp for VulDB `note` objects. Vulnerability objects are imported from Vulmatch and are not created from the RSS feed directly.
+
+## Output
+
+The processor writes STIX bundles to `outputs/vuldb/bundles/vuldb_part_NNN.json`.
+
+The updated unresolved CVE map is written to `outputs/vuldb/data/vuldb-cve-list.json` for upload as the `vuldb-cve-list` workflow artifact.
+
+## GitHub Action
+
+The processor is intended to run hourly and resume unresolved CVEs from the latest `vuldb-cve-list` artifact.
+
+### Required Configuration
+
+**Secrets:**
+- `CTX_BASE_URL`
+- `CTX_API_KEY`
+- `VULMATCH_BASE_URL`
+- `VULMATCH_API_KEY`
+
+**Variables:**
+- `VULDB_FEED_ID`
+- `MAX_BUNDLE_SIZE_KB`
+
+### Workflow inputs
+
+- `target_environment`: choose `all`, `staging`, or `production` for manual runs

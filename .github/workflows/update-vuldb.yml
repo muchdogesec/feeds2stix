@@ -1,0 +1,124 @@
+name: "[Update CTX] VulDB"
+
+on:
+  schedule:
+    # Poll hourly because VulDB RSS is short-lived and Vulmatch can lag behind it.
+    - cron: "12 * * * *"
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Which environment(s) to run"
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+
+    env:
+      PYTHONPATH: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get last VulDB CVE list artifact
+        id: cve_list
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p vuldb-state
+          python -c "import os; from helpers import hashmanager; hashmanager.download_latest_artifact_with_name('vuldb-cve-list', os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_TOKEN'], 'vuldb-state')"
+          CVE_FILE="$(find vuldb-state -name 'vuldb-cve-list.json' -type f | head -n 1)"
+          if [ -z "$CVE_FILE" ]; then
+            CVE_FILE="vuldb-state/vuldb-cve-list.json"
+            touch "$CVE_FILE"
+          fi
+          echo "cve_file=$CVE_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Process VulDB feed and create STIX bundles
+        id: process
+        env:
+          VULMATCH_BASE_URL: ${{ secrets.VULMATCH_BASE_URL }}
+          VULMATCH_API_KEY: ${{ secrets.VULMATCH_API_KEY }}
+        run: |
+          python processors/vuldb/vuldb.py "${{ steps.cve_list.outputs.cve_file }}"
+
+      - name: Upload bundles to CTX
+        id: upload
+        if: ${{ steps.process.outputs.bundle_count != '0' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          VULDB_FEED_ID: ${{ vars.VULDB_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="outputs/vuldb/bundles"
+
+          if [ -z "$VULDB_FEED_ID" ]; then
+            echo "Error: VULDB_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading $BUNDLE_PATH to feed $VULDB_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$VULDB_FEED_ID"
+
+      - name: Upload dedupe database
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload failed bundles
+        if: ${{ always() && steps.upload.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
+      - name: Upload VulDB CVE list
+        if: ${{ steps.process.outputs.cve_list_path != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: vuldb-cve-list
+          path: ${{ steps.process.outputs.cve_list_path }}
+          retention-days: 90
+          overwrite: true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vuldb-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            outputs/
+            upload_artifacts/
+          retention-days: 7
