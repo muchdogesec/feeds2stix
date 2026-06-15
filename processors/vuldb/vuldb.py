@@ -179,9 +179,11 @@ def load_pending_cves(path: Path) -> dict[str, dict]:
         )
     return normalized_pending_cves
 
+
 def save_pending_cves(path: Path, pending_cves: dict[str, dict]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(pending_cves, indent=2, sort_keys=True) + "\n")
+    logger.info("saved missing_cve_list to %s", path)
     return path
 
 
@@ -193,15 +195,6 @@ def fetch_vulnerabilities_for_cves(cve_ids: list[str]) -> dict[str, dict]:
     return vulnerabilities
 
 
-def vulmatch_reference(vulnerability) -> dict | None:
-    for reference in vulnerability.get("external_references", []) or []:
-        if (reference.get("source_name") or "").lower() == "vulmatch" and reference.get(
-            "url"
-        ):
-            return {"source_name": "vulmatch", "url": reference["url"]}
-    return None
-
-
 def build_vuldb_note(
     cve_id: str,
     pending_item: dict,
@@ -209,14 +202,14 @@ def build_vuldb_note(
     source_identity_id: str,
     source_marking_id: str,
 ):
-    external_references = []
+    external_references = [
+        vulnerability['external_references'][0]
+    ]
     if pending_item.get("link"):
-        external_references.append({"source_name": "vuldb", "url": pending_item["link"]})
+        external_references.append(
+            {"source_name": "vuldb", "url": pending_item["link"]}
+        )
     external_references.extend(pending_item.get("description_references", []))
-
-    vulmatch_ref = vulmatch_reference(vulnerability)
-    if vulmatch_ref:
-        external_references.append(vulmatch_ref)
 
     pub_date = datetime.fromisoformat(pending_item["pub_date"].replace("Z", "+00:00"))
     labels = [
@@ -246,7 +239,7 @@ def build_bundle_objects(
 ) -> list:
     objects = []
     for vulnerability in vulnerabilities:
-        cve_id = vulnerability['name']
+        cve_id = vulnerability["name"]
         pending_item = pending_cves.get(cve_id)
         if not pending_item:
             continue
@@ -265,7 +258,9 @@ def build_bundle_objects(
 
 def process_vuldb(cve_list_path: Path, data_dir: Path):
     parsed_cves = load_pending_cves(cve_list_path)
+    logger.info("loaded %s missing CVEs from last run", len(parsed_cves))
     rss_pending_cves = fetch_vuldb_rss(data_dir)
+    logger.info("loaded %s CVEs from VulDB RSS", len(rss_pending_cves))
     parsed_cves.update(rss_pending_cves)
     new_cve_list_path = data_dir / PENDING_CVE_FILENAME
 
@@ -276,11 +271,19 @@ def process_vuldb(cve_list_path: Path, data_dir: Path):
         for cve_id, pending_item in parsed_cves.items()
         if cve_id not in found_cves_by_name
     }
+    logger.info(
+        "found %s CVEs and left %s missing", len(found_cves_by_name), len(pending_cves)
+    )
     save_pending_cves(new_cve_list_path, pending_cves)
     (data_dir / "vuldb_found_cves.json").write_text(
         json.dumps(sorted(found_cves_by_name), indent=2) + "\n"
     )
-    return list(found_cves_by_name.values()), parsed_cves, pending_cves, new_cve_list_path
+    return (
+        list(found_cves_by_name.values()),
+        parsed_cves,
+        pending_cves,
+        new_cve_list_path,
+    )
 
 
 def make_bundles(
@@ -294,7 +297,10 @@ def make_bundles(
 ):
     bundle_paths = []
     for idx, vulnerability_group in enumerate(
-        [vulnerabilities[i : i + vulnerabilities_per_bundle] for i in range(0, len(vulnerabilities), vulnerabilities_per_bundle)],
+        [
+            vulnerabilities[i : i + vulnerabilities_per_bundle]
+            for i in range(0, len(vulnerabilities), vulnerabilities_per_bundle)
+        ],
         start=1,
     ):
         stix_objects = build_bundle_objects(
@@ -340,7 +346,9 @@ def main():
     source_marking = create_vuldb_marking_definition()
     feeds2stix_marking = fetch_external_objects()
 
-    vulnerabilities, parsed_cves, pending_cves, new_cve_list_path = process_vuldb(old_cve_list_path, data_dir)
+    vulnerabilities, parsed_cves, pending_cves, new_cve_list_path = process_vuldb(
+        old_cve_list_path, data_dir
+    )
     bundle_paths = make_bundles(
         vulnerabilities,
         parsed_cves,

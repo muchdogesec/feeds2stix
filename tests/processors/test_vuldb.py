@@ -6,7 +6,6 @@ from pathlib import Path
 from processors.vuldb import vuldb
 from tests.utilities import FakeResponse, stix_as_dict
 
-
 SOURCE_IDENTITY_ID = "identity--24c95c49-df92-561c-8955-7411e5fd3fd2"
 SOURCE_MARKING_ID = "marking-definition--fd617b14-244a-5edc-99f0-46ce6f53e219"
 FEEDS2STIX_MARKING = {
@@ -31,8 +30,9 @@ VULNERABILITY = {
     "name": "CVE-2026-11438",
     "external_references": [
         {
-            "source_name": "vulmatch",
+            "source_name": "cve",
             "url": "https://vulmatch.test/cve/CVE-2026-11438",
+            "external_id": "CVE-2026-11438",
         }
     ],
 }
@@ -231,6 +231,11 @@ def test_build_vuldb_note():
         "object_refs": ["vulnerability--11111111-1111-4111-8111-111111111111"],
         "labels": ["Vendor: theonedev", "Risk: critical"],
         "external_references": [
+            {
+                "source_name": "cve",
+                "url": "https://vulmatch.test/cve/CVE-2026-11438",
+                "external_id": "CVE-2026-11438",
+            },
             {"source_name": "vuldb", "url": "https://vuldb.com/vuln/369018"},
             {
                 "source_name": "vuldb",
@@ -241,10 +246,6 @@ def test_build_vuldb_note():
                 "source_name": "vuldb",
                 "url": "https://vuldb.com/product/theonedev:onedev",
                 "description": "theonedev onedev up to 15.0.5",
-            },
-            {
-                "source_name": "vulmatch",
-                "url": "https://vulmatch.test/cve/CVE-2026-11438",
             },
         ],
         "object_marking_refs": [
@@ -298,6 +299,11 @@ def test_create_stix_objects_adds_note_for_feed_context():
             "object_refs": ["vulnerability--11111111-1111-4111-8111-111111111111"],
             "labels": ["Vendor: theonedev", "Risk: critical"],
             "external_references": [
+                {
+                    "source_name": "cve",
+                    "url": "https://vulmatch.test/cve/CVE-2026-11438",
+                    "external_id": "CVE-2026-11438",
+                },
                 {"source_name": "vuldb", "url": "https://vuldb.com/vuln/369018"},
                 {
                     "source_name": "vuldb",
@@ -308,10 +314,6 @@ def test_create_stix_objects_adds_note_for_feed_context():
                     "source_name": "vuldb",
                     "url": "https://vuldb.com/product/theonedev:onedev",
                     "description": "theonedev onedev up to 15.0.5",
-                },
-                {
-                    "source_name": "vulmatch",
-                    "url": "https://vulmatch.test/cve/CVE-2026-11438",
                 },
             ],
             "object_marking_refs": [
@@ -403,7 +405,7 @@ def test_process_vuldb_merges_pending_and_rss_then_removes_found(monkeypatch, tm
             "description_references": [],
             "pub_date": "2026-06-05T22:26:13Z",
             "categories": {},
-        }
+        },
     }
     assert pending_cves == {
         "CVE-2026-11438": {

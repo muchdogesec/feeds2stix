@@ -129,13 +129,14 @@ To represent the VulDB data we should attach a Note to the Vulnerability (thus m
   ],
   "external_references": [
     {
+      "source_name": "cve",
+      "url": "<NVD LINK>",
+      "external_id": "CVE-XXXX-YYYZZ",
+    },
+    {
       "source_name": "vuldb",
       "url": "<link>"
     },
-    {
-      "source_name": "vulmatch",
-      "url": "<vulmatch link>"
-    }
   ]
 }
 ```
