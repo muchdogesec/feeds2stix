@@ -123,6 +123,13 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["ransomware", "threat_actor", "data_leak", "campaign"],
         ["ransomware-groups", "victim-tracking", "leak-sites", "extortion"],
     ),
+    "ransomlook": build_processor_metadata(
+        "RansomLook",
+        "Dated ransomware victim-post intelligence from RansomLook.",
+        "RansomLook is an open-source ransomware and data-extortion intelligence platform that publishes victim posts, group profiles, infrastructure, and crypto context. This processor publishes dated victim posts as STIX notes and related group, infrastructure, and wallet context to support tracking, enrichment, and investigations.",
+        ["ransomware", "threat_actor", "data_leak", "campaign"],
+        ["ransomware-groups", "victim-tracking", "leak-sites", "extortion"],
+    ),
     "certpl": build_processor_metadata(
         "CERT.PL Warning List",
         "Dangerous domains tracked by CERT Polska to protect Polish internet users.",
