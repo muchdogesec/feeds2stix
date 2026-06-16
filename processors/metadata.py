@@ -221,4 +221,11 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
         ["indicator_of_compromise", "ttp", "cyber_crime"],
         ["ai-security", "prompt-injection", "jailbreak", "llm-threat-intelligence"],
     ),
+    "vuldb": build_processor_metadata(
+        "VulDB",
+        "Recent vulnerability intelligence from the VulDB RSS feed.",
+        "VulDB publishes recent vulnerability disclosures through an RSS feed. This processor tracks CVE IDs from the feed, retries unresolved CVEs until they are available in Vulmatch, then publishes Vulmatch vulnerability objects with VulDB note context for vulnerability intelligence workflows.",
+        ["vulnerability"],
+        ["vulnerability-intelligence", "cve", "rss-feed", "vulmatch"],
+    ),
 }

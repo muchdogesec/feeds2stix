@@ -41,7 +41,7 @@ def test_fetch_attack_pattern_from_ctibutler_uses_session_base_url():
 
     with patch(
         "helpers.kb_fetch.ctibutler_session",
-        return_value=(session, "https://ctibutler.example"),
+        return_value=(session, "https://api.ctibutler.com"),
     ):
         obj = kb_fetch._fetch_kb_object_from_ctibutler(
             "attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b"
@@ -50,7 +50,7 @@ def test_fetch_attack_pattern_from_ctibutler_uses_session_base_url():
     assert obj["name"] == "Phishing"
     assert session.calls == [
         {
-            "url": "https://ctibutler.example/v1/attack-enterprise/objects/attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b/",
+            "url": "https://api.ctibutler.com/v1/attack-enterprise/objects/attack-pattern--a62a8db3-f23a-4d8f-afd6-9dbc77e7813b/",
             "timeout": 30,
             "params": None,
         }
@@ -65,18 +65,50 @@ def test_get_all_pages_uses_initial_params_only():
         ]
     )
 
-    results = kb_fetch.get_all_pages(session, "https://ctibutler.example/")
+    results = kb_fetch.get_all_pages(session, "https://api.ctibutler.com/")
 
     assert results == [{"id": "location--1"}, {"id": "location--2"}]
     assert session.calls == [
         {
-            "url": "https://ctibutler.example/",
+            "url": "https://api.ctibutler.com/",
             "timeout": 30,
             "params": {"page": 1},
         },
         {
-            "url": "https://ctibutler.example/",
+            "url": "https://api.ctibutler.com/",
             "timeout": 30,
             "params": {"page": 2},
         },
+    ]
+
+
+def test_vulmatch_session_uses_env_without_api_key(monkeypatch):
+    monkeypatch.setenv("VULMATCH_BASE_URL", "https://api.vulmatch.com/")
+    monkeypatch.delenv("VULMATCH_API_KEY", raising=False)
+
+    session, base_url = kb_fetch.vulmatch_session()
+
+    assert base_url == "https://api.vulmatch.com"
+    assert "API-KEY" not in session.headers
+
+
+def test_fetch_vulnerabilities_uses_vulmatch_session_and_returns_dict(monkeypatch):
+    session = FakeSession([{"objects": [{"name": "CVE-2026-11438", "id": "vulnerability--1"}]}])
+    calls = []
+
+    def fake_get_all_pages(fake_session, url):
+        calls.append((fake_session, url))
+        return [{"name": "CVE-2026-11438", "id": "vulnerability--1"}]
+
+    monkeypatch.setattr(kb_fetch, "vulmatch_session", lambda: (session, "https://api.vulmatch.com"))
+    monkeypatch.setattr(kb_fetch, "get_all_pages", fake_get_all_pages)
+
+    assert kb_fetch.fetch_vulnerabilities(["CVE-2026-11438"]) == {
+        "CVE-2026-11438": {"name": "CVE-2026-11438", "id": "vulnerability--1"}
+    }
+    assert calls == [
+        (
+            session,
+            "https://api.vulmatch.com/v1/cve/objects/?cve_id=CVE-2026-11438",
+        )
     ]

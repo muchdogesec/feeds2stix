@@ -54,11 +54,13 @@ export PYTHONPATH=.
 
 You can then run each script as shown in that feeds README.md file.
 
-Many feed rely on CTI Butler so you will want to set
+Many feed rely on CTI Butler or Vulmatch so you will want to set
 
 ```
 export CTIBUTLER_BASE_URL='https://api.ctibutler.com/'
 export CTIBUTLER_API_KEY='<YOUR KEY>'
+export VULMATCH_BASE_URL='https://api.vulmatch.com/'
+export VULMATCH_API_KEY='<YOUR KEY>'
 ```
 
 ## Github actions note
