@@ -1,0 +1,123 @@
+name: "[Update CTX] MSRC"
+
+on:
+  schedule:
+    - cron: "12 3 * * *"
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Which environment(s) to run"
+        required: true
+        type: choice
+        options:
+          - all
+          - staging
+          - production
+        default: all
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_env: ${{ fromJson((github.event_name != 'workflow_dispatch' || github.event.inputs.target_environment == 'all') && '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'staging') && '["cyberthreatexchange-updates-staging"]' || (github.event.inputs.target_environment == 'production') && '["cyberthreatexchange-updates-production"]' || '["cyberthreatexchange-updates-production","cyberthreatexchange-updates-staging"]') }}
+    environment: ${{ matrix.target_env }}
+
+    env:
+      PYTHONPATH: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Get last MSRC missing CVE list artifact
+        id: missing_cve_list
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p msrc-state
+          python -c "import os; from helpers import hashmanager; hashmanager.download_latest_artifact_with_name('msrc-missing-cve-list', os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_TOKEN'], 'msrc-state')"
+          MISSING_CVE_FILE="$(find msrc-state -name 'missing_cve_list.json' -type f | head -n 1)"
+          if [ -z "$MISSING_CVE_FILE" ]; then
+            MISSING_CVE_FILE="msrc-state/missing_cve_list.json"
+            touch "$MISSING_CVE_FILE"
+          fi
+          echo "missing_cve_file=$MISSING_CVE_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Process MSRC feed and create STIX bundles
+        id: process
+        env:
+          VULMATCH_BASE_URL: ${{ secrets.VULMATCH_BASE_URL }}
+          VULMATCH_API_KEY: ${{ secrets.VULMATCH_API_KEY }}
+        run: |
+          python processors/microsoft_update_guide/microsoft_update_guide.py "${{ steps.missing_cve_list.outputs.missing_cve_file }}"
+
+      - name: Upload bundles to CTX
+        id: upload
+        if: ${{ steps.process.outputs.bundle_count != '0' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CTX_BASE_URL: ${{ secrets.CTX_BASE_URL }}
+          CTX_API_KEY: ${{ secrets.CTX_API_KEY }}
+          MSRC_FEED_ID: ${{ vars.MSRC_FEED_ID }}
+          MAX_BUNDLE_SIZE_KB: ${{ vars.MAX_BUNDLE_SIZE_KB }}
+          ARTIFACT_PREFIX: ${{ matrix.target_env }}
+        run: |
+          BUNDLE_PATH="outputs/microsoft_update_guide/bundles"
+
+          if [ -z "$MSRC_FEED_ID" ]; then
+            echo "Error: MSRC_FEED_ID variable is not set"
+            exit 1
+          fi
+
+          echo "Uploading $BUNDLE_PATH to feed $MSRC_FEED_ID..."
+          python helpers/upload.py "$BUNDLE_PATH" --feed_id "$MSRC_FEED_ID"
+
+      - name: Upload dedupe database
+        if: ${{ always() && steps.upload.outputs.has_success == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.dedupe_artifact_name }}
+          path: ${{ steps.upload.outputs.dedupe_path }}
+          retention-days: 90
+
+      - name: Upload failed bundles
+        if: ${{ always() && steps.upload.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.upload.outputs.failed_artifact_name }}
+          path: upload_artifacts/failed_bundles/
+          retention-days: 7
+
+      - name: Upload MSRC missing CVE list
+        if: ${{ steps.process.outputs.missing_cve_list_path != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: msrc-missing-cve-list
+          path: ${{ steps.process.outputs.missing_cve_list_path }}
+          retention-days: 90
+          overwrite: true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: msrc-upload-artifacts-${{ matrix.target_env }}
+          path: |
+            outputs/
+            upload_artifacts/
+          retention-days: 7

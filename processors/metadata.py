@@ -230,9 +230,16 @@ PROCESSOR_METADATA_BY_PROCESSOR = {
     ),
     "vuldb": build_processor_metadata(
         "VulDB",
-        "Recent vulnerability intelligence from the VulDB RSS feed.",
-        "VulDB publishes recent vulnerability disclosures through an RSS feed. This processor tracks CVE IDs from the feed, retries unresolved CVEs until they are available in Vulmatch, then publishes Vulmatch vulnerability objects with VulDB note context for vulnerability intelligence workflows.",
+        "Vulnerability intelligence from the VulDB RSS feed.",
+        "VulDB publishes vulnerability intelligence from the VulDB RSS feed. This processor keeps unresolved CVEs in a persistent JSON file, retries them until Vulmatch returns a vulnerability, and attaches VulDB note context with extracted description links.",
         ["vulnerability"],
-        ["vulnerability-intelligence", "cve", "rss-feed", "vulmatch"],
+        ["vuldb", "cve", "rss-feed", "vulnerability-intelligence"],
+    ),
+    "microsoft_update_guide": build_processor_metadata(
+        "MSRC Security Update Guide",
+        "Microsoft vulnerability intelligence from the MSRC RSS feed.",
+        "MSRC Security Update Guide publishes Microsoft vulnerability intelligence from the official MSRC RSS feed. This processor keeps an unresolved CVE list for records that are not yet present in Vulmatch, skips feed revisions above 1.0, and attaches MSRC note context with markdown links extracted into external references.",
+        ["vulnerability"],
+        ["msrc", "cve", "rss-feed", "vulnerability-intelligence"],
     ),
 }

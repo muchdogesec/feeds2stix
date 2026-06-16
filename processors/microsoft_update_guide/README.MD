@@ -1,47 +1,41 @@
 ## MSRC Security Update Guide
 
-This feed posts new vulnerabilities
+## Overview
 
-https://api.msrc.microsoft.com/update-guide/rss
+MSRC Security Update Guide publishes Microsoft vulnerability intelligence from the official MSRC RSS feed and converts it into STIX 2.1.
 
-Note entries in the feeds can be duplicates (see below)
+**Feed:** https://api.msrc.microsoft.com/update-guide/rss
 
-All we need to do is create a feed from Vulmatch bundle (import ONLY `vulnerability` object).
+This processor is dated and keeps an unresolved CVE list so CVEs that are not yet in Vulmatch can be retried on later runs. It only processes `Revision="1.0"` items. Higher revisions are skipped because they are usually editorial updates rather than new vulnerability records.
 
-Each record in the feed looks like
+**STIX Objects Created:**
+- `identity`
+- `marking-definition`
+- `note`
+
+**Imported objects:**
+- `vulnerability` from Vulmatch
+
+## Data source
+
+Each RSS item looks like this:
 
 ```xml
-    <item
-      Revision="1.0000000000">
-      <guid
-        isPermaLink="false">CVE-2026-26030</guid>
-      <link>https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-26030</link>
-      <category>CVE</category>
-      <title>CVE-2026-26030 GitHub: CVE-2026-26030 Microsoft Semantic Kernel InMemoryVectorStore filter functionality vulnerable</title>
-      <description>[CVE-2026-26030](https://www.cve.org/CVERecord?id=CVE-2026-26030) is a Remote Code Execution vulnerability that has been identified in Microsoft Semantic Kernel Python SDK, specifically within the InMemoryVectorStore filter functionality. GitHub created this CVE on their behalf. GitHub created this CVE on their behalf. This document incorporates updates in the Microsoft Semantic Kernel Repository which address this vulnerability.
-
-Please see [CVE-2026-26030](https://www.cve.org/CVERecord?id=CVE-2026-26030) for more information.</description>
-      <pubDate>Tue, 10 Mar 2026 07:00:00 -0700</pubDate>
-    </item>
-    <item
-      Revision="1.1000000000">
-      <guid
-        isPermaLink="false">CVE-2026-26030</guid>
-      <link>https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-26030</link>
-      <category>CVE</category>
-      <title>CVE-2026-26030 GitHub: CVE-2026-26030 Microsoft Semantic Kernel InMemoryVectorStore filter functionality vulnerable</title>
-      <description>Acknowledgement added. This is an informational change only.</description>
-      <pubDate>Thu, 12 Mar 2026 07:00:00 -0700</pubDate>
-    </item>
+<item Revision="1.0000000000">
+  <guid isPermaLink="false">CVE-2026-26030</guid>
+  <link>https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-26030</link>
+  <category>CVE</category>
+  <title>CVE-2026-26030 GitHub: CVE-2026-26030 Microsoft Semantic Kernel InMemoryVectorStore filter functionality vulnerable</title>
+  <description>[CVE-2026-26030](https://www.cve.org/CVERecord?id=CVE-2026-26030) is a Remote Code Execution vulnerability. Please see [CVE-2026-26030](https://www.cve.org/CVERecord?id=CVE-2026-26030) for more information.</description>
+  <pubDate>Tue, 10 Mar 2026 07:00:00 -0700</pubDate>
+</item>
 ```
 
-For duplicate entries, we should make sure we limit to `Revision=1.0`, subsequent entries do not usually add any relevant info, other than to advise of an update.
+The CVE ID is taken from `<guid>`.
 
-Note, this feed is quite large and stores a large amount of entries. This means updates can be run once per day.
+The `description` field is Markdown, so Markdown links are extracted and written to the Note object as `external_references`. The plain text description is kept as the Note `content`.
 
-### STIX Mapping
-
-We should include the feed data as we do with all feeds.
+## Mapping
 
 #### Imported objects
 
@@ -70,7 +64,7 @@ An identity is hardcoded for the feed.
 }
 ```
 
-Identity `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
+Identity `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `name`.
 
 #### Marking Definition
 
@@ -94,15 +88,14 @@ This is hardcoded and never changes.
 }
 ```
 
-Marking Definition `id` generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
+Marking Definition `id` is generated using namespace `a1cb37d2-3bd3-5b23-8526-47a22694b7e0` and value `definition.statement`.
 
 #### Note
 
-To represent the MSRC data we should attach a Note to the Vulnerability (thus must exist in Vulmatch)
+To represent the MSRC data we attach a Note to the Vulnerability, so the CVE must already exist in Vulmatch.
 
 ```json
 {
-
   "type": "note",
   "spec_version": "2.1",
   "id": "note--<UUIDV5>",
@@ -118,8 +111,17 @@ To represent the MSRC data we should attach a Note to the Vulnerability (thus mu
   ],
   "external_references": [
     {
+      "source_name": "cve",
+      "url": "<NVD LINK>",
+      "external_id": "CVE-XXXX-YYYYY",
+    }
+    {
       "source_name": "msrc",
       "url": "<link>"
+    },
+    {
+      "source_name": "msrc",
+      "url": "<markdown link>"
     },
     {
       "source_name": "vulmatch",
@@ -128,3 +130,39 @@ To represent the MSRC data we should attach a Note to the Vulnerability (thus mu
   ]
 }
 ```
+
+## Usage
+
+```bash
+python processors/microsoft_update_guide/microsoft_update_guide.py path/to/missing_cve_list.json
+```
+
+The argument is a persistent JSON file mapping CVE IDs to the parsed RSS item that first introduced them. Each run reads the file, appends CVEs parsed from the MSRC RSS feed, fetches Vulmatch vulnerabilities in chunks of 50, removes found CVEs from the map, and writes the unresolved map back to disk.
+
+The processor uses the MSRC RSS item `pubDate` timestamp for Note timestamps. Vulnerability objects are imported from Vulmatch and are not created from the RSS feed directly.
+
+## Output
+
+The processor writes STIX bundles to `outputs/microsoft_update_guide/bundles/msrc_part_NNN.json`.
+
+The updated unresolved CVE map is written to `outputs/microsoft_update_guide/data/missing_cve_list.json` and uploaded as the `msrc-missing-cve-list` workflow artifact.
+
+## GitHub Action
+
+The processor is intended to run daily and resume unresolved CVEs from the latest `msrc-missing-cve-list` artifact.
+
+### Required Configuration
+
+**Secrets:**
+- `CTX_BASE_URL`
+- `CTX_API_KEY`
+- `VULMATCH_BASE_URL`
+- `VULMATCH_API_KEY`
+
+**Variables:**
+- `MSRC_FEED_ID`
+- `MAX_BUNDLE_SIZE_KB`
+
+### Workflow inputs
+
+- `target_environment`: choose `all`, `staging`, or `production` for manual runs

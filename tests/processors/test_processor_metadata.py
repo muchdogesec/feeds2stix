@@ -35,6 +35,7 @@ PROCESSOR_FILES = {
     "cinsscore": Path("processors/cinsscore/cinsscore.py"),
     "viriback": Path("processors/viriback/viriback.py"),
     "promptintel": Path("processors/promptintel/promptintel.py"),
+    "microsoft_update_guide": Path("processors/microsoft_update_guide/microsoft_update_guide.py"),
     "vuldb": Path("processors/vuldb/vuldb.py"),
 }
 
